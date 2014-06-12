@@ -35,12 +35,4 @@ public class Overview extends Root{
 
         render(tips, extras);
     }
-
-    public static void lazy(final int number, final int start) {
-        final Playday playday = Playday.find("byNumber", number).first();
-        final List<User> users = User.find("SELECT u FROM User u WHERE active = true ORDER BY place ASC").fetch();
-        final List<Map<User, List<GameTip>>> tips = AppUtils.getPlaydayTips(playday, users);
-
-        render(tips);
-    }
 }
