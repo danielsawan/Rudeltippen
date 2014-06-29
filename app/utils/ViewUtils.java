@@ -366,7 +366,7 @@ public class ViewUtils extends JavaExtensions implements AppConstants{
         String score = "- : -";
         if (game.isEnded()) {
             if (game.isOvertime()) {
-				score = game.getHomeScoreOT() + " : " + game.getAwayScoreOT() + " " + Messages.get(game.getOvertimeType()) + " / " + game.getHomeScore() + " : " + game.getAwayScore();
+				score = game.getHomeScoreOT() + " : " + game.getAwayScoreOT() + " " + Messages.get(game.getOvertimeType()) + " (" + game.getHomeScore() + " : " + game.getAwayScore() + ")";
             } else {
                 score = game.getHomeScore() + " : " + game.getAwayScore();
             }
