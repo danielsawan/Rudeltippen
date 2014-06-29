@@ -27,7 +27,7 @@ import play.i18n.Messages;
 import play.templates.JavaExtensions;
 
 public class ViewUtils extends JavaExtensions implements AppConstants{
-	private static final String ICON_ARROW_GREEN = "<span class=\"glyphicon glyphicon-arrow-up green\"></span>";
+    private static final String ICON_ARROW_GREEN = "<span class=\"glyphicon glyphicon-arrow-up green\"></span>";
     private static final String ICON_ARROW_RED = "<span class=\"glyphicon glyphicon-arrow-down red\"></span>";
     private static final String ICON_MINUS = "<span class=\"glyphicon glyphicon-minus black\"></span>";
 
@@ -301,9 +301,9 @@ public class ViewUtils extends JavaExtensions implements AppConstants{
     public static String getExtraTipAnswer(final ExtraTip extraTip) {
         String answer = "-";
         if (extraTip.getAnswer() != null) {
-			if (extraTip.getUser() == AppUtils.getConnectedUser()) {
-				answer = Messages.get(extraTip.getAnswer().getName());
-			} else if (extraTip.getExtra().getEnding().getTime() < new Date().getTime()) {
+            if (extraTip.getUser() == AppUtils.getConnectedUser()) {
+                answer = Messages.get(extraTip.getAnswer().getName());
+            } else if (extraTip.getExtra().getEnding().getTime() < new Date().getTime()) {
                 answer = Messages.get(extraTip.getAnswer().getName());
             } else {
                 answer = Messages.get("model.user.tipped");
@@ -331,7 +331,7 @@ public class ViewUtils extends JavaExtensions implements AppConstants{
         final int previousPlace = user.getPreviousPlace();
         String trend = "";
 
-		if (previousPlace > 0) {
+        if (previousPlace > 0) {
             if (currentPlace < previousPlace) {
                 trend = ICON_ARROW_GREEN + " (" + previousPlace + ")";
             } else if (currentPlace > previousPlace) {
@@ -366,7 +366,7 @@ public class ViewUtils extends JavaExtensions implements AppConstants{
         String score = "- : -";
         if (game.isEnded()) {
             if (game.isOvertime()) {
-                score = game.getHomeScore() + " : " + game.getAwayScore() + " / " + game.getHomeScoreOT() + ":" + game.getAwayScoreOT() + " (" + game.getOvertimeType() + ")";
+                score = game.getHomeScore() + " : " + game.getAwayScore() + " / " + game.getHomeScoreOT() + " : " + game.getAwayScoreOT() + " (" + Messages.get(game.getOvertimeType()) + ")";
             } else {
                 score = game.getHomeScore() + " : " + game.getAwayScore();
             }
