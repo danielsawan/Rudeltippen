@@ -129,7 +129,6 @@ public class ApplicationTests extends FunctionalTest {
         
         assertStatus(200, GET("/rules"));
         assertStatus(200, GET("/statistics"));
-        assertStatus(200, GET("/tips/extras"));
         assertStatus(200, GET("/tips/playday"));
         assertStatus(200, GET("/tournament/brackets"));
         assertStatus(200, GET("/tournament/playday/1"));

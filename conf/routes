@@ -16,7 +16,6 @@ GET     /auth/password/{token}          	auth.password
 GET	    /tips/playday/{number}				tips.playday
 GET     /standings                          tips.standings
 GET	    /overview/playday/{number}	    	overview.playday
-GET	    /overview/playday/{number}/{start}	overview.lazy
 GET	    /overview/extras/{number}			overview.extras
 GET	    /admin/changeactive/{userid}		admin.changeactive
 GET	    /admin/changeadmin/{userid}			admin.changeadmin
