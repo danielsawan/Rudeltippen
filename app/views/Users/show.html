@@ -67,7 +67,8 @@ window.onload = function () {
 	    		type: "line",
 	      		dataPoints: [
 					#{list items:userStatistics, as:'userStatistic'} { y: ${userStatistic.playdayPoints}, x: ${userStatistic.playday.number} } ${userStatistic_isLast ? '' : ','}#{/list}             
-	      		]
+	      		],
+				markerSize: 1
 	  		}
 	  	]
 	});
