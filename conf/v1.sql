@@ -34,3 +34,8 @@ UPDATE rudeltippen_games SET webserviceID = 28491 WHERE number = 53;
 UPDATE rudeltippen_games SET webserviceID = 28495 WHERE number = 54;
 UPDATE rudeltippen_games SET webserviceID = 28492 WHERE number = 55;
 UPDATE rudeltippen_games SET webserviceID = 28496 WHERE number = 56;
+UPDATE rudeltippen_games SET webserviceID = 28677 WHERE number = 57;
+UPDATE rudeltippen_games SET webserviceID = 28682 WHERE number = 58;
+UPDATE rudeltippen_games SET webserviceID = 28678 WHERE number = 59;
+
+UPDATE rudeltippen_games SET webserviceID = 28496 WHERE number = 60;
