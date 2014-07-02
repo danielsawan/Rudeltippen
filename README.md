@@ -178,6 +178,8 @@ play stop
 Upgrading
 ------------------
 
+> If you are on debian you can use the upgrade shell script (upgrade.sh) which you'll find in the root directory.
+
 ### Step 1
 
 Download the [latest release of Rudeltippen][14] (the X.X.X.zip version file, not the source code zip)
