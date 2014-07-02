@@ -27,7 +27,16 @@ public class NotificationUtils {
         buffer.append(" - ");
         buffer.append(Messages.get(game.getAwayTeam().getName()));
         buffer.append(" ");
-		buffer.append(ViewUtils.getScore(game));
+		if (game.isOvertime()) {
+			buffer.append(game.getHomeScoreOT());
+			buffer.append(":");
+			buffer.append(game.getAwayScoreOT());
+			buffer.append(" (" + Messages.get(game.getOvertimeType()) + ")");
+		} else {
+			buffer.append(game.getHomeScore());
+			buffer.append(":");
+			buffer.append(game.getAwayScore());
+		}
         buffer.append(" - " + Messages.get(game.getPlayday().getName()));
         buffer.append("\n\n");
 
