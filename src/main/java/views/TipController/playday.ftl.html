@@ -1,0 +1,127 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n(playday.name)}</legend>
+	</div>
+</div>
+<div class="row" style="text-align:right; padding-right: 5px;">
+	<div class="col-md-12">
+		<#include "../Tags/pagination.ftl.html">
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+		<form action="/tips/storetips" method="post" role="form">
+		    <table class="table table-striped">
+		        <thead>
+		            <tr>
+		                <th>#</th>		            
+		                <th>${i18n('date')} - ${i18n('time')}</th>
+		                <th>${i18n('betending')}</th>
+		                <th>${i18n('hometeam')}</th>
+		                <th>${i18n('awayteam')}</th>
+		                <th>${i18n('result')}</div></th>
+		                <th colspan="3"><div align="center">${i18n('yourbet')}</div></th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <#list playday.games as game>
+		                <tr>
+		                    <td>${game.number}</td>		                
+		                    <td>${game.kickoff?datetime}</td>
+		                    <td>${ViewService.difference(game.kickoff)}</td>
+		                    <#if (game.homeTeam)?? && (game.awayTeam.name)??>
+		                        <td><img class="flag" src="/assets/img/flags/${game.homeTeam.flag}">${i18n(game.homeTeam.name)}</td>
+		                        <td><img class="flag" src="/assets/img/flags/${game.awayTeam.flag}">${i18n(game.awayTeam.name)}</td>
+		                    <#else>
+		                        <td>${game.homeReferenceName()}</td>
+		                        <td>${game.awayReferenceName()}</td>
+		                    </#if>
+		                    <td align="center">${ViewService.getResult(game)}</td>
+		                    <#if ViewService.gameIsTippable(game)>
+		                        <td align="right"><input type="text" value="${ViewService.getHomeScoreTip(game, connectedUser)}" id="game_homeScore_${game_index}" name="game_${game.id}_homeScore" maxlength="2" class="form-control input-small"></td>
+		                        <td align="center">:</td>
+		                        <td align="left"><input type="text" value="${ViewService.getAwayScoreTip(game, connectedUser)}" id="game_awayScore_${game_index}" name="game_${game.id}_awayScore" maxlength="2" class="form-control input-small"></td>
+		                    <#else>
+		                		<td align="center" colspan="3">${ViewService.getGameTipAndPoints(game, connectedUser)}</td>
+		                    </#if>		                    
+		                </tr>
+		            </#list>
+		        </tbody>
+		    </table>
+	    </div>
+	   	<#if ViewService.playdayIsTippable(playday)>
+	   		<div style="text-align:right; padding-right: 5px;">
+	        	<input type="submit" data-loading-text="${i18n('save')}..." class="btn btn-success" value="${i18n('save')}" />
+	        </div>
+	    </#if>
+	    </form>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('extratips')}&nbsp;&nbsp;<span class="glyphicon glyphicon-question-sign bonustips" data-toggle="tooltip" data-placement="top" title="${i18n('app.bonus.tooltip')}"></span></legend>
+	</div>
+</div>
+<div class="row" style="text-align:right; padding-right: 5px;">
+	<div class="col-md-12">
+		<a data-toggle="collapse" id="collapseExtra" data-parent="#accordion" href="#extratips"><span class="glyphicon glyphicon-circle-arrow-down"></span></a>
+	</div>
+</div>
+<div id="extratips" class="row panel-collapse collapse">
+	<div class="col-md-12">
+		<form action="/tips/storeextratips" method="post" role="form">
+		<div class="table-responsive">
+			<table class="table table-striped">
+			    <thead>
+			        <tr>
+			            <th>${i18n('extraquestion')}</th>
+			            <th>${i18n('points')}</th>
+			            <th>${i18n('betending')}</th>
+			            <th>${i18n('youranswer')}</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			    	<#if extras?has_content>
+			        <#list extras as extra>
+			            <tr>
+			                <td>${i18n(extra.question)}</td>
+			                <td>${extra.points}</td>
+			                <td>${ViewService.difference(extra.ending)}</td>
+			                <td>
+			                    <#if (extra.tipable)??>
+			                        <select id="bonustipp_${extra_index}" name="bonus_${extra.id}_teamId" class="form-control">
+			                            <#if !((extra.getExtraTip)??)>	
+			                                <option value="0" selected="selected">-- ${i18n('pleasechoose')} --</option>
+			                            </#if>
+			                            <#list extra.answers as team>
+			                                <#if (extra.getExtraTip)?? && extra.getExtraTip() == team.id>
+			                                    <option value="${team.id}" selected="selected">${i18n(team.name)}</option>
+			                                <#else>
+			                                    <option value="${team.id}">${i18n(team.name)}</option>
+			                                </#if>
+			                            </#list>
+			                        </select>
+			                    <#else>
+			                    	<#if (extra.answer)??>
+										${ViewService.getAnswer(extra, connectedUser)}
+			                        </#if>
+			                    </#if>
+			                </td>
+			            </tr>
+			        </#list>
+			        </#if>
+			    </tbody>
+			</table>
+		</div>
+		<#if tippable>
+	   		<div style="text-align:right; padding-right: 5px;">
+	        	<input type="submit" data-loading-text="${i18n('save')}..." class="btn btn-success" value="${i18n('save')}">
+	        </div>
+		</#if>
+		</form>
+	</div>
+</div>
+</@layout.main>

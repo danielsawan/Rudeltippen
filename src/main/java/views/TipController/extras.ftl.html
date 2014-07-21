@@ -1,0 +1,36 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+	<legend>${i18n('extratips')}</legend>
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th></th>
+						<th></th>
+						<#list extras as extra>
+							<th>${i18n(extra.questionShort)}</th>
+						</#list>
+					</tr>
+				</thead>
+				<tbody>
+					<#list tips as extraTips>
+					<tr>
+						<#if (extraTips.entrySet())??>
+							<#list extraTips.entrySet() as user>
+								<td style="width: 60px;"><a href="/users/show/${user.key.username}"><img src="https://secure.gravatar.com/avatar/${user.key.picture}.jpg?s=64&d=mm" width="64" height="64"/></a></td>
+								<td><br /><b><a href="/users/show/${user.key.username}">${user.key.username}</a></b><br /><small>&{'place'} ${user.key.place}, ${user.key.points} &{'points'}</small></td>
+								<#list user.value as extraTip>
+									<td>&{extraTip.getExtraTipAnswer()}${extraTip.getExtraTipPoints()}</td>
+								</#list>
+							</#list>
+						</#if>
+					</tr>
+					</#list>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</@layout.main>

@@ -1,0 +1,87 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('statistics')}</legend>
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h3 class="panel-title">${i18n('playdayoverview')}</h3></div>
+		  <div class="panel-body">
+			<div class="table-responsive">
+	        <table class="table table-hover">
+	            <thead>
+	                <th>${i18n('playday')}</th>
+	                <th>${i18n('app.correct.tips')}</th>
+	                <th>${i18n('app.correct.differences')}</th>
+	                <th>${i18n('app.correct.tendences')}</th>
+	                <th>${i18n('app.points.total')}</th>
+	                <th>${i18n('app.points.player')}</th>
+	            </thead>
+	            <#if gameTipStatistics?has_content>
+		            <#list gameTipStatistics as gameTipStatistic>
+		            <tr>
+		                <td>${gameTipStatistic.playday.number}</td>
+		                <td>${gameTipStatistic.correctTips}</td>
+		                <td>${gameTipStatistic.correctDiffs}</td>
+		                <td>${gameTipStatistic.correctTrends}</td>
+		                <td>${gameTipStatistic.points}</td>
+		                <td>${gameTipStatistic.avgPoints}</td>
+		            </tr>
+		            </#list>
+	            </#if>
+	        </table>
+	        </div>
+		  </div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h3 class="panel-title">${i18n('tipedresults')}</h3></div>
+		  <div class="panel-body">
+			<div class="table-responsive">
+		        <table class="table table-hover">
+		            <thead>
+		                <th>${i18n('app.statistics.number')}</th>
+		                <th>${i18n('app.statistics.result')}</th>
+		            </thead>
+		            <#if results?has_content>
+			            <#list results as result>
+			                <tr>
+			                <#list result as aResult>
+			                    <td>${aResult}</td>
+			                </#list>
+			                </tr>
+			            </#list>
+		            </#if>
+		        </table>
+	        </div>
+		  </div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h3 class="panel-title">${i18n('playedresults')}</h3></div>
+		  <div class="panel-body">
+			<div class="table-responsive">
+		        <table class="table table-hover">
+		            <thead>
+		                <th>${i18n('app.statistics.number')}</th>
+		                <th>${i18n('app.statistics.result')}</th>
+		            </thead>
+		            <#if games?has_content>
+			            <#list games as game>
+			                <tr>
+			                <#list game as aGame>
+			                    <td>${aGame}</td>
+			                </#list>
+			                </tr>
+			            </#list>
+		            </#if>
+		        </table>
+	        </div>
+		  </div>
+		</div>
+	</div>	
+</div>
+</@layout.main>

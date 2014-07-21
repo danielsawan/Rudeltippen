@@ -22,3 +22,6 @@ server.pid
 /public/javascripts/combined.js
 /public/stylesheets/combined.css
 /*.zip
+/target
+/src/main/java/assets/stylesheets/combined.min.css
+/src/main/java/assets/javascripts/combined.min.js

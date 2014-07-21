@@ -1,4 +1,0 @@
-${notification}
-
---- 
-#{include 'Mails/_footer.txt' /}

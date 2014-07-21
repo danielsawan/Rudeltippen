@@ -1,0 +1,62 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<legend>${i18n('rules')}</legend>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table">
+				<tbody>
+					<tr>
+						<td><b>${i18n('setup.pointsbet')}</b></td>
+						<td>${settings.pointsTip}</td>
+					</tr>
+					<tr>
+						<td><b>${i18n('setup.pointsbetdiff')}</b></td>
+						<td>${settings.pointsTipDiff}</td>
+					</tr>
+					<tr>
+						<td><b>${i18n('setup.pointsbettrend')}</b></td>
+						<td>${settings.pointsTipTrend}</td>
+					</tr>
+					<tr>
+						<td><b>${i18n('rules.bet.minutes')}</b></td>
+						<td>${i18n('rules.bet.minutes.value', settings.minutesBeforeTip)}</td>
+					</tr>
+					<tr>
+						<td><b>${i18n('rules.points.playoffs')}</b></td>
+						<td>${i18n('setup.ninetyminutes')}
+							<ul>
+		                        <li>${i18n('rules.nintyminutesinfo')}</li>
+		                    </ul>
+						</td>
+					</tr>
+			        <tr>
+			            <td><b>${i18n('rules.points.standings.header')}</b></td>
+			            <td>
+			                ${i18n('rules.points.standings')}
+			                <ol>
+			                    <li>${i18n('rules.points.standings.1')}</li>
+			                    <li>${i18n('rules.points.standings.2')}</li>
+			                    <li>${i18n('rules.points.standings.3')}</li>
+			                    <li>${i18n('rules.points.standings.4')}</li>
+			                    <li>${i18n('rules.points.standings.5')}</li>
+			                </ol>
+			                ${i18n('rules.points.standings.same')}
+			            </td>
+			        </tr>		
+					<tr>
+						<td><b>${i18n('rules.global')}</b></td>
+						<td>
+							<ul>
+								<li>${i18n('rules.global.1')}</li>
+								<li>${i18n('rules.global.2')}</li>
+								<li>${i18n('rules.global.3')}</li>
+							</ul>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>	
+</div>
+</@layout.main>

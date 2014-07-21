@@ -1,0 +1,17 @@
+<ul class="pagination">
+	<#if pagination.number != 1>
+		<li><a href="${pagination.url}1" class="pagination-prev">&laquo;</a></li>
+		<li><a href="${pagination.url}${pagination.number - 1}">&lsaquo;</a></li>
+	</#if>
+	<#list pagination.offsetStart..pagination.offset as page>
+		<#if page == pagination.number>
+			<li class="active"><a>${page}</a></li>
+		<#else>
+			<li><a href="${pagination.url}${page}">${page}</a></li>
+		</#if>
+	</#list>
+	<#if pagination.number != pagination.offsetEnd>
+		<li><a href="${pagination.url}${pagination.number + 1}" class="pagination-next">&rsaquo;</a></li>
+		<li><a href="${pagination.url}${pagination.offsetEnd}">&raquo;</a></li>
+	</#if>
+</ul>

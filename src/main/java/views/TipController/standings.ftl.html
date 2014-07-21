@@ -1,0 +1,34 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('standings')}</legend>
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>${i18n('place')}</th>
+						<th>${i18n('tipper')}</th>
+						<th>${i18n('username')}</th>
+						<th>${i18n('points')}</th>
+						<th>${i18n('extrapoints')}</th>
+						<th>${i18n('totalpoints')}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<#list users as user>
+						<tr <#if user == connectedUser> class="connecteduser" </#if>>
+							<td>${user_index} <#noescape>${ViewService.getPlaceTrend(user)}</#noescape></td>
+							<td><a href="/users/show/${user.username}"><img src="${user.picture}" width="64" height="64" /></a></td>
+							<td><b><a href="/users/show/${user.username}">${user.username}</a></b></td>
+							<td>${user.tipPoints}</td>
+							<td>${user.extraPoints}</td>
+							<td><b>${user.points}</b></td>
+						</tr>
+					 </#list>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</@layout.main>

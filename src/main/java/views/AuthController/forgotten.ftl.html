@@ -1,0 +1,24 @@
+<#import "../layout/auth.ftl.html" as layout>
+<@layout.auth>
+<div class="row" style="margin-top:5px">
+    <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+    	<div class="panel panel-default">
+    		<form action="/auth/reset" role="form well" method="post">
+				<fieldset>
+					<h2>${i18n('app.auth.forgotten.header')}</h2>
+					<hr class="colorgraph">
+					<div class="form-group <#if validation?? && validation.getFieldViolation('username')>has-error</#if>">
+						<#if validation?? && validation.getFieldViolation("username")><span class="help-block">FOO</span></#if>
+	                    <input type="text" name="email" id="email" class="form-control input-lg" placeholder="${i18n('app.auth.email')}">
+					</div>
+					<hr class="colorgraph">
+					<div class="row">
+						<div class="col-xs-6 col-md-6"><a href="/auth/login" class="btn btn-primary btn-block btn-lg"><< ${i18n('app.auth.back')}</a></div>
+						<div class="col-xs-6 col-md-6"><input type="submit" value="${i18n('send')}" data-loading-text="${i18n('send')}..." class="btn btn-success btn-loading btn-block btn-lg" tabindex="7"></div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+</@layout.auth>

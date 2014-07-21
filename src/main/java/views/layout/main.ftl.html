@@ -1,0 +1,160 @@
+<#macro main title="Main template">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rudeltippen</title>
+    <meta charset="UTF-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+ 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+ 	<meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" />
+    <meta name="description" content="Rudeltippen">
+    <meta name="author" content="Sven Kubiak">
+    <link href="/assets/img/apple-touch-icon-152x152.png" rel="shortcut icon">
+	<link href="/assets/img/apple-touch-icon-76x76.png" rel="apple-touch-icon">
+	<link href="/assets/img/apple-touch-icon-76x76.png" rel="apple-touch-icon" sizes="76x76">
+	<link href="/assets/img/apple-touch-icon-120x120.png" rel="apple-touch-icon" sizes="120x120">
+	<link href="/assets/img/apple-touch-icon-152x152.png" rel="apple-touch-icon" sizes="152x152">    
+    <link href="/assets/stylesheets/combined.min.css" rel="stylesheet">
+    <#if location?contains("/admin/tournament")>
+	<link href="/assets/stylesheets/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<link href="/assets/stylesheets/bootstrap-editable.min.css" rel="stylesheet">
+	</#if>
+    <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+		  <a class="navbar-brand" href="/">Rudeltippen</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li <#if location == "/">class="active"</#if>><a href="/"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a></li>
+            <li class="dropdown<#if location?contains("/tournament")> active</#if>">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-tower"></span>&nbsp;&nbsp;${i18n("app.tournament")} <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="/tournament/brackets">${i18n("app.tables")}</a></li>
+                <li><a href="/tournament/playday/${currentPlayday.number}">${i18n("app.results")}</a></li>
+              </ul>
+            </li>
+            <li class="dropdown<#if location?contains("/tips") && !location?contains("/tips/playday")> active</#if>">
+                <a data-toggle="dropdown" class="dropdown-toggle" href="#"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;${i18n("app.betting.game")} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/tips/overview/${currentPlayday.number}">${i18n("app.tipoverview")}</a></li>
+                  <li><a href="/tips/extras">${i18n("extratips")}</a></li>
+                  <li><a href="/tips/standings">${i18n("standings")}</a></li>
+                  <li><a href="/tips/statistics">${i18n("statistics")}</a></li>
+            	  <li><a href="/tips/rules">${i18n("rules")}</a></li>                  
+                </ul>
+            </li>
+            <li<#if location?contains("/tips/playday")> class="active"</#if>><a href="/tips/playday/${currentPlayday.number}"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;&nbsp;${i18n("app.place.tipps")}</a></li> 
+            <li<#if location?contains("/users/myprofile")> class="active"</#if>><a href="/users/myprofile"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;${i18n("app.myprofile")}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            <#if connectedUser.admin>
+            <li class="dropdown<#if location?contains("/admin")> active</#if>">
+	            <a data-toggle="dropdown" class="dropdown-toggle" href="#"><span class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp;${i18n("app.administration")} <b class="caret"></b></a>
+	            <ul class="dropdown-menu">
+              		<li><a href="/admin/settings">${i18n("settings")}</a></li>
+              		<li><a href="/admin/users">${i18n("usermanagement")}</a></li>
+              		<li><a href="/admin/tournament">${i18n("app.tournament.management")}</a></li>
+              		<li><a href="/admin/results/${currentPlayday.number}">${i18n("results")}</a></li>
+                    <li><a href="/admin/rudelmail">${i18n("rudelmail")}</a></li>	              		
+              		<li><a href="/admin/jobs">${i18n("jobs")}</a></li>
+	            </ul>
+            </li>
+            </#if>
+            <li><a href="/auth/logout"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;${i18n("app.logout")}</a></li>
+          	</ul>
+        </div>
+      </div>
+    </div>
+ 	<#if flash.error??>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-danger">
+	                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                <span class="glyphicon glyphicon-hand-right"></span> <strong>${i18n('app.error')}</strong>
+	                <hr class="message-inner-separator">
+		    		<p><#noescape>${flash.error}</#noescape></p>
+	            </div>
+	    	</div>
+		</div>
+	</div>
+	</#if>
+	<#if flash.warning??>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+	            <div class="alert alert-warning">
+	                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                <span class="glyphicon glyphicon-record"></span> <strong>${i18n('app.warning')}</strong>
+	                <hr class="message-inner-separator">
+					<p><#noescape>${flash.warning}</#noescape></p>
+	            </div>
+	        </div>		
+		</div>
+	</div>
+	</#if>
+	<#if flash.success??>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+	            <div class="alert alert-success">
+	                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	               <span class="glyphicon glyphicon-ok"></span> <strong>${i18n('app.success')}</strong>
+	                <hr class="message-inner-separator">
+	                <p><#noescape>${flash.success}</#noescape></p>
+	            </div>
+	        </div>
+		</div>
+	</div>
+	</#if>
+	<div class="container">
+		<#nested/>
+    </div>
+    <div class="container">
+    	<div class="row">
+    		<hr class="colorgraph"> 
+    		<div class="modal fade" id="credits">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			        <h4 class="modal-title" id="modalLabel">Credits</h4>
+			      </div>
+				      <div class="modal-body">
+						<p>Rudeltippen is based on some great Open Source Software:</p>
+						<p>Thanks to <a href="http://www.raphaelbauer.com" target="_blank">Raphael Bauer</a> and the <a href="http://www.finalfrontierlabs.com/" target="_blank">Team of FinalFrontierLabs</a> for bringing the <a href="http://www.ninjaframework.org/" target="_blank">Ninja Framework</a> to the Java-World. Thanks to MongoDB, Inc. for <a href="http://www.mongodb.org/" target="_blank">MongoDB</a>. Thanks to <a href="https://twitter.com" target="_blank">Twitter</a> for this handy UI-Framework called <a href="http://twitter.github.com/bootstrap/" target="_blank">Bootstrap</a>. Thanks to <a href="http://thomaspark.me/" target="_blank">Thomas Park</a> for the Bootstrap Themes at <a href="http://bootswatch.com/" target="_blank">Bootswatch</a>. Thanks to Marcel Siegel for <a href="http://www.openligadb.de/">OpenLigaDB</a>. And last but not least, thanks to <a href="http://kampongboy92.deviantart.com/" target="_blank">kampongboy92</a> who made some great looking flags.</p>
+						<hr>
+						<p>Rudeltippen &copy; 2012-2014 <a href="http://www.svenkubiak.de" target="_blank">Sven Kubiak</a></p>
+						<p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at</p>
+						<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+						<p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</p>
+				      </div>
+			    </div>
+			  </div>
+			</div>
+		</div>
+    	<p><a href="https://github.com/svenkubiak/rudeltippen" target="_blank">Rudeltippen 3.0.0</a> | <a href="#" class="credits-modal hidden-xs">Credits</a> <span class="hidden-xs">|</span> <a href="https://flattr.com/thing/1628177/Rudeltippen" target="_blank">Flattr</a></p>
+    </div>
+	<script src="/assets/javascripts/combined.min.js" type="text/javascript"></script>
+	<#if location?contains("/admin/tournament")>
+	<script src="/assets/javascripts/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+	<script src="/assets/javascripts/bootstrap-editable.min.js" type="text/javascript"></script>
+	</#if>
+	<#if location?contains("/users/show")>
+    <script src="/assets/javascripts/canvasjs.min.js" type="text/javascript"></script>
+    </#if>
+    <script src="/assets/javascripts/main.additional.min.js" type="text/javascript"></script>
+  </body>
+</html>
+</#macro>
