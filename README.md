@@ -1,4 +1,4 @@
-Rudeltippen [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
+Rudeltippen [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=2.2.x)](http://travis-ci.org/svenkubiak/Rudeltippen)
 ------------------
 
 A football betting game based on the Play Framework and Twitter Bootstrap.
