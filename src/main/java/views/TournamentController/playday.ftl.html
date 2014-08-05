@@ -1,0 +1,57 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n(playday.name)}</legend>
+	</div>
+</div>
+<div class="row" style="text-align:right; padding-right: 5px;">
+	<div class="col-md-12">
+		<#include "../Tags/pagination.ftl.html">
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>${i18n('date')} - ${i18n('time')}</th>
+						<th>${i18n('hometeam')}</th>
+						<th>${i18n('awayteam')}</th>
+						<th>${i18n('result')}</th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list playday.games as game>
+					<tr>
+						<td>${game.number}</td>					
+						<td>${game.kickoff?date}</td>
+						<#if (game.homeTeam)??>
+							<td><img class="flag" src="/assets/img/flags/${game.homeTeam.flag}" alt="${game.homeTeam.name}" />${i18n(game.homeTeam.name)}</td>
+						<#else>
+							<td>${game.homeReferenceName()}</td>
+						</#if>
+						<#if (game.awayTeam)??>
+							<td><img class="flag" src="/assets/img/flags/${game.awayTeam.flag}" alt="${game.awayTeam.name}" />${i18n(game.awayTeam.name)}</td>
+						<#else>
+							<td>${game.awayReferenceName()}</td>
+						</#if>
+						<#if !game.ended>
+							<td>- : -</td>
+						<#else>
+							<#if game.overtime>
+								<td>${game.homeScoreOT} : ${game.awayScoreOT} (&{game.overtimeType})</td>
+							<#else>
+								<td>${game.homeScore} : ${game.awayScore}</td>
+							</#if>
+						</#if>
+					</tr>
+				</#list>	
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</@layout.main>

@@ -1,0 +1,4 @@
+${notification}
+
+--- 
+<#include "footer.ftl">

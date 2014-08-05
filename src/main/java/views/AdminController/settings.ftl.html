@@ -1,0 +1,98 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('settings')}</legend>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<#if validation??>
+		<div class='form-group has-error'>
+			<#list validation.getBeanViolations() as violation>
+				<span class="help-block">${violation.constraintViolation.messageKey}</span>
+			</#list>
+		</div>
+		</#if>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<form action="/admin/updatesettings" method="post" role="form">
+		<fieldset>
+		    <div class="form-group<#if validation?? && validation.hasBeanViolation("name")> has-error</#if>">
+		    	<label for="labelName">${i18n('setup.name')}</label>
+		        <div class="controls">
+		        	<input type="text" name="name" id="name" class="form-control input-lg" value="<#if (flash.name)??>${flash.name}<#else>Rudeltippen</#if>">
+		        </div>
+		    </div>
+		    <div class="form-group<#if validation?? && validation.hasBeanViolation("pointsTip")> has-error</#if>">
+		    	<label for="labelPointsTip">${i18n('setup.pointsbet')}</label>
+		        <div class="controls">
+		        	<input type="text" name="pointsTip" id="pointsTip" class="form-control input-lg" value="<#if (flash.pointsTip)??>${flash.pointsTip}<#else>4</#if>">
+		        </div>
+		    </div>
+		    <div class="form-group<#if validation?? && validation.hasBeanViolation("pointsTipDiff")> has-error</#if>">
+		        <label for="labelPointsDiff">${i18n('setup.pointsbetdiff')}</label>
+		        <div class="controls">
+		            <input type="text" id="pointsTipDiff" value="<#if (flash.pointsTipDiff)??>${flash.pointsTipDiff}<#else>2</#if>" name="pointsTipDiff" class="form-control input-lg">
+		        </div>
+		    </div>
+		    <div class="form-group<#if validation?? && validation.hasBeanViolation("pointsTipTrend")> has-error</#if>">
+		        <label for="labelPointsTrend">${i18n('setup.pointsbettrend')}</label>
+		        <div class="controls">
+		            <input type="text" id="pointsTipTrend" value="<#if (flash.pointsTipTrend)??>${flash.pointsTipTrend}<#else>1</#if>" name="pointsTipTrend" class="form-control input-lg">
+		        </div>
+		    </div>
+		    <div class="form-group<#if validation?? && validation.hasBeanViolation("minutesBeforeTip")> has-error</#if>">
+		        <label for="labelMinutesBefore">${i18n('setup.minutesbefore')}</label>
+		        <div class="controls">
+		            <input type="text" id="minutesBeforeTip" value="<#if (flash.minutesBeforeTip)??>${flash.minutesBeforeTip}<#else>10</#if>" name="minutesBeforeTip" class="form-control input-lg">
+		        </div>
+		    </div>
+		    <div class="form-group">
+		        <label for="input01" class="control-label">${i18n('setup.informontipper')}</label>
+		        <div class="controls">
+		            <input type="radio" id="informOnNewTipper" value="true" name="informOnNewTipper" <#if flash.informOnNewTipper == 'true'> checked="checked" </#if> class="input-medium"> ${i18n('yes')}<br />
+		            <input type="radio" id="informOnNewTipper" value="false" name="informOnNewTipper" <#if flash.informOnNewTipper == 'false'> checked="checked" </#if> class="input-medium"> ${i18n('no')}
+		        </div>
+		    </div>
+		    <div class="form-group">
+		        <label for="input01" class="control-label">${i18n('setup.enableregistration')}</label>
+		        <div class="controls">
+		            <input type="radio" id="enableRegistration" value="true" name="enableRegistration" <#if flash.enableRegistration == 'true'> checked="checked" </#if>  class="input-medium"> ${i18n('yes')}<br />
+		            <input type="radio" id="enableRegistration" value="false" name="enableRegistration" <#if flash.enableRegistration == 'false'> checked="checked" </#if> class="input-medium"> ${i18n('no')}
+		        </div>
+		    </div>
+		</fieldset>
+		<input type="submit" data-loading-text="${i18n('save')}..." class="btn btn-success" value="${i18n('save')}">
+		</form>
+	</div>
+</div>
+<br /><br /><br />
+<script>
+function confirmation(message) {
+	return confirm("${i18n('settings.rudeltippen.reset.confirm')}");
+}
+</script>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-danger">
+		  <div class="panel-heading">${i18n('settings.rudeltippen.reset')}</div>
+		  <div class="panel-body">
+			<form action="/admin/reset" role="form" method="post" onsubmit="return confirmation()" >
+		    	<label for="labelName">${i18n('settings.rudeltippen.reset.info')}</label>
+		        <div class="controls">
+		        	<input type="text" name="confirm" id="confirm" class="form-control input-lg" value="" placeholder="${i18n('settings.rudeltippen.reset.form')}">
+		        </div>
+		        <div class="controls">
+		        	 <br />
+		        	 <input type="submit" class="btn btn-danger" value="${i18n('delete')}">
+		        </div>
+		    </div>
+			</form>
+		  </div>
+		</div>
+	</div>
+</div>
+</@layout.main>

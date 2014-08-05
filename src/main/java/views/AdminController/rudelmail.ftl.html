@@ -1,0 +1,26 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>Rudelmail</legend>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">	
+		<form action="/admin/send" role="form" method="post">
+		    <fieldset>
+		        <h5>${i18n('app.rudelmail.send')}</h5>
+	            <div class="form-group<#if validation?? && validation.hasBeanViolation("subject")> has-error</#if>">
+	            	<input type="text" name="subject" id="subject" class="form-control input-lg" placeholder="Betreff">
+	            </div>
+	            <div class="form-group<#if validation?? && validation.hasBeanViolation("message")> has-error</#if>">
+	                <div class="controls">
+	                    <textarea rows="8" name="message" value="" class="form-control input-lg" placeholder="${i18n('app.message')}"></textarea>
+	                </div>
+	            </div>
+				<input type="submit" data-loading-text="${i18n('send')}..." class="btn btn-success" value="${i18n('send')}">
+		    </fieldset>
+		</form>
+	</div>
+</div>
+</@layout.main>

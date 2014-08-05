@@ -1,0 +1,41 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>Jobs</legend>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<a href="/admin/jobs" class="btn btn-success" id="fat-btn-loading" data-loading-text="${i18n('app.jobs.update')}..." role="button"><span class="glyphicon glyphicon-repeat"></span> ${i18n('app.jobs.update')}</a>
+		<div class="table-responsive">
+			<table class="table table-stripes">
+			    <thead>
+			        <tr>
+			            <th>${i18n('app.jobs.name')}</th>
+			            <th>${i18n('app.jobs.scheduled')}</th>
+			            <th>${i18n('app.jobs.description')}</th>
+			            <th>${i18n('app.jobs.last')}</th>
+			            <th>${i18n('app.jobs.active')}</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <#list jobs as job>
+			            <tr>
+			                <td>${job.name}</td>
+			                <td>${job.scheduled}</td>
+			                <td>${job.description}</td>
+			                <td><#if (job.executed)??>${job.executed?datetime}<#else>-</#if></td>
+			                <#if job.active>
+			                	<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.is.active')}" class="jobtooltip" onclick="return confirm('Change status of ${job.name}?');"><span class="glyphicon glyphicon-ok-circle"></span></a></td>
+			                <#else>
+			               		<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.isnot.active')}" class="jobtooltip" onclick="return confirm('Change status of ${job.name}?');"><span class="glyphicon glyphicon-ban-circle"></span></a></td>
+			                </#if>
+			            </tr>
+			         </#list>
+			    </tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</@layout.main>

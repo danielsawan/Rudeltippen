@@ -1,0 +1,70 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main> 
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('topthree')}</legend>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th data-priority="3">${i18n('tipper')}</th>
+						<th>${i18n('username')}</th>
+						<th data-priority="3">${i18n('points')}</th>
+						<th data-priority="3">${i18n('extrapoints')}</th>
+						<th>${i18n('totalpoints')}</th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list topUsers as topUser>
+					<tr>
+						<td><a href="/users/show/${topUser.username}"><img src="${topUser.picture}" width="64" height="64" /></a></td>
+						<td><b><a href="/users/show/${topUser.username}">${topUser.username}</a></b></td>
+						<td>${topUser.tipPoints}</td>
+						<td>${topUser.extraPoints}</td>
+						<td><b>${topUser.points}</b></td>
+					</tr>
+				</#list>
+				<tr><td colspan="5"><#noescape>${i18n('user.placandpoints.one', connectedUser.points, connectedUser.place, users)}</#noescape></td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n(playday.name)}</legend>
+		<div class="table-responsive">
+			<table class="table table-striped">
+		          <thead>
+		              <tr>
+		              	  <th data-priority="3">#</th>
+		                  <th data-priority="3">${i18n('app.date.time')}</th>
+		                  <th>${i18n('hometeam')}</th>
+		                  <th>${i18n('awayteam')}</th>
+		                  <th>${i18n('result')}</th>
+		                  <th>${i18n('yourbet')}</th>
+		              </tr>
+		          </thead>
+		          <tbody>
+					  <#if playday.games?has_content>
+			              <#list playday.games as game>
+			                  <tr>
+			                      <td>${game.number}</td>
+			                      <td>${game.kickoff?datetime}</td>
+			                      <td><img src="/assets/img/flags/${game.homeTeam.flag}" class="flag">${i18n(game.homeTeam.name)}</td>
+			                      <td><img src="/assets/img/flags/${game.awayTeam.flag}" class="flag">${i18n(game.awayTeam.name)}</td>
+			                      <td>${ViewService.getScore(game)}</td>
+			                      <td>${ViewService.getGameTipAndPoints(game, connectedUser)}</td>
+			                  </tr>
+			              </#list>
+		              <#else>
+		                  <tr>
+		                      <td colspan="6">${i18n('nogamesyet')}</td>
+		                  </tr>
+	                  </#if>
+		          </tbody>
+		      </table>
+	      </div>
+	   </div>
+</div>
+</@layout.main>

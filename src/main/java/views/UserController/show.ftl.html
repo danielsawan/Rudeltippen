@@ -1,0 +1,112 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${user.username}</legend>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<p><img src="${user.picture}" width="128" height="128"/></p>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<table class="table">
+		    <tbody>
+		        <tr>
+		            <td><b>${i18n('place')}</b></td>
+		            <td>${user.place}</td>
+		        </tr>
+				<tr>
+					<td><b>${i18n('points')}</b></td>
+					<td>${user.points}</td>
+				</tr>
+		           <tr>
+		               <td><b>${i18n('pointsperbet')}</b></td>
+		               <td>${pointsPerTipp}</td>
+		           </tr>
+				<tr>
+					<td><b>${i18n('placedbets')}</b></td>
+					<td>${i18n('placedbets', statistics.sumTipps, statistics.sumGames)}</td>
+				</tr>
+				<tr>
+					<td><b>${i18n('correct.extratips')}</b></td>
+					<td>${i18n('extratips.statistic', statistics.correctExtraTips, statistics.extraTips)}</td>
+				</tr>		
+				<tr>
+					<td><b>${i18n('correctresults')}</b></td>
+					<td>${statistics.correctTipps}</td>
+				</tr>
+				<tr>
+					<td><b>${i18n('correctdifferences')}</b></td>
+					<td>${statistics.correctDifference}</td>
+				</tr>
+				<tr>
+					<td><b>${i18n('correcttendence')}</b></td>
+					<td>${statistics.correctTrend}</td>
+				</tr>
+		        <tr>
+		            <td><b>${i18n('betquote')}</b></td>
+		            <td>${tippQuote} ${i18n('correctresultsquote')} (${statistics.correctTipps} / ${tippedGames})</td>
+		        </tr>      
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+window.onload = function () {
+	var points = new CanvasJS.Chart("points",
+	{
+		data: [
+	  		{
+	    		type: "line",
+	      		dataPoints: [<#list userStatistics as userStatistic> { y: ${userStatistic.playdayPoints}, x: ${userStatistic.playday.number} } <#if userStatistic_has_next>,</#if></#list>]
+	  		}
+	  	]	
+	});
+	points.render();
+}
+</script>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h3 class="panel-title">${i18n('pointsperplayday')}</h3></div>
+		  <div class="panel-body">
+			<div id="points" style="height: 400px; width: 100%;"></div>	
+		  </div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-primary">
+		  <div class="panel-heading"><h3 class="panel-title">${i18n('tipstatistic')}</h3></div>
+		  <div class="panel-body">
+		  <div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>${i18n('app.playday')}</th>
+							<th>${i18n('app.correct.tips')}</th>
+							<th>${i18n('app.correct.differences')}</th>
+							<th>${i18n('app.correct.tendences')}</th>
+							<th>${i18n('app.points')}</th>
+						</tr>
+					</thead>
+					<#list userStatistics as userStatistic>
+						<tr>
+							<td>${userStatistic.playday.number}</td>
+							<td>${userStatistic.playdayCorrectTips}</td>
+							<td>${userStatistic.playdayCorrectDiffs}</td>
+							<td>${userStatistic.playdayCorrectTrends}</td>
+							<td>${userStatistic.playdayPoints}</td>
+						</tr>
+					</#list>							
+				</table>	
+			</div>
+		  </div>
+		</div>
+	</div>
+</div>
+</@layout.main>  

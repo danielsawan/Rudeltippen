@@ -1,0 +1,104 @@
+<#import "../layout/main.ftl.html" as layout> 
+<@layout.main>
+<div class="row">
+	<div class="col-md-12">
+		<legend>${i18n('app.tournament.management')}</legend>
+  	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="bs-callout bs-callout-info">
+	    	<h2>${i18n('app.tournament.brackets')}</h2>
+	    	<p>${i18n('app.tournament.brackets.info')}</p>
+	  	</div>
+		<p><a href="/admin/calculations" class="btn btn-success" data-loading-text="${i18n('app.tournament.calculate')}..." id="calculations" role="button"><span class="glyphicon glyphicon-repeat"></span> ${i18n('app.tournament.calculate')}</a></p>
+  	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table">
+			<#list brackets as bracket>
+			    <thead>
+			        <tr>
+			            <td colspan="9"><legend>${i18n(bracket.name)}</legend>${i18n('app.automatic.calculation')}&nbsp;&nbsp;<input type="checkbox" value="${bracket.updatable?c}" class="updatable" data-url="/ajax/bracket/updatable/${bracket.id}" <#if bracket.updatable>checked</#if> /></td>
+			        </tr>
+			        <tr>
+			            <th>#</th>
+			            <th>${i18n('team')}</th>
+			            <th>${i18n('games')}</th>
+			            <th>${i18n('gameswon')}</th>
+			            <th>${i18n('gamesdraw')}</th>
+			            <th>${i18n('gameslost')}</th>
+			            <th>${i18n('goals')}</th>
+			            <th>${i18n('goalsdiff')}</th>
+			            <th>${i18n('points')}</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <#list bracket.teams as team>
+			            <tr>
+			                <td><a href="#" class="editable" data-type="text" data-pk="${team.id}" data-url="/ajax/bracket/place/${team.id}" data-title="${i18n('app.new.place')}">${team.place}</td>
+			                <td><img class="flag" src="/assets/img/flags/${team.flag}"/>&nbsp;&nbsp;${i18n(team.name)}</td>
+			                <td>${team.gamesPlayed}</td>
+			                <td>${team.gamesWon}</td>
+			                <td>${team.gamesDraw}</td>
+			                <td>${team.gamesLost}</td>
+			                <td>${team.goalsFor} : ${team.goalsAgainst}</td>
+			                <td>${team.goalsDiff}</td>
+			                <td>${team.points}</td>
+			            </tr>
+			        </#list>
+			    </tbody>
+			</#list>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="bs-callout bs-callout-info">
+	    	<h2>${i18n('app.tournament.games')}</h2>
+	    	<p>${i18n('app.tournament.games.info', '<a href="http://www.openligadb.de/Matches/WebserviceLivetest" target="_blank">http://www.openligadb.de/Matches/WebserviceLivetest</a>')}</p>
+	  	</div>
+	  </div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>${i18n('app.auto.update')}</th>					
+						<th>#</th>
+						<th>${i18n('date')} - ${i18n('time')}</th>
+						<th>${i18n('hometeam')}</th>
+						<th>${i18n('awayteam')}</th>
+						<th>${i18n('app.webservice.id')}</th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list games as game>
+					<tr>
+						<td><input type="checkbox" value="${game.updatable?c}" class="updatable" data-url="/ajax/game/updatable/${game.id}" <#if game.updatable>checked</#if> /></td>
+						<td>${game.number}</td>
+						<td><a href="#" class="editable" data-type="datetime" data-format="dd.mm.yyyy - hh:ii" data-pk="${game.id}" data-url="/ajax/game/kickoff/${game.id}" title="${i18n('app.new.data.time')}">${game.kickoff?datetime}</a></td>
+						<#if (game.homeTeam)??>
+							<td><img class="flag" src="/assets/img/flags/${game.homeTeam.flag}" alt="${game.homeTeam.name}" />${i18n(game.homeTeam.name)}</td>
+						<#else>
+							<td>${game.homeReferenceName()}</td>
+						</#if>
+						<#if (game.awayTeam)??>
+							<td><img class="flag" src="/assets/img/flags/${game.awayTeam.flag}" alt="${game.awayTeam.name}" />${i18n(game.awayTeam.name)}</td>
+						<#else>
+							<td>${game.awayReferenceName()}</td>
+						</#if>
+						<td><a href="#" class="editable" data-type="text" data-pk="${game.id}" data-url="/ajax/game/webserviceid/${game.id}" data-title="${i18n('app.new.webservice.id')}">${game.webserviceID}</a></td>
+					</tr>
+				</#list>	
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</@layout.main>
