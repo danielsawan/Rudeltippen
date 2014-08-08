@@ -10,15 +10,17 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 
 public class EmbeddedMongo {
-    private static final Logger LOG = LoggerFactory.getLogger(TestBase.class);
-    private static final MongodStarter starter = MongodStarter.getDefaultInstance();
-    private static final int port = 28018;
+    private static final Logger LOG = LoggerFactory.getLogger(EmbeddedMongo.class);
+    private static final MongodStarter STARTER = MongodStarter.getDefaultInstance();
     private static MongodExecutable mongodExecutable;
     private static EmbeddedMongo instance;
+    public static String host = "127.0.0.1";
+    public static int port = 0;
     
     private EmbeddedMongo() {
-        try {
-            mongodExecutable = starter.prepare(new MongodConfigBuilder()
+    	port = (int) (Math.random() * (65000 - 28000) + 28000);
+    	try {
+            mongodExecutable = STARTER.prepare(new MongodConfigBuilder()
             .version(Version.Main.V2_6)
             .net(new Net(port, false))
             .build());
