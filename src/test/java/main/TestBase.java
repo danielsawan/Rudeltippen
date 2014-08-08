@@ -42,7 +42,7 @@ public class TestBase extends NinjaTest {
             EmbeddedMongo.getInstance();
             
             NinjaMorphia ninjaMorphia = getInjector().getInstance(NinjaMorphia.class);
-            ninjaMorphia.setMongoClient(new MongoClient("localhost", 28018));
+            ninjaMorphia.setMongoClient(new MongoClient(EmbeddedMongo.host, EmbeddedMongo.port));
             ninjaMorphia.dropDatabase();
             
             getInjector().getInstance(ImportService.class).loadInitialData();
