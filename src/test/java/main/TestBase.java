@@ -31,6 +31,8 @@ import services.ImportService;
 
 import com.mongodb.MongoClient;
 
+import de.svenkubiak.embeddedmongodb.EmbeddedMongoDB;
+
 public class TestBase extends NinjaTest {
     private static final Logger LOG = LoggerFactory.getLogger(TestBase.class);
     public static final String ADMIN = "admin";
@@ -39,10 +41,10 @@ public class TestBase extends NinjaTest {
     @Before
     public void init() {
         try {
-            EmbeddedMongo.getInstance();
+            EmbeddedMongoDB.getInstance();
             
             NinjaMorphia ninjaMorphia = getInjector().getInstance(NinjaMorphia.class);
-            ninjaMorphia.setMongoClient(new MongoClient(EmbeddedMongo.host, EmbeddedMongo.port));
+            ninjaMorphia.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
             ninjaMorphia.dropDatabase();
             
             getInjector().getInstance(ImportService.class).loadInitialData();
