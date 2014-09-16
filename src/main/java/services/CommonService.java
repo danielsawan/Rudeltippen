@@ -117,6 +117,7 @@ public class CommonService extends ViewService {
     public String getProcessedTemplate(String name, Map<String, Object> content) {
         Writer writer = new StringWriter();
         Configuration configuration = new Configuration();
+        configuration.setClassForTemplateLoading(this.getClass(), "/views/mails/");
         try {
             Template template = configuration.getTemplate(name);
             template.process(content, writer);

@@ -3,7 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.Date;
 
-import ninja.morphia.NinjaMorphiaModel;
+import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 
@@ -13,7 +13,7 @@ import org.mongodb.morphia.annotations.Entity;
  *
  */
 @Entity(value = "jobs", noClassnameStored = true)
-public class AbstractJob extends NinjaMorphiaModel implements Serializable {
+public class AbstractJob extends MorphiaModel implements Serializable {
     private static final long serialVersionUID = -181239072023766955L;
 
     private String name;

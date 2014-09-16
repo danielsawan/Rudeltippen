@@ -7,7 +7,7 @@ import models.AbstractJob;
 import models.Game;
 import models.User;
 import models.enums.Constants;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -35,7 +35,7 @@ public class GameTipJob implements Job {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
 
     @Inject
     private MailService mailService;
@@ -62,12 +62,12 @@ public class GameTipJob implements Job {
 
                     for (final Game game : games) {
                         game.setInformed(true);
-                        ninjaMorphia.save(game);
+                        mongoDB.save(game);
                     }
                 }
 
                 job.setExecuted(new Date());
-                ninjaMorphia.save(job);
+                mongoDB.save(job);
                 LOG.info("Finished Job: " + Constants.GAMETIPJOB.get());
             }
         }

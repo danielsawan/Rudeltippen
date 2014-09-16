@@ -7,7 +7,7 @@ import java.util.List;
 import models.enums.Avatar;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import ninja.morphia.NinjaMorphiaModel;
+import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
@@ -19,7 +19,7 @@ import org.mongodb.morphia.annotations.Reference;
  *
  */
 @Entity(value = "users", noClassnameStored = true)
-public class User extends NinjaMorphiaModel implements Serializable {
+public class User extends MorphiaModel implements Serializable {
     private static final long serialVersionUID = 5381913315282528298L;
     
     @Reference(value = "user_gametips", lazy = true)

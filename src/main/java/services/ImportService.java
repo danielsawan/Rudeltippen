@@ -1,9 +1,7 @@
 package services;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,14 +21,14 @@ import models.Team;
 import models.User;
 import models.enums.Avatar;
 import models.enums.Constants;
-import ninja.morphia.NinjaMorphia;
+import ninja.Context;
+import ninja.mongodb.MongoDB;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Resources;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mongodb.BasicDBObject;
@@ -55,7 +53,7 @@ public class ImportService {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
     
     @Inject
     private AuthService authService;
@@ -66,12 +64,12 @@ public class ImportService {
     @Inject
     private I18nService i18nService;
 
-    public void loadInitialData() {
-        Map<String, Bracket> brackets = loadBrackets();
-        Map<String, Team> teams = loadTeams(brackets);
-        Map<String, Playday> playdays = loadPlaydays();
-        loadGames(playdays, teams, brackets);
-        loadExtras(teams);
+    public void loadInitialData(Context context) {
+        Map<String, Bracket> brackets = loadBrackets(context);
+        Map<String, Team> teams = loadTeams(brackets, context);
+        Map<String, Playday> playdays = loadPlaydays(context);
+        loadGames(playdays, teams, brackets, context);
+        loadExtras(teams, context);
         loadSettingsAndAdmin();
         initJobs();
 
@@ -100,7 +98,7 @@ public class ImportService {
         settings.setNumPrePlayoffGames(prePlayoffGames.size());
         settings.setInformOnNewTipper(true);
         settings.setEnableRegistration(true);
-        ninjaMorphia.save(settings);
+        mongoDB.save(settings);
 
         User user = new User();
         final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
@@ -124,7 +122,7 @@ public class ImportService {
         user.setCorrectExtraTips(0);
         user.setPicture(commonService.getUserPictureUrl(Avatar.GRAVATAR, user));
         user.setAvatar(Avatar.GRAVATAR);
-        ninjaMorphia.save(user);        
+        mongoDB.save(user);        
     }
 
     private void initJobs() {
@@ -137,20 +135,20 @@ public class ImportService {
         for (AbstractJob abstractJob : abstractJobs) {
             AbstractJob job = dataService.findAbstractJobByName(abstractJob.getName());
             if (job == null) {
-                ninjaMorphia.save(abstractJob);
+                mongoDB.save(abstractJob);
             }
         }
     }
 
     private void setReferences() {
-        List<Bracket> brackets = ninjaMorphia.findAll(Bracket.class);
+        List<Bracket> brackets = mongoDB.findAll(Bracket.class);
         for (Bracket bracket : brackets) {
             List<Game> games = dataService.findGamesByBracket(bracket);
             List<Team> teams = dataService.findTeamsByBracket(bracket);
 
             bracket.setGames(games);
             bracket.setTeams(teams);
-            ninjaMorphia.save(bracket);
+            mongoDB.save(bracket);
         }
 
         List<Playday> playdays = dataService.findAllPlaydaysOrderByNumber();
@@ -158,13 +156,14 @@ public class ImportService {
             List<Game> games = dataService.findGamesByPlayday(playday);
 
             playday.setGames(games);
-            ninjaMorphia.save(playday);
+            mongoDB.save(playday);
         }
     }
 
-    private Map<String, Bracket> loadBrackets() {
+    private Map<String, Bracket> loadBrackets(Context context) {
         Map<String, Bracket> brackets = new HashMap<String, Bracket>();
-        List<String> lines = readLines("brackets.json");
+        InputStream inputStream = context.getClass().getClassLoader().getResourceAsStream("brackets.json");
+        List<String> lines = readLines(inputStream);
 
         for (String line : lines) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
@@ -172,7 +171,7 @@ public class ImportService {
             bracket.setName(basicDBObject.getString("name"));
             bracket.setNumber(basicDBObject.getInt(NUMBER));
             bracket.setUpdatable(basicDBObject.getBoolean(UPDATABLE));
-            ninjaMorphia.save(bracket);
+            mongoDB.save(bracket);
 
             brackets.put(basicDBObject.getString("id"), bracket);
         }
@@ -180,8 +179,8 @@ public class ImportService {
         return brackets;
     }
 
-    private void loadExtras(Map<String, Team> teams) {
-        List<String> lines = readLines("extras.json");
+    private void loadExtras(Map<String, Team> teams, Context context) {
+        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("extras.json"));
         
         List<Team> answers = new ArrayList<Team>();
         for (String key: teams.keySet()) {
@@ -197,12 +196,12 @@ public class ImportService {
             extra.setQuestion(basicDBObject.getString("question"));
             extra.setExtraReference(basicDBObject.getString("extraReference"));
             extra.setQuestionShort(basicDBObject.getString("questionShort"));
-            ninjaMorphia.save(extra);
+            mongoDB.save(extra);
         }
     }
 
-    private void loadGames(Map<String, Playday> playdays, Map<String, Team> teams, Map<String, Bracket> brackets) {
-        List<String> lines = readLines("games.json");
+    private void loadGames(Map<String, Playday> playdays, Map<String, Team> teams, Map<String, Bracket> brackets, Context context) {
+        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("games.json"));
 
         for (String line : lines) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
@@ -219,7 +218,7 @@ public class ImportService {
             game.setAwayTeam(teams.get(basicDBObject.getString("awayTeam")));
             game.setPlayday(playdays.get(basicDBObject.getString("playday")));
             game.setKickoff(parseDate(basicDBObject.getString("kickoff"), DATE_FORMAT));
-            ninjaMorphia.save(game);
+            mongoDB.save(game);
         }
     }
 
@@ -235,9 +234,9 @@ public class ImportService {
         return null;
     }
 
-    private Map<String, Playday> loadPlaydays() {
+    private Map<String, Playday> loadPlaydays(Context context) {
         Map<String, Playday> playdays = new HashMap<String, Playday>();
-        List<String> lines = readLines("playdays.json");
+        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("playdays.json"));
 
         for (String line : lines) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
@@ -246,7 +245,7 @@ public class ImportService {
             playday.setCurrent(basicDBObject.getBoolean("current"));
             playday.setCurrent(basicDBObject.getBoolean(PLAYOFF));
             playday.setNumber(basicDBObject.getInt(NUMBER));
-            ninjaMorphia.save(playday);
+            mongoDB.save(playday);
 
             playdays.put(basicDBObject.getString("id"), playday);
         }
@@ -254,9 +253,9 @@ public class ImportService {
         return playdays;
     }
 
-    private Map<String, Team> loadTeams(Map<String, Bracket> brackets) {
+    private Map<String, Team> loadTeams(Map<String, Bracket> brackets, Context context) {
         Map<String, Team> teams = new HashMap<String, Team>();
-        List<String> lines = readLines("teams.json");
+        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("teams.json"));
 
         for (String line : lines) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
@@ -268,7 +267,7 @@ public class ImportService {
             team.setGamesDraw(basicDBObject.getInt("gamesDraw"));
             team.setGamesLost(basicDBObject.getInt("gamesLost"));
             team.setBracket(brackets.get(basicDBObject.getString(BRACKET)));
-            ninjaMorphia.save(team);
+            mongoDB.save(team);
 
             teams.put(basicDBObject.getString("id"), team);
         }
@@ -276,11 +275,10 @@ public class ImportService {
         return teams;
     }
 
-    private List<String> readLines(String filename) {
-        URL url = Resources.getResource(filename);
+    private List<String> readLines(InputStream inputStream) {
         List<String> lines = null;
         try {
-            lines = IOUtils.readLines(new FileInputStream(new File(url.getPath())), Constants.ENCODING.get());
+            lines = IOUtils.readLines(inputStream, Constants.ENCODING.get());
         } catch (IOException e) {
             LOG.error("Failed to read lines", e);
         }

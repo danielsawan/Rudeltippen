@@ -25,6 +25,7 @@ public class Routes implements ApplicationRoutes {
     public void init(Router router) {
         /** Auth Controller **/
         router.GET().route("/auth/login").with(AuthController.class, "login");
+        router.GET().route("/auth/confirm/{token}").with(AuthController.class, "confirm");
         router.GET().route("/auth/logout").with(AuthController.class, "logout");
         router.GET().route("/auth/register").with(AuthController.class, "register");
         router.GET().route("/auth/forgotten").with(AuthController.class, "forgotten");

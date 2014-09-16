@@ -26,7 +26,7 @@ import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
 import ninja.cache.NinjaCache;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 
 import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
@@ -41,6 +41,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 /**
  * 
@@ -68,6 +69,7 @@ public class DataService {
     private static final String PLAYDAY = "playday";
     private static final String ACTIVE = "active";
     private Datastore datastore;
+    private MongoDB mongoDB;
 
     @Inject
     private NinjaCache ninjaCache;
@@ -85,8 +87,13 @@ public class DataService {
     private CommonService commonService;
 
     @Inject
-    public DataService(NinjaMorphia ninjaMorphia) {
-        this.datastore = ninjaMorphia.getDatastore();
+    private DataService(MongoDB mongoDB) {
+        this.mongoDB = mongoDB;
+        this.datastore = mongoDB.getDatastore();
+    }
+    
+    public void setMongoClient(MongoClient mongoClient) {
+        this.mongoDB.setMongoClient(mongoClient);
     }
 
     public AbstractJob findAbstractJobByName(String jobName) {
@@ -586,4 +593,9 @@ public class DataService {
     public void dropDatabase() {
         this.datastore.getDB().dropDatabase();
     }
+
+    public void save(final Object object) {
+        this.mongoDB.getDatastore().save(object);
+    }
+
 }

@@ -15,7 +15,7 @@ import ninja.FilterWith;
 import ninja.NinjaValidator;
 import ninja.Result;
 import ninja.Results;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -55,7 +55,7 @@ public class AuthController {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
 
     @Inject
     private ValidationService validationService;
@@ -109,7 +109,7 @@ public class AuthController {
             confirmation.setConfirmationType(confirmType);
             confirmation.setConfirmValue(authService.encryptAES(UUID.randomUUID().toString()));
             confirmation.setCreated(new Date());
-            ninjaMorphia.save(confirmation);
+            mongoDB.save(confirmation);
 
             mailService.confirm(user, token, confirmType);
             flashScope.success(i18nService.get("confirm.message"));
@@ -136,8 +136,8 @@ public class AuthController {
                 } else {
                     if ((ConfirmationType.ACTIVATION).equals(confirmationType)) {
                         user.setActive(true);
-                        ninjaMorphia.save(user);
-                        ninjaMorphia.delete(confirmation);
+                        mongoDB.save(user);
+                        mongoDB.delete(confirmation);
                         
                         flashScope.success(i18nService.get("controller.users.accountactivated"));
                         LOG.info("User activated: " + user.getEmail());
@@ -145,18 +145,18 @@ public class AuthController {
                         final String oldusername = user.getEmail();
                         final String newusername = authService.decryptAES(confirmation.getConfirmValue());
                         user.setEmail(newusername);
-                        ninjaMorphia.save(user);
+                        mongoDB.save(user);
                         session.remove(Constants.USERNAME.get());
                         flashScope.success(i18nService.get("controller.users.changedusername"));
-                        ninjaMorphia.delete(confirmation);
+                        mongoDB.delete(confirmation);
 
                         LOG.info("User changed username... old username: " + oldusername + " - " + "new username: " + newusername);
                     } else if ((ConfirmationType.CHANGEUSERPASS).equals(confirmationType)) {
                         user.setUserpass(authService.decryptAES(confirmation.getConfirmValue()));
-                        ninjaMorphia.save(user);
+                        mongoDB.save(user);
                         session.remove("username");
                         flashScope.success(i18nService.get("controller.users.changeduserpass"));
-                        ninjaMorphia.delete(confirmation);
+                        mongoDB.delete(confirmation);
 
                         LOG.info(user.getEmail() + " changed his password");
                     }
@@ -206,7 +206,7 @@ public class AuthController {
             user.setUserpass(authService.hashPassword(userDTO.getUserpass(), salt));
             user.setPoints(0);
             user.setPicture(DigestUtils.md5Hex(userDTO.getEmail()));
-            ninjaMorphia.save(user);
+            mongoDB.save(user);
 
             final String token = UUID.randomUUID().toString();
             final ConfirmationType confirmationType = ConfirmationType.ACTIVATION;
@@ -216,7 +216,7 @@ public class AuthController {
             confirmation.setCreated(new Date());
             confirmation.setToken(token);
             confirmation.setUser(user);
-            ninjaMorphia.save(confirmation);
+            mongoDB.save(confirmation);
 
             mailService.confirm(user, token, confirmationType);
             if (settings.isInformOnNewTipper()) {
@@ -249,9 +249,9 @@ public class AuthController {
         final User user = confirmation.getUser();
         final String password = authService.hashPassword(passwordDTO.getUserpass(), user.getSalt());
         user.setUserpass(password);
-        ninjaMorphia.delete(user);
+        mongoDB.delete(user);
 
-        ninjaMorphia.delete(confirmation);
+        mongoDB.delete(confirmation);
         flashScope.success(i18nService.get("controller.auth.passwordreset"));
 
         return Results.redirect(AUTH_LOGIN);

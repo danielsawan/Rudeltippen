@@ -10,7 +10,7 @@ import ninja.Context;
 import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,15 +32,15 @@ public class AjaxController extends RootController {
     private static final String VALUE = "value";
 
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
 
     public Result webserviceid(@PathParam("gameId") String gameId, Context context) {
-        Game game = ninjaMorphia.findById(gameId, Game.class);
+        Game game = mongoDB.findById(gameId, Game.class);
         if (game != null) {
             final String webserviceID = context.getParameter(VALUE);
             if (StringUtils.isNotBlank(webserviceID)) {
                 game.setWebserviceID(webserviceID);
-                ninjaMorphia.save(game);
+                mongoDB.save(game);
 
                 return Results.noContent();
             }
@@ -50,7 +50,7 @@ public class AjaxController extends RootController {
     }
 
     public Result kickoff(@PathParam("gameId") String gameId, Context context) {
-        Game game = ninjaMorphia.findById(gameId, Game.class);
+        Game game = mongoDB.findById(gameId, Game.class);
         if (game != null) {
             final String kickoff = context.getParameter(VALUE);
             if (StringUtils.isNotBlank(kickoff)) {
@@ -58,7 +58,7 @@ public class AjaxController extends RootController {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm", Locale.ENGLISH);
                     game.setKickoff(simpleDateFormat.parse(kickoff));
                     game.setUpdatable(false);
-                    ninjaMorphia.save(game);
+                    mongoDB.save(game);
 
                     return Results.noContent();
                 } catch (Exception e) {
@@ -71,16 +71,16 @@ public class AjaxController extends RootController {
     }
 
     public Result place(@PathParam("teamId") String teamId, Context context) {
-        Team team = ninjaMorphia.findById(teamId, Team.class);
+        Team team = mongoDB.findById(teamId, Team.class);
         if (team != null) {
             final String place = context.getParameter(VALUE);
             if (StringUtils.isNotBlank(place)) {
                 team.setPlace(Integer.valueOf(place));
-                ninjaMorphia.save(team);
+                mongoDB.save(team);
 
                 Bracket bracket = team.getBracket();
                 bracket.setUpdatable(false);
-                ninjaMorphia.save(bracket);
+                mongoDB.save(bracket);
 
                 return Results.noContent();
             }
@@ -90,10 +90,10 @@ public class AjaxController extends RootController {
     }
 
     public Result updatablegame(@PathParam("gameId") String gameId) {
-        Game game = ninjaMorphia.findById(gameId, Game.class);
+        Game game = mongoDB.findById(gameId, Game.class);
         if (game != null) {
             game.setUpdatable(!game.isUpdatable());
-            ninjaMorphia.save(game);
+            mongoDB.save(game);
 
             return Results.noContent();
         }
@@ -102,10 +102,10 @@ public class AjaxController extends RootController {
     }
 
     public Result updatablebracket(@PathParam("bracketId") String bracketId) {
-        Bracket bracket = ninjaMorphia.findById(bracketId, Bracket.class);
+        Bracket bracket = mongoDB.findById(bracketId, Bracket.class);
         if (bracket != null) {
             bracket.setUpdatable(!bracket.isUpdatable());
-            ninjaMorphia.save(bracket);
+            mongoDB.save(bracket);
 
             return Results.noContent();
         }

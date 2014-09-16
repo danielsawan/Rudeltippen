@@ -8,7 +8,7 @@ import models.enums.Constants;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 import services.CalculationService;
 import services.DataService;
 import services.I18nService;
@@ -26,7 +26,7 @@ public class ApplicationController extends RootController {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
     
     @Inject
     private CalculationService calculationService;
@@ -39,7 +39,7 @@ public class ApplicationController extends RootController {
         final String diffToTop = i18nService.getDiffToTop(pointsDiff);
         final Playday playday = dataService.findCurrentPlayday();
         final List<User> topUsers = dataService.findTopThreeUsers();
-        final long users = ninjaMorphia.countAll(User.class);
+        final long users = mongoDB.countAll(User.class);
         
         dataService.findResultsStatistic();
         

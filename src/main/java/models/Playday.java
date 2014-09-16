@@ -6,7 +6,7 @@ import java.util.List;
 import models.statistic.GameStatistic;
 import models.statistic.GameTipStatistic;
 import models.statistic.UserStatistic;
-import ninja.morphia.NinjaMorphiaModel;
+import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -17,7 +17,7 @@ import org.mongodb.morphia.annotations.Reference;
  *
  */
 @Entity(value = "playdays", noClassnameStored = true)
-public class Playday extends NinjaMorphiaModel implements Serializable {
+public class Playday extends MorphiaModel implements Serializable {
     private static final long serialVersionUID = -7329808092314093714L;
 
     @Reference(value = "playday_games")

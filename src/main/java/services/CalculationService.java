@@ -15,7 +15,7 @@ import models.Team;
 import models.User;
 import models.ws.WSResult;
 import models.ws.WSResults;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class CalculationService {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
 
     @Inject
     private ResultService resultService;
@@ -90,13 +90,13 @@ public class CalculationService {
     private void calculateUserPoints() {
         final Settings settings = dataService.findSettings();
 
-        final List<Extra> extras = ninjaMorphia.findAll(Extra.class);
+        final List<Extra> extras = mongoDB.findAll(Extra.class);
         for (final Extra extra : extras) {
             if (extra.getAnswer() == null && commonService.allReferencedGamesEnded(extra.getGameReferences())) {
                 final Team team = commonService.getTeamByReference(extra.getExtraReference());
                 if (team != null) {
                     extra.setAnswer(team);
-                    ninjaMorphia.save(extra);
+                    mongoDB.save(extra);
                 }
             }
         }
@@ -124,7 +124,7 @@ public class CalculationService {
                     pointsForTipp = resultService.getTipPoints(Integer.parseInt(game.getHomeScore()), Integer.parseInt(game.getAwayScore()), gameTip.getHomeScore(), gameTip.getAwayScore());
                 }
                 gameTip.setPoints(pointsForTipp);
-                ninjaMorphia.save(gameTip);
+                mongoDB.save(gameTip);
 
                 if (pointsForTipp == settings.getPointsTip()) {
                     correctResults++;
@@ -151,7 +151,7 @@ public class CalculationService {
                         final int bPoints = extra.getPoints();
                         extraTip.setPoints(bPoints);
                         correctExtraTips++;
-                        ninjaMorphia.save(extraTip);
+                        mongoDB.save(extraTip);
                         bonusPoints = bonusPoints + bPoints;
                     }
                 }
@@ -160,7 +160,7 @@ public class CalculationService {
             user.setExtraPoints(bonusPoints);
             user.setPoints(bonusPoints + userTipPoints);
             user.setCorrectExtraTips(correctExtraTips);
-            ninjaMorphia.save(user);
+            mongoDB.save(user);
         }
     }
 
@@ -169,7 +169,7 @@ public class CalculationService {
         final int pointsWin = settings.getPointsGameWin();
         final int pointsDraw = settings.getPointsGameDraw();
 
-        final List<Team> teams = ninjaMorphia.findAll(Team.class);
+        final List<Team> teams = mongoDB.findAll(Team.class);
         for (final Team team : teams) {
             final List<Game> homeGames = dataService.findGamesByHomeTeam(team);
             final List<Game> awayGames = dataService.findGamesByAwayTeam(team);
@@ -225,7 +225,7 @@ public class CalculationService {
             team.setGoalsFor(goalsFor);
             team.setGoalsAgainst(goalsAgainst);
             team.setGoalsDiff(goalsFor - goalsAgainst);
-            ninjaMorphia.save(team);
+            mongoDB.save(team);
         }
     }
 
@@ -235,7 +235,7 @@ public class CalculationService {
         for (final User user : users) {
             user.setPreviousPlace(user.getPlace());
             user.setPlace(place);
-            ninjaMorphia.save(user);
+            mongoDB.save(user);
             place++;
         }
     }
@@ -247,10 +247,10 @@ public class CalculationService {
         for (final Playday playday : playdays) {
             if (commonService.allGamesEnded(playday)) {
                 playday.setCurrent(false);
-                ninjaMorphia.save(playday);
+                mongoDB.save(playday);
             } else {
                 playday.setCurrent(true);
-                ninjaMorphia.save(playday);
+                mongoDB.save(playday);
                 break;
             }
         }
@@ -269,7 +269,7 @@ public class CalculationService {
             Team homeTeam = null;
             Team awayTeam = null;
 
-            final List<Bracket> brackets = ninjaMorphia.findAll(Bracket.class);
+            final List<Bracket> brackets = mongoDB.findAll(Bracket.class);
             for (final Bracket bracket : brackets) {
                 if (commonService.allGamesEnded(bracket)) {
                     final int number = bracket.getNumber();
@@ -280,7 +280,7 @@ public class CalculationService {
                         awayTeam = commonService.getTeamByReference(game.getAwayReference());
                         game.setHomeTeam(homeTeam);
                         game.setAwayTeam(awayTeam);
-                        ninjaMorphia.save(game);
+                        mongoDB.save(game);
                     }
                 }
             }
@@ -291,7 +291,7 @@ public class CalculationService {
                 awayTeam = commonService.getTeamByReference(game.getAwayReference());
                 game.setHomeTeam(homeTeam);
                 game.setAwayTeam(awayTeam);
-                ninjaMorphia.save(game);
+                mongoDB.save(game);
             }
         }
     }
@@ -304,7 +304,7 @@ public class CalculationService {
             for (final Team team : teams) {
                 team.setPreviousPlace(team.getPlace());
                 team.setPlace(place);
-                ninjaMorphia.save(team);
+                mongoDB.save(team);
                 place++;
             }
         }
@@ -312,7 +312,7 @@ public class CalculationService {
 
     public void setGameScore(final String gameId, final String homeScore, final String awayScore, final String extratime, final String homeScoreExtratime, final String awayScoreExtratime) {
         if (validationService.isValidScore(homeScore, awayScore)) {
-            final Game game = ninjaMorphia.findById(gameId, Game.class);
+            final Game game = mongoDB.findById(gameId, Game.class);
             if (game != null) {
                 dataService.saveScore(game, homeScore, awayScore, extratime, homeScoreExtratime, awayScoreExtratime);
             }

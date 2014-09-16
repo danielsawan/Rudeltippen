@@ -10,7 +10,6 @@ import java.util.UUID;
 import models.User;
 import models.enums.Avatar;
 import ninja.NinjaTest;
-import ninja.morphia.NinjaMorphia;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import services.AuthService;
 import services.CommonService;
-import services.ImportService;
+import services.DataService;
 
 import com.mongodb.MongoClient;
 
@@ -35,6 +34,7 @@ import de.svenkubiak.embeddedmongodb.EmbeddedMongoDB;
 
 public class TestBase extends NinjaTest {
     private static final Logger LOG = LoggerFactory.getLogger(TestBase.class);
+    private static DataService dataService;
     public static final String ADMIN = "admin";
     public static final String USER = "user";
 
@@ -42,12 +42,8 @@ public class TestBase extends NinjaTest {
     public void init() {
         try {
             EmbeddedMongoDB.getInstance();
-            
-            NinjaMorphia ninjaMorphia = getInjector().getInstance(NinjaMorphia.class);
-            ninjaMorphia.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
-            ninjaMorphia.dropDatabase();
-            
-            getInjector().getInstance(ImportService.class).loadInitialData();
+            dataService = getInjector().getInstance(DataService.class);
+            dataService.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
 
             User user = new User();
             final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
@@ -71,7 +67,7 @@ public class TestBase extends NinjaTest {
             user.setCorrectExtraTips(0);
             user.setPicture(getInjector().getInstance(CommonService.class).getUserPictureUrl(Avatar.GRAVATAR, user));
             user.setAvatar(Avatar.GRAVATAR);
-            ninjaMorphia.save(user);  
+            dataService.save(user);  
         } catch (Exception e) {
             LOG.error("Failed to start in memory mongodb for testing", e);
         }

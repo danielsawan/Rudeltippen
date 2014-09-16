@@ -19,7 +19,6 @@ public enum Constants {
     OBJECTIDPATTERN("^[0-9a-z]{24}$"),
     USERNAME("username"),
     COOKIENAME("rudelremember"),
-    MAILFOLDER("src/main/java/views/mails/"),
     GAMETIPJOB("GameTipJob"),
     KICKOFFJOB("KickoffJob"),
     REMINDERJOB("ReminderJob"),

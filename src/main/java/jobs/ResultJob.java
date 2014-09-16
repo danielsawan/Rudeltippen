@@ -7,7 +7,7 @@ import models.AbstractJob;
 import models.Game;
 import models.enums.Constants;
 import models.ws.WSResults;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -35,7 +35,7 @@ public class ResultJob implements Job {
     private DataService dataService;
     
     @Inject
-    private NinjaMorphia ninjaMorphia;
+    private MongoDB mongoDB;
 
     @Inject
     private CalculationService calculationService;
@@ -58,7 +58,7 @@ public class ResultJob implements Job {
                 }
                 
                 job.setExecuted(new Date());
-                ninjaMorphia.save(job);
+                mongoDB.save(job);
                 LOG.info("Finished Job: " + Constants.RESULTJOB.get());
             }
         }

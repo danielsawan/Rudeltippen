@@ -8,7 +8,7 @@
 	<version>3.0.0-SNAPSHOT</version>
 	<url>https://github.com/svenkubiak/Rudeltippen</url>
 	<properties>
-		<ninja.version>3.3.0</ninja.version>
+		<ninja.version>3.3.1</ninja.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
@@ -246,12 +246,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>de.svenkubiak</groupId>
-			<artifactId>embedded-mongodb</artifactId>
-			<version>1.1.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.ninjaframework</groupId>
 			<artifactId>ninja-standalone</artifactId>
 			<version>${ninja.version}</version>
@@ -264,13 +258,19 @@
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
-			<artifactId>ninja-quartz-scheduler-module</artifactId>
+			<artifactId>embedded-mongodb</artifactId>
 			<version>1.1.0</version>
+			<scope>test</scope>
+		</dependency>		
+		<dependency>
+			<groupId>de.svenkubiak</groupId>
+			<artifactId>ninja-quartz-scheduler-module</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
-			<artifactId>ninja-morphia-module</artifactId>
-			<version>1.1.0</version>
+			<artifactId>ninja-mongodb-module</artifactId>
+			<version>1.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>

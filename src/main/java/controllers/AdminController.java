@@ -22,7 +22,7 @@ import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
 import ninja.cache.NinjaCache;
-import ninja.morphia.NinjaMorphia;
+import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -65,7 +65,8 @@ public class AdminController extends RootController {
     @Inject
     private DataService dataService;
     
-    @Inject NinjaMorphia ninjaMorphia;
+    @Inject
+    private MongoDB mongoDB;
 
     @Inject
     private CalculationService calculationService;
@@ -93,7 +94,7 @@ public class AdminController extends RootController {
     }
 
     public Result users() {
-        final List<User> users = ninjaMorphia.findAll(User.class);
+        final List<User> users = mongoDB.findAll(User.class);
         return Results.html().render("users", users);
     }
 
@@ -117,7 +118,7 @@ public class AdminController extends RootController {
         int playday = 1;
         if (keys != null && !keys.isEmpty() && StringUtils.isNotBlank(gamekey)) {
             gamekey = gamekey.replace("_et", "");
-            final Game game = ninjaMorphia.findById(gamekey, Game.class);
+            final Game game = mongoDB.findById(gamekey, Game.class);
             if (game != null && game.getPlayday() != null) {
                 playday = game.getPlayday().getNumber();
             }
@@ -160,7 +161,7 @@ public class AdminController extends RootController {
             settings.setMinutesBeforeTip(settingsDTO.getMinutesBeforeTip());
             settings.setInformOnNewTipper(settingsDTO.isInformOnNewTipper());
             settings.setEnableRegistration(settingsDTO.isEnableRegistration());
-            ninjaMorphia.save(settings);
+            mongoDB.save(settings);
 
             ninjaCache.delete(Constants.SETTINGS.get());
             flashScope.success(i18nService.get("setup.saved"));
@@ -185,7 +186,7 @@ public class AdminController extends RootController {
 
     public Result changeactive(@PathParam("userid") String userId, Context context, FlashScope flashScope) {
         final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
-        final User user = ninjaMorphia.findById(userId, User.class);
+        final User user = mongoDB.findById(userId, User.class);
 
         if (user != null) {
             if (!connectedUser.equals(user)) {
@@ -198,13 +199,13 @@ public class AdminController extends RootController {
                 } else {
                     final Confirmation confirmation = dataService.findConfirmationByTypeAndUser(ConfirmationType.ACTIVATION, user);
                     if (confirmation != null) {
-                        ninjaMorphia.delete(confirmation);
+                        mongoDB.delete(confirmation);
                     }
                     user.setActive(true);
                     activate = "activated";
                     message = i18nService.get("info.change.activate", new Object[]{user.getEmail()});
                 }
-                ninjaMorphia.save(user);
+                mongoDB.save(user);
                 flashScope.success(message);
                 LOG.info("User " + user.getEmail() + " " + activate + " - by " + connectedUser.getEmail());
             } else {
@@ -219,7 +220,7 @@ public class AdminController extends RootController {
 
     public Result changeadmin(@PathParam("userid") String userId, FlashScope flashScope, Context context) {
         final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
-        final User user = ninjaMorphia.findById(userId, User.class);
+        final User user = mongoDB.findById(userId, User.class);
 
         if (user != null) {
             if (!connectedUser.equals(user)) {
@@ -234,7 +235,7 @@ public class AdminController extends RootController {
                     admin = "is not admin anymore";
                     user.setAdmin(true);
                 }
-                ninjaMorphia.save(user);
+                mongoDB.save(user);
                 flashScope.success(message);
                 LOG.info(user.getEmail() + " " + admin + " - " + connectedUser.getEmail());
             } else {
@@ -249,12 +250,12 @@ public class AdminController extends RootController {
 
     public Result deleteuser(@PathParam("userid") String userId, FlashScope flashScope, Context context) {
         final User connectedUser = context.getAttribute("connectedUser", User.class);
-        final User user = ninjaMorphia.findById(userId, User.class);
+        final User user = mongoDB.findById(userId, User.class);
 
         if (user != null && !user.equals(connectedUser)) {
             final String username = user.getEmail();
             dataService.deleteConfirmationsByUser(user);
-            ninjaMorphia.delete(user);
+            mongoDB.delete(user);
             
             flashScope.success(i18nService.get("info.delete.user", new Object[]{username}));
             LOG.info(username + " deleted - " + connectedUser.getEmail());
@@ -272,8 +273,8 @@ public class AdminController extends RootController {
     }
 
     public Result tournament() {
-        List<Bracket> brackets = ninjaMorphia.findAll(Bracket.class);
-        List<Game> games = ninjaMorphia.findAll(Game.class);
+        List<Bracket> brackets = mongoDB.findAll(Bracket.class);
+        List<Game> games = mongoDB.findAll(Game.class);
 
         return Results.html().render("brackets", brackets).render("games", games);
     }
@@ -306,14 +307,14 @@ public class AdminController extends RootController {
         if (StringUtils.isNotBlank(name)) {
             AbstractJob abstractJob = dataService.findAbstractJobByName(name);
             abstractJob.setActive(!abstractJob.isActive());
-            ninjaMorphia.save(abstractJob);
+            mongoDB.save(abstractJob);
         }
 
         return Results.redirect("/admin/jobs");
     }
 
     public Result jobs() {
-        List<AbstractJob> jobs = ninjaMorphia.findAll(AbstractJob.class);
+        List<AbstractJob> jobs = mongoDB.findAll(AbstractJob.class);
 
         return Results.html().render("jobs", jobs);
     }
@@ -328,7 +329,7 @@ public class AdminController extends RootController {
         String confirm = context.getParameter("confirm");
         
         if (("rudeltippen").equalsIgnoreCase(confirm)) {
-            ninjaMorphia.dropDatabase();
+            mongoDB.dropDatabase();
             ninjaCache.clear();
             session.clear();
             

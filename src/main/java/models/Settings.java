@@ -2,7 +2,7 @@ package models;
 
 import java.io.Serializable;
 
-import ninja.morphia.NinjaMorphiaModel;
+import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 
@@ -12,7 +12,7 @@ import org.mongodb.morphia.annotations.Entity;
  *
  */
 @Entity(value = "settings", noClassnameStored = true)
-public class Settings extends NinjaMorphiaModel implements Serializable {
+public class Settings extends MorphiaModel implements Serializable {
     private static final long serialVersionUID = 864836696835606862L;
 
     private String appSalt;

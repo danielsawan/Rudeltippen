@@ -60,8 +60,8 @@ public class SystemController {
             } catch (InterruptedException e) {
                 LOG.error("Failed while trying to sleep in system/init", e);
             }
-
-            importService.loadInitialData();
+            
+            importService.loadInitialData(context);
 
             return Results.ok().render(Result.NO_HTTP_BODY);
         }

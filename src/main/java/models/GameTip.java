@@ -3,7 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.Date;
 
-import ninja.morphia.NinjaMorphiaModel;
+import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -14,7 +14,7 @@ import org.mongodb.morphia.annotations.Reference;
  *
  */
 @Entity(value = "gametips", noClassnameStored = true)
-public class GameTip extends NinjaMorphiaModel implements Serializable {
+public class GameTip extends MorphiaModel implements Serializable {
     private static final long serialVersionUID = -8038881739647141796L;
 
     @Reference
