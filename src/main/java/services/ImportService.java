@@ -23,6 +23,7 @@ import models.enums.Avatar;
 import models.enums.Constants;
 import ninja.Context;
 import ninja.mongodb.MongoDB;
+import ninja.utils.NinjaProperties;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -43,7 +44,6 @@ import com.mongodb.util.JSON;
 public class ImportService {
     private static final Logger LOG = LoggerFactory.getLogger(ImportService.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
-    private static final String ADMIN = "admin";
     private static final String BRACKET = "bracket";
     private static final String PLAYOFF = "playoff";
     private static final String UPDATABLE = "updatable";
@@ -63,6 +63,9 @@ public class ImportService {
     
     @Inject
     private I18nService i18nService;
+    
+    @Inject 
+    private NinjaProperties ninjaProperties;
 
     public void loadInitialData(Context context) {
         Map<String, Bracket> brackets = loadBrackets(context);
@@ -103,9 +106,9 @@ public class ImportService {
         User user = new User();
         final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
         user.setSalt(salt);
-        user.setEmail("admin@foo.bar");
-        user.setUsername(ADMIN);
-        user.setUserpass(authService.hashPassword(ADMIN, salt));
+        user.setEmail(ninjaProperties.get("rudeltippen.admin.email"));
+        user.setUsername(ninjaProperties.get("rudeltippen.admin.username"));
+        user.setUserpass(authService.hashPassword(ninjaProperties.get("rudeltippen.admin.password"), salt));
         user.setRegistered(new Date());
         user.setExtraPoints(0);
         user.setTipPoints(0);

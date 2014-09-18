@@ -1,3 +1,3 @@
 #!/bin/sh
-mvn clean compile assembly:single
-mvn deploy
+mvn clean package assembly:single -Dmaven.test.skip=true
+mvn deploy -Dmaven.test.skip=true
