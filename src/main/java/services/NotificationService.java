@@ -2,13 +2,13 @@ package services;
 
 import java.util.List;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import models.Game;
 import models.GameTip;
 import models.Playday;
 import models.User;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * 

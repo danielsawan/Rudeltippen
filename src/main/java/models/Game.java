@@ -238,4 +238,12 @@ public class Game extends MorphiaModel implements Serializable {
     public void setUpdatable(boolean updatable) {
         this.updatable = updatable;
     }
+    
+    //TODO Needs dynamic offset from settings
+    public Date getTippEnding() {
+        final long time = this.kickoff.getTime();
+        final int offset = 5 * 60000 ;
+
+        return new Date (time - offset);
+    }
 }

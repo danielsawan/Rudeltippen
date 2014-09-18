@@ -110,7 +110,7 @@ public class AuthService {
     public boolean authenticate(String username, String userpass) {
         boolean authenticated = false;
         User user = dataService.findUserByUsernameOrEmail(username);
-        if (user != null && user.getUserpass().equals(authService.hashPassword(username, user.getSalt()))) {
+        if (user != null && user.getUserpass().equals(authService.hashPassword(userpass, user.getSalt()))) {
             authenticated = true;
         }
 

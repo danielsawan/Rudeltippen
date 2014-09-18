@@ -79,7 +79,7 @@ public class AuthController {
             return Results.redirect(AUTH_LOGIN);
         }
 
-        return Results.html().render(token);
+        return Results.html().render("token", token);
     }
 
     public Result login() {
@@ -249,7 +249,7 @@ public class AuthController {
         final User user = confirmation.getUser();
         final String password = authService.hashPassword(passwordDTO.getUserpass(), user.getSalt());
         user.setUserpass(password);
-        mongoDB.delete(user);
+        mongoDB.save(user);
 
         mongoDB.delete(confirmation);
         flashScope.success(i18nService.get("controller.auth.passwordreset"));

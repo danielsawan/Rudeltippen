@@ -1,10 +1,5 @@
 package filters;
 
-import services.DataService;
-import services.I18nService;
-
-import com.google.inject.Inject;
-
 import ninja.Context;
 import ninja.Filter;
 import ninja.FilterChain;
@@ -12,6 +7,10 @@ import ninja.Result;
 import ninja.Results;
 import ninja.i18n.Lang;
 import ninja.utils.NoHttpBody;
+import services.DataService;
+import services.I18nService;
+
+import com.google.inject.Inject;
 
 /**
  * 

@@ -1,10 +1,10 @@
 package services;
 
-import org.apache.commons.lang.StringUtils;
-
 import models.enums.Constants;
 import ninja.i18n.Messages;
 import ninja.utils.NinjaProperties;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;

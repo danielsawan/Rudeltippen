@@ -16,7 +16,7 @@
 					<td>${i18n.get(game.homeTeam.name)} - ${i18n.get(game.awayTeam.name)}</td>
 				</tr>
 				<tr>
-					<td>${i18n.get('mail.tipto')}: ${game.tippEnding.formatted()}</td>
+					<td>${i18n.get('mail.tipto')}: ${game.tippEnding}</td>
 				</tr>
 				<#if game_has_next>
 					<tr>

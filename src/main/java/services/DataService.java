@@ -36,11 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.mongodb.AggregationOutput;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 /**
@@ -496,26 +491,6 @@ public class DataService {
         //                        "ORDER BY counts DESC").getResultList();
         //
         //        return results;
-        
-        DB db = this.datastore.getDB();
-        DBCollection playdayStatistics = db.getCollection("playdaystatistics");
-
-        DBObject groupFields = new BasicDBObject( "_id", "$resultCount");
-        groupFields.put("counts", new BasicDBObject( "$sum", "$resultCount"));
-        DBObject group = new BasicDBObject("$group", groupFields);
-        
-        List<DBObject> pipeline = new ArrayList<DBObject>();
-        pipeline.add(group);
-        
-        AggregationOutput aggregate = playdayStatistics.aggregate(pipeline);
-        DBObject command = aggregate.getCommand();
-    
-        System.out.println("command: " + command.toString());
-        
-        Iterable<DBObject> results = aggregate.results();
-        for (DBObject result : results) {
-            System.out.println(result.toString());
-        }
     }
 
     public void findPlaydayStatistics() {
@@ -597,5 +572,4 @@ public class DataService {
     public void save(final Object object) {
         this.mongoDB.getDatastore().save(object);
     }
-
 }

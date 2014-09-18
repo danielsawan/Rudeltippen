@@ -9,7 +9,7 @@
 	<table>
 		<#list games as game>
 			<tr>
-				<td colspan="2"><strong>${i18n.get(game.homeTeam)} - ${i18n.get(game.awayTeam)}</strong></td>
+				<td colspan="2"><strong>${i18n.get(game.homeTeam.name)} - ${i18n.get(game.awayTeam.name)}</strong></td>
 			</tr>
 			<#list game.gameTips as gameTip>
 				<tr>
