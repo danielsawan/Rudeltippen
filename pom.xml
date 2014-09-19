@@ -102,6 +102,8 @@
 							<mainClass>ninja.standalone.NinjaJetty</mainClass>
 						</manifest>
 					</archive>
+					<finalName>rudeltippen</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
 			<plugin>
