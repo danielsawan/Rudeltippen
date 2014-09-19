@@ -243,7 +243,7 @@ public class DataService {
     }
 
     public Bracket findBracketByNumber(String number) {
-        return this.datastore.find(Bracket.class).field(NUMBER).equal(number).get();
+        return this.datastore.find(Bracket.class).field(NUMBER).equal(Integer.valueOf(number)).get();
     }
 
     public void saveScore(final Game game, final String homeScore, final String awayScore, final String extratime, String homeScoreExtratime, String awayScoreExtratime) {

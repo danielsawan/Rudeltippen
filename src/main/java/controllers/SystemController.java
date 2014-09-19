@@ -8,10 +8,6 @@ import ninja.Results;
 import ninja.cache.NinjaCache;
 import ninja.session.Session;
 import ninja.utils.NinjaProperties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import services.DataService;
 import services.ImportService;
 import services.SetupService;
@@ -24,8 +20,6 @@ import com.google.inject.Inject;
  *
  */
 public class SystemController {
-    private static final Logger LOG = LoggerFactory.getLogger(SystemController.class);
-
     @Inject
     private DataService dataService;
 
@@ -54,12 +48,6 @@ public class SystemController {
         if (!dataService.appIsInizialized()) {
             ninjaCache.clear();
             session.clear();
-
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                LOG.error("Failed while trying to sleep in system/init", e);
-            }
             
             importService.loadInitialData(context);
 
@@ -74,7 +62,7 @@ public class SystemController {
             final List<String> games = setupService.getGamesFromWebService(34, "bl1", "2014");
             return Results.html().render("games", games);
         }
-
+        
         return Results.redirect("/");
     }
 }

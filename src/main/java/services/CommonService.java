@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -40,6 +41,8 @@ import freemarker.template.Template;
 
 @Singleton
 public class CommonService extends ViewService {
+    private static final int TIMEOUT = 4000;
+
     private static final Logger LOG = LoggerFactory.getLogger(CommonService.class);
 
     @Inject
@@ -372,7 +375,15 @@ public class CommonService extends ViewService {
                 param = user.getEmail();
             }
             
-            HttpClient httpClient = HttpClientBuilder.create().build();
+            RequestConfig config = RequestConfig.custom()
+                    .setSocketTimeout(TIMEOUT)
+                    .setConnectTimeout(TIMEOUT)
+                    .build();
+            
+            HttpClient httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(config)
+                    .build();
+            
             HttpGet httpGet = new HttpGet(avatar.get() + param + "?size=large");
             HttpContext httpContext = new BasicHttpContext(); 
             httpClient.execute(httpGet, httpContext); 
