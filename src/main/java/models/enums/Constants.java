@@ -7,6 +7,7 @@ package models.enums;
  */
 public enum Constants {
     APPNAME("rudeltippen"),
+    DEFAULT_DATETIMEFORMAT("dd.MM.yyyy kk:mm"),
     DEFAULT_DATEFORMAT("dd.MM.yyyy"),
     DEFAULT_TIMEFORMAT("kk:mm"),
     DEFAULT_TIMEZONE("Europe/Berlin"),

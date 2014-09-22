@@ -18,11 +18,10 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import services.DataService;
-import services.I18nService;
 import services.ResultService;
-import services.SetupService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -34,8 +33,8 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class KickoffJob implements Job {
+    private static final Logger LOG = LoggerFactory.getLogger(KickoffJob.class);
     private static final String KICKOFF_FORMAT = "yyyy-MM-dd kk:mm:ss";
-    private static final Logger LOG = LoggerFactory.getLogger(GameTipJob.class);
 
     @Inject
     private DataService dataService;
@@ -44,13 +43,7 @@ public class KickoffJob implements Job {
     private MongoDB mongoDB;
 
     @Inject
-    private SetupService setupService;
-
-    @Inject
     private ResultService resultService;
-
-    @Inject
-    private I18nService i18nService;
 
     public KickoffJob() {
     }
@@ -69,14 +62,21 @@ public class KickoffJob implements Job {
                         final String matchID = game.getWebserviceID();
                         if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
                             final Document document = resultService.getDocumentFromWebService(matchID);
-                            final Date kickoff = setupService.getKickoffFromDocument(document);
-                            final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
-                            df.setTimeZone(TimeZone.getTimeZone(i18nService.getCurrentTimeZone()));
+                            final String kickoff = getKickoffFromDocument(document);
+                            
+                            if (document != null && StringUtils.isNotBlank(kickoff)) {
+                                final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                            game.setKickoff(kickoff);
-                            mongoDB.save(game);
+                                try {
+                                    game.setKickoff(df.parse(kickoff));
+                                    mongoDB.save(game);
 
-                            LOG.info("Updated Kickoff and MatchID of Playday: " + playday.getName());
+                                    LOG.info("Updated Kickoff of game number: " + game.getNumber());
+                                } catch (Exception e) {
+                                    LOG.error("Failed to parse date from openligadb for kickoff update");
+                                }
+                            }
                         }
                     }
                 }
@@ -87,5 +87,19 @@ public class KickoffJob implements Job {
             mongoDB.save(job);
             LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
         }
+    }
+    
+    private static String getKickoffFromDocument(final Document document) {
+        String kickoff = null;
+        if (document != null) {
+            final NodeList nodeList = document.getElementsByTagName("matchDateTimeUTC");
+            if ((nodeList != null) && (nodeList.getLength() > 0)) {
+                kickoff = nodeList.item(0).getTextContent();
+                kickoff = kickoff.replace("T", " ");
+                kickoff = kickoff.replace("Z", "");
+            }
+        }
+
+        return kickoff;
     }
 }

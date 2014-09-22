@@ -1,9 +1,11 @@
 package models;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import models.enums.Constants;
 import ninja.morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
@@ -240,10 +242,11 @@ public class Game extends MorphiaModel implements Serializable {
     }
     
     //TODO Needs dynamic offset from settings
-    public Date getTippEnding() {
+    public String getTippEnding() {
         final long time = this.kickoff.getTime();
         final int offset = 5 * 60000 ;
-
-        return new Date (time - offset);
+        
+        SimpleDateFormat sdf = new SimpleDateFormat(Constants.DEFAULT_DATETIMEFORMAT.get());
+        return sdf.format(new Date (time - offset));
     }
 }

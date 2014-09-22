@@ -27,7 +27,7 @@
 				<#list games as game>
 					<tr>
 						<td>${game.number}</td>					
-						<td>${game.kickoff?date}</td>
+						<td>${game.kickoff?datetime}</td>
 						<#if (game.homeTeam)??>
 							<td><img class="flag" src="/assets/img/flags/${game.homeTeam.flag}" alt="${game.homeTeam.name}" />${i18n(game.homeTeam.name)}</td>
 						<#else>
