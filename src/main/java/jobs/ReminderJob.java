@@ -52,41 +52,39 @@ public class ReminderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        if (resultService.isJobInstance()) {
-            AbstractJob job = dataService.findAbstractJobByName(Constants.REMINDERJOB.get());
-            if (job != null && job.isActive()) {
-                LOG.info("Started Job: " + Constants.REMINDERJOB.get());
-                final List<Extra> nextExtras = dataService.findAllExtrasEnding();
-                final List<Game> nextGames = dataService.findAllGamesEnding();
-                final List<User> users = dataService.findAllRemindableUsers();
+        AbstractJob job = dataService.findAbstractJobByName(Constants.REMINDERJOB.get());
+        if (job != null && job.isActive() && resultService.isJobInstance()) {
+            LOG.info("Started Job: " + Constants.REMINDERJOB.get());
+            final List<Extra> nextExtras = dataService.findAllExtrasEnding();
+            final List<Game> nextGames = dataService.findAllGamesEnding();
+            final List<User> users = dataService.findAllRemindableUsers();
 
-                for (final User user : users) {
-                    final List<Game> reminderGames = new ArrayList<Game>();
-                    final List<Extra> reminderBonus = new ArrayList<Extra>();
+            for (final User user : users) {
+                final List<Game> reminderGames = new ArrayList<Game>();
+                final List<Extra> reminderBonus = new ArrayList<Extra>();
 
-                    for (final Game game : nextGames) {
-                        final GameTip gameTip = dataService.findGameTipByGameAndUser(game, user);
-                        if (gameTip == null) {
-                            reminderGames.add(game);
-                        }
+                for (final Game game : nextGames) {
+                    final GameTip gameTip = dataService.findGameTipByGameAndUser(game, user);
+                    if (gameTip == null) {
+                        reminderGames.add(game);
                     }
-
-                    for (final Extra extra : nextExtras) {
-                        final ExtraTip extraTip = dataService.findExtraTipByExtraAndUser(extra, user);
-                        if (extraTip == null) {
-                            reminderBonus.add(extra);
-                        }
-                    }
-
-                    sendNotification(user, reminderGames, reminderBonus);
                 }
 
-                disableReminder(nextExtras, nextGames);
-                
-                job.setExecuted(new Date());
-                mongoDB.save(job);
-                LOG.info("Finshed Job: " + Constants.REMINDERJOB.get());
+                for (final Extra extra : nextExtras) {
+                    final ExtraTip extraTip = dataService.findExtraTipByExtraAndUser(extra, user);
+                    if (extraTip == null) {
+                        reminderBonus.add(extra);
+                    }
+                }
+
+                sendNotification(user, reminderGames, reminderBonus);
             }
+
+            disableReminder(nextExtras, nextGames);
+            
+            job.setExecuted(new Date());
+            mongoDB.save(job);
+            LOG.info("Finshed Job: " + Constants.REMINDERJOB.get());
         }
     }
 

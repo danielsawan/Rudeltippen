@@ -477,7 +477,7 @@ public class DataService {
     }
 
     public void deleteConfirmationsByUser(User user) {
-        this.datastore.delete(this.datastore.find(Confirmation.class).field(USER).equal(user).get());
+        this.datastore.delete(this.datastore.find(Confirmation.class).field(USER).equal(user).asList());
     }
 
     public void findResultsStatistic() {
@@ -571,5 +571,14 @@ public class DataService {
 
     public void save(final Object object) {
         this.mongoDB.getDatastore().save(object);
+    }
+
+    public void deleteUser(User user) {
+        this.datastore.delete(this.datastore.find(GameTip.class).field("user").equal(user));
+        this.datastore.delete(this.datastore.find(ExtraTip.class).field("user").equal(user));
+        this.datastore.delete(this.datastore.find(Confirmation.class).field("user").equal(user));
+        this.datastore.delete(this.datastore.find(UserStatistic.class).field("user").equal(user));
+        this.datastore.delete(this.datastore.find(ResultStatistic.class).field("user").equal(user));
+        this.datastore.delete(user);
     }
 }

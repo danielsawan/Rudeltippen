@@ -255,7 +255,7 @@ public class AdminController extends RootController {
         if (user != null && !user.equals(connectedUser)) {
             final String username = user.getEmail();
             dataService.deleteConfirmationsByUser(user);
-            mongoDB.delete(user);
+            dataService.deleteUser(user);
             
             flashScope.success(i18nService.get("info.delete.user", new Object[]{username}));
             LOG.info(username + " deleted - " + connectedUser.getEmail());

@@ -48,19 +48,17 @@ public class ResultJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        if (resultService.isJobInstance()) {
-            AbstractJob job = dataService.findAbstractJobByName(Constants.RESULTJOB.get());
-            if (job != null && job.isActive()) {
-                LOG.info("Started Job: " + Constants.RESULTJOB.get());
-                final List<Game> games = dataService.findAllGamesWithNoResult();
-                for (final Game game : games) {
-                    setGameScore(game);
-                }
-                
-                job.setExecuted(new Date());
-                mongoDB.save(job);
-                LOG.info("Finished Job: " + Constants.RESULTJOB.get());
+        AbstractJob job = dataService.findAbstractJobByName(Constants.RESULTJOB.get());
+        if (job != null && job.isActive() && resultService.isJobInstance()) {
+            LOG.info("Started Job: " + Constants.RESULTJOB.get());
+            final List<Game> games = dataService.findAllGamesWithNoResult();
+            for (final Game game : games) {
+                setGameScore(game);
             }
+            
+            job.setExecuted(new Date());
+            mongoDB.save(job);
+            LOG.info("Finished Job: " + Constants.RESULTJOB.get());
         }
     }
 

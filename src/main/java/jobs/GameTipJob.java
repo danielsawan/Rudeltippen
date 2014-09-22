@@ -48,28 +48,26 @@ public class GameTipJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        if (resultService.isJobInstance()) {
-            AbstractJob job = dataService.findAbstractJobByName(Constants.GAMETIPJOB.get());
-            if (job != null && job.isActive()) {
-                LOG.info("Started Job: " + Constants.GAMETIPJOB.get());
+        AbstractJob job = dataService.findAbstractJobByName(Constants.GAMETIPJOB.get());
+        if (job != null && job.isActive() && resultService.isJobInstance()) {
+            LOG.info("Started Job: " + Constants.GAMETIPJOB.get());
+            final List<Game> games = dataService.findAllNotifiableGames();
+
+            if (games != null && !games.isEmpty()) {
                 final List<User> users = dataService.findAllNotifiableUsers();
-                final List<Game> games = dataService.findAllNotifiableGames();
-
-                if (games != null && !games.isEmpty()) {
-                    for (final User user : users) {
-                        mailService.gametips(user, games);
-                    }
-
-                    for (final Game game : games) {
-                        game.setInformed(true);
-                        mongoDB.save(game);
-                    }
+                for (final User user : users) {
+                    mailService.gametips(user, games);
                 }
 
-                job.setExecuted(new Date());
-                mongoDB.save(job);
-                LOG.info("Finished Job: " + Constants.GAMETIPJOB.get());
+                for (final Game game : games) {
+                    game.setInformed(true);
+                    mongoDB.save(game);
+                }
             }
+
+            job.setExecuted(new Date());
+            mongoDB.save(job);
+            LOG.info("Finished Job: " + Constants.GAMETIPJOB.get());
         }
     }
 }
