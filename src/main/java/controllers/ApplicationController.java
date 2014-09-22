@@ -2,6 +2,7 @@ package controllers;
 
 import java.util.List;
 
+import models.Game;
 import models.Playday;
 import models.User;
 import models.enums.Constants;
@@ -39,6 +40,7 @@ public class ApplicationController extends RootController {
         final String diffToTop = i18nService.getDiffToTop(pointsDiff);
         final Playday playday = dataService.findCurrentPlayday();
         final List<User> topUsers = dataService.findTopThreeUsers();
+        final List<Game> games = dataService.findGamesByPlayday(playday);
         final long users = mongoDB.countAll(User.class);
         
         dataService.findResultsStatistic();
@@ -46,6 +48,7 @@ public class ApplicationController extends RootController {
         return Results.html()
                 .render("topUsers", topUsers)
                 .render("playday", playday)
+                .render("games", games)
                 .render("users", users)
                 .render("diffToTop", diffToTop);
     }

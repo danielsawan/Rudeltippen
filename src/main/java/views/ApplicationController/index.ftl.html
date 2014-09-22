@@ -46,8 +46,8 @@
 		              </tr>
 		          </thead>
 		          <tbody>
-					  <#if playday.games?has_content>
-			              <#list playday.games as game>
+					  <#if games?has_content>
+			              <#list games as game>
 			                  <tr>
 			                      <td>${game.number}</td>
 			                      <td>${game.kickoff?datetime}</td>

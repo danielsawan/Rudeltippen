@@ -89,8 +89,13 @@ public class AdminController extends RootController {
     public Result results(@PathParam("number") long number) {
         final Pagination pagination = commonService.getPagination(number, ADMIN_RESULTS, dataService.findAllPlaydaysOrderByNumber().size());
         final Playday playday = dataService.findPlaydaybByNumber(pagination.getNumberAsInt());
+        final List<Game> games = dataService.findGamesByPlayday(playday);
 
-        return Results.html().render("playday", playday).render("pagination", pagination);
+        return Results
+                .html()
+                .render("playday", playday)
+                .render("games", games)
+                .render("pagination", pagination);
     }
 
     public Result users() {

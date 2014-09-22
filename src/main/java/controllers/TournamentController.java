@@ -3,6 +3,7 @@ package controllers;
 import java.util.List;
 
 import models.Bracket;
+import models.Game;
 import models.Playday;
 import models.pagination.Pagination;
 import ninja.Result;
@@ -34,7 +35,12 @@ public class TournamentController extends RootController {
     public Result playday(@PathParam("number") long number) {
         final Pagination pagination = commonService.getPagination(number, "/tournament/playday/", dataService.findAllPlaydaysOrderByNumber().size());
         final Playday playday = dataService.findPlaydaybByNumber(pagination.getNumberAsInt());
+        final List<Game> games = dataService.findGamesByPlayday(playday);
 
-        return Results.html().render("playday", playday).render("pagination", pagination);
+        return Results
+                .html()
+                .render("playday", playday)
+                .render("games", games)
+                .render("pagination", pagination);
     }
 }

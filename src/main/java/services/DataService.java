@@ -89,6 +89,7 @@ public class DataService {
     
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoDB.setMongoClient(mongoClient);
+        this.datastore = this.mongoDB.getDatastore();
     }
 
     public AbstractJob findAbstractJobByName(String jobName) {
@@ -448,7 +449,7 @@ public class DataService {
     }
 
     public List<Game> findGamesByPlayday(Playday playday) {
-        return this.datastore.find(Game.class).field(PLAYDAY).equal(playday).asList();
+        return this.datastore.find(Game.class).field(PLAYDAY).equal(playday).order("kickoff").asList();
     }
 
     public List<ExtraTip> findExtraTipsByUser(User user) {
