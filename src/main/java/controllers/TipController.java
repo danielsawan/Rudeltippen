@@ -67,12 +67,14 @@ public class TipController extends RootController {
     public Result playday(@PathParam("number") long number) {
         final Pagination pagination = commonService.getPagination(number, TIPS_PLAYDAY, dataService.findAllPlaydaysOrderByNumber().size());
         final Playday playday = dataService.findPlaydaybByNumber(pagination.getNumberAsInt());
+        final List<Game> games = dataService.findGamesByPlayday(playday);
 
         final List<Extra> extras = mongoDB.findAll(Extra.class);
         final boolean tippable = commonService.extrasAreTipable(extras);
 
         return Results.html()
                 .render("playday", playday)
+                .render("games", games)
                 .render("number", number)
                 .render("pagination", pagination)
                 .render("extras", extras)

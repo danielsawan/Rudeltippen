@@ -15,6 +15,7 @@ import models.Team;
 import models.User;
 import models.ws.WSResult;
 import models.ws.WSResults;
+import ninja.cache.NinjaCache;
 import ninja.mongodb.MongoDB;
 
 import org.slf4j.Logger;
@@ -53,7 +54,12 @@ public class CalculationService {
     @Inject
     private CommonService commonService;
 
+    @Inject
+    private NinjaCache ninjaCache;
+    
     public void calculations() {
+        ninjaCache.clear();
+        
         calculateBrackets();
         setTeamPlaces();
         calculateUserPoints();

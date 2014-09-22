@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import services.AuthService;
 import services.CommonService;
 import services.DataService;
+import services.ImportService;
 
 import com.mongodb.MongoClient;
 
@@ -44,35 +45,39 @@ public class TestBase extends NinjaTest {
             EmbeddedMongoDB.getInstance();
             dataService = getInjector().getInstance(DataService.class);
             dataService.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
-
-            User user = new User();
-            final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
-            user.setSalt(salt);
-            user.setEmail("user@foo.bar");
-            user.setUsername(USER);
-            user.setUserpass(getInjector().getInstance(AuthService.class).hashPassword(USER, salt));
-            user.setRegistered(new Date());
-            user.setExtraPoints(0);
-            user.setTipPoints(0);
-            user.setPoints(0);
-            user.setActive(true);
-            user.setAdmin(false);
-            user.setReminder(true);
-            user.setNotification(true);
-            user.setSendGameTips(true);
-            user.setSendStandings(true);
-            user.setCorrectResults(0);
-            user.setCorrectDifferences(0);
-            user.setCorrectTrends(0);
-            user.setCorrectExtraTips(0);
-            user.setPicture(getInjector().getInstance(CommonService.class).getUserPictureUrl(Avatar.GRAVATAR, user));
-            user.setAvatar(Avatar.GRAVATAR);
-            dataService.save(user);  
         } catch (Exception e) {
             LOG.error("Failed to start in memory mongodb for testing", e);
         }
+
+        User user = new User();
+        final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
+        user.setSalt(salt);
+        user.setEmail("user@foo.bar");
+        user.setUsername(USER);
+        user.setUserpass(getInjector().getInstance(AuthService.class).hashPassword(USER, salt));
+        user.setRegistered(new Date());
+        user.setExtraPoints(0);
+        user.setTipPoints(0);
+        user.setPoints(0);
+        user.setActive(true);
+        user.setAdmin(false);
+        user.setReminder(true);
+        user.setNotification(true);
+        user.setSendGameTips(true);
+        user.setSendStandings(true);
+        user.setCorrectResults(0);
+        user.setCorrectDifferences(0);
+        user.setCorrectTrends(0);
+        user.setCorrectExtraTips(0);
+        user.setPicture(getInjector().getInstance(CommonService.class).getUserPictureUrl(Avatar.GRAVATAR, user));
+        user.setAvatar(Avatar.GRAVATAR);
+        dataService.save(user); 
+        
+        if (dataService.findSettings() == null) {
+            getInjector().getInstance(ImportService.class).loadSettingsAndAdmin(); 
+        }
     }
-    
+
     public void doLogin(String username, String userpass) {
         Map<String, String> formParameters = new HashMap<String, String>();
         formParameters.put("username", username);
