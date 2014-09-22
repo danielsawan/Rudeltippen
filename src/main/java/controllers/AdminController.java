@@ -19,6 +19,7 @@ import models.enums.Constants;
 import models.pagination.Pagination;
 import ninja.Context;
 import ninja.FilterWith;
+import ninja.NinjaScheduler;
 import ninja.Result;
 import ninja.Results;
 import ninja.cache.NinjaCache;
@@ -30,6 +31,10 @@ import ninja.validation.JSR303Validation;
 import ninja.validation.Validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +90,9 @@ public class AdminController extends RootController {
     
     @Inject
     private NinjaCache ninjaCache;
+    
+    @Inject
+    private NinjaScheduler ninjaScheduler;
 
     public Result results(@PathParam("number") long number) {
         final Pagination pagination = commonService.getPagination(number, ADMIN_RESULTS, dataService.findAllPlaydaysOrderByNumber().size());
@@ -342,5 +350,23 @@ public class AdminController extends RootController {
         }
         
         return Results.redirect("/admin/settings");
+    }
+    
+    public Result executeJob(@PathParam("name") String name, FlashScope flashScope) {
+        Scheduler scheduler = ninjaScheduler.getScheduler();
+        try {
+            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals("jobGroup"));
+            for (JobKey jobKey : jobKeys) {
+                if (jobKey != null && jobKey.getName().equalsIgnoreCase(name)) {
+                    scheduler.triggerJob(jobKey);
+                    flashScope.success(i18nService.get("admin.jobs.executed", new Object[]{name}));
+                }
+            }
+        } catch (SchedulerException e) {
+            LOG.error("Faile to trigger on demand job: " + name, e);
+            flashScope.error(i18nService.get("admin.jobs.failed", new Object[]{name}));
+        }
+        
+        return Results.redirect("/admin/jobs");
     }
 }
