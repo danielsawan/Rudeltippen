@@ -186,8 +186,9 @@ public class ImportService {
         List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("extras.json"));
         
         List<Team> answers = new ArrayList<Team>();
-        for (String key: teams.keySet()) {
-            answers.add(teams.get(key));
+        for (Map.Entry<String, Team> entry : teams.entrySet())
+        {
+            answers.add(entry.getValue());
         }
 
         for (String line : lines) {

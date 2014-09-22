@@ -57,37 +57,35 @@ public class KickoffJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        if (resultService.isJobInstance()) {
-            AbstractJob job = dataService.findAbstractJobByName(Constants.KICKOFFJOB.get());
-            if (job != null && job.isActive()) {
-                LOG.info("Started Job: " + Constants.KICKOFFJOB.get());
-                int number = dataService.findCurrentPlayday().getNumber();
-                for (int i=0; i <= 3; i++) {
-                    final Playday playday = dataService.findPlaydaybByNumber(number);
-                    if (playday != null) {
-                        final List<Game> games = playday.getGames();
-                        for (final Game game : games) {
-                            final String matchID = game.getWebserviceID();
-                            if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
-                                final Document document = resultService.getDocumentFromWebService(matchID);
-                                final Date kickoff = setupService.getKickoffFromDocument(document);
-                                final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
-                                df.setTimeZone(TimeZone.getTimeZone(i18nService.getCurrentTimeZone()));
+        AbstractJob job = dataService.findAbstractJobByName(Constants.KICKOFFJOB.get());
+        if (job != null && job.isActive() && resultService.isJobInstance()) {
+            LOG.info("Started Job: " + Constants.KICKOFFJOB.get());
+            int number = dataService.findCurrentPlayday().getNumber();
+            for (int i=0; i <= 3; i++) {
+                final Playday playday = dataService.findPlaydaybByNumber(number);
+                if (playday != null) {
+                    final List<Game> games = playday.getGames();
+                    for (final Game game : games) {
+                        final String matchID = game.getWebserviceID();
+                        if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
+                            final Document document = resultService.getDocumentFromWebService(matchID);
+                            final Date kickoff = setupService.getKickoffFromDocument(document);
+                            final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
+                            df.setTimeZone(TimeZone.getTimeZone(i18nService.getCurrentTimeZone()));
 
-                                game.setKickoff(kickoff);
-                                mongoDB.save(game);
+                            game.setKickoff(kickoff);
+                            mongoDB.save(game);
 
-                                LOG.info("Updated Kickoff and MatchID of Playday: " + playday.getName());
-                            }
+                            LOG.info("Updated Kickoff and MatchID of Playday: " + playday.getName());
                         }
                     }
-                    number++;
                 }
-                
-                job.setExecuted(new Date());
-                mongoDB.save(job);
-                LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
+                number++;
             }
+            
+            job.setExecuted(new Date());
+            mongoDB.save(job);
+            LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
         }
     }
 }

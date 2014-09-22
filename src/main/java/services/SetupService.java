@@ -70,7 +70,7 @@ public class SetupService {
                     }
                 }
                 
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 buffer.append("{");
                 buffer.append("\"number\":");
                 buffer.append(number);
