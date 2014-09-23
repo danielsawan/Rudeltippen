@@ -13,15 +13,18 @@ import ninja.utils.NinjaProperties;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mchange.v1.util.UnexpectedException;
+
 /**
  * 
  * @author svenkubiak
+ * Mainly based on the encryption class of the play framework
  *
  */
 @Singleton
@@ -89,7 +92,7 @@ public class AuthService {
             SecretKeySpec skeySpec = new SecretKeySpec(raw, AES);
             Cipher cipher = Cipher.getInstance(AES);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-            return new String(cipher.doFinal(hexStringToByte(value)));
+            return new String(cipher.doFinal(hexStringToByte(value)), Charsets.UTF_8);
         } catch (Exception ex) {
             throw new UnexpectedException(ex);
         }

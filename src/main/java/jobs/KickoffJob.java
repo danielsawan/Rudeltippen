@@ -74,7 +74,7 @@ public class KickoffJob implements Job {
                                     LOG.info("Updated Kickoff of game number: " + game.getNumber() + " to " + newKickoff);  
                                 }
                             } catch (Exception e) {
-                                LOG.error("Failed to parse date from openligadb for kickoff update");
+                                LOG.error("Failed to parse date from openligadb for kickoff update", e);
                             }
                         }
                     }

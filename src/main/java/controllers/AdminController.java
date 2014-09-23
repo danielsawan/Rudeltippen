@@ -201,29 +201,25 @@ public class AdminController extends RootController {
         final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
         final User user = mongoDB.findById(userId, User.class);
 
-        if (user != null) {
-            if (!connectedUser.equals(user)) {
-                String message;
-                String activate;
-                if (user.isActive()) {
-                    user.setActive(false);
-                    activate = "deactivated";
-                    message = i18nService.get("info.change.deactivate");
-                } else {
-                    final Confirmation confirmation = dataService.findConfirmationByTypeAndUser(ConfirmationType.ACTIVATION, user);
-                    if (confirmation != null) {
-                        mongoDB.delete(confirmation);
-                    }
-                    user.setActive(true);
-                    activate = "activated";
-                    message = i18nService.get("info.change.activate", new Object[]{user.getEmail()});
-                }
-                mongoDB.save(user);
-                flashScope.success(message);
-                LOG.info("User " + user.getEmail() + " " + activate + " - by " + connectedUser.getEmail());
+        if (!connectedUser.equals(user)) {
+            String message;
+            String activate;
+            if (user.isActive()) {
+                user.setActive(false);
+                activate = "deactivated";
+                message = i18nService.get("info.change.deactivate");
             } else {
-                flashScope.put(Constants.FLASHWARNING.get(), i18nService.get("warning.change.active"));
+                final Confirmation confirmation = dataService.findConfirmationByTypeAndUser(ConfirmationType.ACTIVATION, user);
+                if (confirmation != null) {
+                    mongoDB.delete(confirmation);
+                }
+                user.setActive(true);
+                activate = "activated";
+                message = i18nService.get("info.change.activate", new Object[]{user.getEmail()});
             }
+            mongoDB.save(user);
+            flashScope.success(message);
+            LOG.info("User " + user.getEmail() + " " + activate + " - by " + connectedUser.getEmail());
         } else {
             flashScope.error(i18nService.get(ERROR_LOADING_USER));
         }
