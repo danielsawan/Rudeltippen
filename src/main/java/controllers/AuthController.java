@@ -129,40 +129,36 @@ public class AuthController {
 
         if (confirmation != null) {
             final User user = confirmation.getUser();
-            if (user != null) {
-                final ConfirmationType confirmationType = confirmation.getConfirmationType();
-                if (ConfirmationType.NEWUSERPASS.equals(confirmationType)) {
-                    return Results.redirect("/auth/password/" + token);
-                } else {
-                    if ((ConfirmationType.ACTIVATION).equals(confirmationType)) {
-                        user.setActive(true);
-                        mongoDB.save(user);
-                        mongoDB.delete(confirmation);
-                        
-                        flashScope.success(i18nService.get("controller.users.accountactivated"));
-                        LOG.info("User activated: " + user.getEmail());
-                    } else if ((ConfirmationType.CHANGEUSERNAME).equals(confirmationType)) {
-                        final String oldusername = user.getEmail();
-                        final String newusername = authService.decryptAES(confirmation.getConfirmValue());
-                        user.setEmail(newusername);
-                        mongoDB.save(user);
-                        session.remove(Constants.USERNAME.get());
-                        flashScope.success(i18nService.get("controller.users.changedusername"));
-                        mongoDB.delete(confirmation);
-
-                        LOG.info("User changed username... old username: " + oldusername + " - " + "new username: " + newusername);
-                    } else if ((ConfirmationType.CHANGEUSERPASS).equals(confirmationType)) {
-                        user.setUserpass(authService.decryptAES(confirmation.getConfirmValue()));
-                        mongoDB.save(user);
-                        session.remove("username");
-                        flashScope.success(i18nService.get("controller.users.changeduserpass"));
-                        mongoDB.delete(confirmation);
-
-                        LOG.info(user.getEmail() + " changed his password");
-                    }
-                }
+            final ConfirmationType confirmationType = confirmation.getConfirmationType();
+            if (ConfirmationType.NEWUSERPASS.equals(confirmationType)) {
+                return Results.redirect("/auth/password/" + token);
             } else {
-                flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
+                if ((ConfirmationType.ACTIVATION).equals(confirmationType)) {
+                    user.setActive(true);
+                    mongoDB.save(user);
+                    mongoDB.delete(confirmation);
+                    
+                    flashScope.success(i18nService.get("controller.users.accountactivated"));
+                    LOG.info("User activated: " + user.getEmail());
+                } else if ((ConfirmationType.CHANGEUSERNAME).equals(confirmationType)) {
+                    final String oldusername = user.getEmail();
+                    final String newusername = authService.decryptAES(confirmation.getConfirmValue());
+                    user.setEmail(newusername);
+                    mongoDB.save(user);
+                    session.remove(Constants.USERNAME.get());
+                    mongoDB.delete(confirmation);
+
+                    flashScope.success(i18nService.get("controller.users.changedusername"));
+                    LOG.info("User changed username... old username: " + oldusername + " - " + "new username: " + newusername);
+                } else if ((ConfirmationType.CHANGEUSERPASS).equals(confirmationType)) {
+                    user.setUserpass(authService.decryptAES(confirmation.getConfirmValue()));
+                    mongoDB.save(user);
+                    session.remove("username");
+                    mongoDB.delete(confirmation);
+
+                    flashScope.success(i18nService.get("controller.users.changeduserpass"));
+                    LOG.info(user.getEmail() + " changed his password");
+                }
             }
         } else {
             flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
