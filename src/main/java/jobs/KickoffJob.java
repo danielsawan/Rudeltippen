@@ -53,34 +53,32 @@ public class KickoffJob implements Job {
         AbstractJob job = dataService.findAbstractJobByName(Constants.KICKOFFJOB.get());
         if (job != null && job.isActive() && resultService.isJobInstance()) {
             LOG.info("Started Job: " + Constants.KICKOFFJOB.get());
-            int number = dataService.findCurrentPlayday().getNumber();
-            for (int i=0; i <= 3; i++) {
-                final Playday playday = dataService.findPlaydaybByNumber(number);
-                if (playday != null) {
-                    final List<Game> games = playday.getGames();
-                    for (final Game game : games) {
-                        final String matchID = game.getWebserviceID();
-                        if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
-                            final Document document = resultService.getDocumentFromWebService(matchID);
-                            final String kickoff = getKickoffFromDocument(document);
-                            
-                            if (document != null && StringUtils.isNotBlank(kickoff)) {
-                                final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
-                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            List<Playday> playdays = dataService.findNextPlaydays();
+            for (Playday playday : playdays) {
+                for (final Game game : playday.getGames()) {
+                    final String matchID = game.getWebserviceID();
+                    if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
+                        final Document document = resultService.getDocumentFromWebService(matchID);
+                        final String kickoff = getKickoffFromDocument(document);
+                        
+                        if (document != null && StringUtils.isNotBlank(kickoff)) {
+                            final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                                try {
-                                    game.setKickoff(df.parse(kickoff));
+                            try {
+                                Date newKickoff = df.parse(kickoff);
+                                if (isValidKickoff(newKickoff, game.getKickoff())) {
+                                    game.setKickoff(newKickoff);
                                     mongoDB.save(game);
 
-                                    LOG.info("Updated Kickoff of game number: " + game.getNumber());
-                                } catch (Exception e) {
-                                    LOG.error("Failed to parse date from openligadb for kickoff update");
+                                    LOG.info("Updated Kickoff of game number: " + game.getNumber() + " to " + newKickoff);  
                                 }
+                            } catch (Exception e) {
+                                LOG.error("Failed to parse date from openligadb for kickoff update", e);
                             }
                         }
                     }
                 }
-                number++;
             }
             
             job.setExecuted(new Date());
@@ -89,6 +87,20 @@ public class KickoffJob implements Job {
         }
     }
     
+    private boolean isValidKickoff(Date newKickoff, Date currentKickoff) {
+        boolean valid = false;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("YYYY");
+            if (sdf.format(newKickoff).equals(sdf.format(currentKickoff))) {
+                valid = true;
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to check if new kickoff date is valid", e);
+        }
+        
+        return valid;
+    }
+
     private static String getKickoffFromDocument(final Document document) {
         String kickoff = null;
         if (document != null) {

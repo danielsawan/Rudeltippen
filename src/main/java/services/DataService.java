@@ -582,4 +582,15 @@ public class DataService {
         this.datastore.delete(this.datastore.find(ResultStatistic.class).field("user").equal(user));
         this.datastore.delete(user);
     }
+
+    public List<Playday> findNextPlaydays() {
+        List<Playday> playdays = new ArrayList<Playday>();
+        int number = findCurrentPlayday().getNumber();
+        for (int i=0; i <= 3; i++) {
+            playdays.add(findPlaydaybByNumber(number));
+            number++;
+        }
+        
+        return playdays;
+    }
 }
