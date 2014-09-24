@@ -23,7 +23,6 @@ import ninja.NinjaScheduler;
 import ninja.Result;
 import ninja.Results;
 import ninja.cache.NinjaCache;
-import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -71,9 +70,6 @@ public class AdminController extends RootController {
     private DataService dataService;
     
     @Inject
-    private MongoDB mongoDB;
-
-    @Inject
     private CalculationService calculationService;
 
     @Inject
@@ -107,7 +103,7 @@ public class AdminController extends RootController {
     }
 
     public Result users() {
-        final List<User> users = mongoDB.findAll(User.class);
+        final List<User> users = dataService.findAllUsers();
         return Results.html().render("users", users);
     }
 
@@ -131,7 +127,7 @@ public class AdminController extends RootController {
         int playday = 1;
         if (keys != null && !keys.isEmpty() && StringUtils.isNotBlank(gamekey)) {
             gamekey = gamekey.replace("_et", "");
-            final Game game = mongoDB.findById(gamekey, Game.class);
+            final Game game = dataService.findGameById(gamekey);
             if (game != null && game.getPlayday() != null) {
                 playday = game.getPlayday().getNumber();
             }
@@ -174,7 +170,7 @@ public class AdminController extends RootController {
             settings.setMinutesBeforeTip(settingsDTO.getMinutesBeforeTip());
             settings.setInformOnNewTipper(settingsDTO.isInformOnNewTipper());
             settings.setEnableRegistration(settingsDTO.isEnableRegistration());
-            mongoDB.save(settings);
+            dataService.save(settings);
 
             ninjaCache.delete(Constants.SETTINGS.get());
             flashScope.success(i18nService.get("setup.saved"));
@@ -199,7 +195,7 @@ public class AdminController extends RootController {
 
     public Result changeactive(@PathParam("userid") String userId, Context context, FlashScope flashScope) {
         final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
-        final User user = mongoDB.findById(userId, User.class);
+        final User user = dataService.findUserById(userId);
 
         if (!connectedUser.equals(user)) {
             String message;
@@ -211,13 +207,13 @@ public class AdminController extends RootController {
             } else {
                 final Confirmation confirmation = dataService.findConfirmationByTypeAndUser(ConfirmationType.ACTIVATION, user);
                 if (confirmation != null) {
-                    mongoDB.delete(confirmation);
+                    dataService.delete(confirmation);
                 }
                 user.setActive(true);
                 activate = "activated";
                 message = i18nService.get("info.change.activate", new Object[]{user.getEmail()});
             }
-            mongoDB.save(user);
+            dataService.save(user);
             flashScope.success(message);
             LOG.info("User " + user.getEmail() + " " + activate + " - by " + connectedUser.getEmail());
         } else {
@@ -229,7 +225,7 @@ public class AdminController extends RootController {
 
     public Result changeadmin(@PathParam("userid") String userId, FlashScope flashScope, Context context) {
         final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
-        final User user = mongoDB.findById(userId, User.class);
+        final User user = dataService.findUserById(userId);
 
         if (user != null) {
             if (!connectedUser.equals(user)) {
@@ -244,7 +240,7 @@ public class AdminController extends RootController {
                     admin = "is not admin anymore";
                     user.setAdmin(true);
                 }
-                mongoDB.save(user);
+                dataService.save(user);
                 flashScope.success(message);
                 LOG.info(user.getEmail() + " " + admin + " - " + connectedUser.getEmail());
             } else {
@@ -259,7 +255,7 @@ public class AdminController extends RootController {
 
     public Result deleteuser(@PathParam("userid") String userId, FlashScope flashScope, Context context) {
         final User connectedUser = context.getAttribute("connectedUser", User.class);
-        final User user = mongoDB.findById(userId, User.class);
+        final User user = dataService.findUserById(userId);
 
         if (user != null && !user.equals(connectedUser)) {
             final String username = user.getEmail();
@@ -282,8 +278,8 @@ public class AdminController extends RootController {
     }
 
     public Result tournament() {
-        List<Bracket> brackets = mongoDB.findAll(Bracket.class);
-        List<Game> games = mongoDB.findAll(Game.class);
+        List<Bracket> brackets = dataService.findAllBrackets();
+        List<Game> games = dataService.findAllGames();
 
         return Results.html().render("brackets", brackets).render("games", games);
     }
@@ -316,14 +312,14 @@ public class AdminController extends RootController {
         if (StringUtils.isNotBlank(name)) {
             AbstractJob abstractJob = dataService.findAbstractJobByName(name);
             abstractJob.setActive(!abstractJob.isActive());
-            mongoDB.save(abstractJob);
+            dataService.save(abstractJob);
         }
 
         return Results.redirect("/admin/jobs");
     }
 
     public Result jobs() {
-        List<AbstractJob> jobs = mongoDB.findAll(AbstractJob.class);
+        List<AbstractJob> jobs = dataService.findAllAbstractJobs();
 
         return Results.html().render("jobs", jobs);
     }
@@ -338,7 +334,7 @@ public class AdminController extends RootController {
         String confirm = context.getParameter("confirm");
         
         if (("rudeltippen").equalsIgnoreCase(confirm)) {
-            mongoDB.dropDatabase();
+            dataService.dropDatabase();
             ninjaCache.clear();
             session.clear();
             

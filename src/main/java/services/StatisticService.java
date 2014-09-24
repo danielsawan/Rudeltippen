@@ -16,7 +16,6 @@ import models.statistic.GameTipStatistic;
 import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import ninja.mongodb.MongoDB;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -32,9 +31,6 @@ public class StatisticService {
     @Inject
     private DataService dataService;
     
-    @Inject
-    private MongoDB mongoDB;
-
     public void setResultStatistic(final User user) {
         dataService.deleteResultsStatisticByUser(user);
 
@@ -60,7 +56,7 @@ public class StatisticService {
                     resultStatistic.setCorrectTrends( resultStatistic.getCorrectTrends() + 1 );
                 }
 
-                mongoDB.save(resultStatistic);
+                dataService.save(resultStatistic);
             }
         }
     }
@@ -88,7 +84,7 @@ public class StatisticService {
 
             gameStatistic.setGameResult(entry.getKey());
             gameStatistic.setResultCount(entry.getValue());
-            mongoDB.save(gameStatistic);
+            dataService.save(gameStatistic);
         }
     }
 
@@ -108,7 +104,7 @@ public class StatisticService {
             gameTipStatistic.setAvgPoints(((Double) statistics [4]).intValue());
         }
 
-        mongoDB.save(gameTipStatistic);
+        dataService.save(gameTipStatistic);
     }
 
     public void setAscendingPlaydayPoints(final Playday playday, final User user) {
@@ -121,7 +117,7 @@ public class StatisticService {
             userStatistic.setCorrectDiffs(((Long) statistics [2]).intValue());
             userStatistic.setCorrectTrends(((Long) statistics [3]).intValue());
         }
-        mongoDB.save(userStatistic);
+        dataService.save(userStatistic);
     }
 
     public void setPlaydayPlaces(final Playday playday) {
@@ -129,7 +125,7 @@ public class StatisticService {
         int place = 1;
         for (final UserStatistic userStatistic : userStatistics) {
             userStatistic.setPlaydayPlace(place);
-            mongoDB.save(userStatistic);
+            dataService.save(userStatistic);
             place++;
         }
 
@@ -137,7 +133,7 @@ public class StatisticService {
         place = 1;
         for (final UserStatistic userStatistic : userStatistics) {
             userStatistic.setPlace(place);
-            mongoDB.save(userStatistic);
+            dataService.save(userStatistic);
             place++;
         }
     }
@@ -176,7 +172,7 @@ public class StatisticService {
         userStatistic.setPlaydayCorrectTips(correctTips);
         userStatistic.setPlaydayCorrectDiffs(correctDiffs);
         userStatistic.setPlaydayCorrectTrends(correctTrends);
-        mongoDB.save(userStatistic);
+        dataService.save(userStatistic);
     }
 
     public void setPlaydayStatistics(final Playday playday, final Map<String, Integer> scores) {
@@ -188,7 +184,7 @@ public class StatisticService {
             }
             playdayStatistic.setGameResult(entry.getKey());
             playdayStatistic.setResultCount(entry.getValue());
-            mongoDB.save(playdayStatistic);
+            dataService.save(playdayStatistic);
         }
     }
 

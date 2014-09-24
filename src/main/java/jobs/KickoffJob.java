@@ -9,7 +9,6 @@ import models.AbstractJob;
 import models.Game;
 import models.Playday;
 import models.enums.Constants;
-import ninja.mongodb.MongoDB;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
@@ -40,9 +39,6 @@ public class KickoffJob implements Job {
     private DataService dataService;
     
     @Inject
-    private MongoDB mongoDB;
-
-    @Inject
     private ResultService resultService;
 
     public KickoffJob() {
@@ -56,34 +52,37 @@ public class KickoffJob implements Job {
             List<Playday> playdays = dataService.findNextPlaydays();
             for (Playday playday : playdays) {
                 for (final Game game : playday.getGames()) {
-                    final String matchID = game.getWebserviceID();
-                    if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
-                        final Document document = resultService.getDocumentFromWebService(matchID);
-                        final String kickoff = getKickoffFromDocument(document);
-                        
-                        if (document != null && StringUtils.isNotBlank(kickoff)) {
-                            final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-                            try {
-                                Date newKickoff = df.parse(kickoff);
-                                if (isValidKickoff(newKickoff, game.getKickoff())) {
-                                    game.setKickoff(newKickoff);
-                                    mongoDB.save(game);
-
-                                    LOG.info("Updated Kickoff of game number: " + game.getNumber() + " to " + newKickoff);  
-                                }
-                            } catch (Exception e) {
-                                LOG.error("Failed to parse date from openligadb for kickoff update", e);
-                            }
-                        }
-                    }
+                    updateKickoff(game, game.getWebserviceID());
                 }
             }
             
             job.setExecuted(new Date());
-            mongoDB.save(job);
+            dataService.save(job);
             LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
+        }
+    }
+
+    private void updateKickoff(final Game game, final String matchID) {
+        if (StringUtils.isNotBlank(matchID) && game.isUpdatable()) {
+            final Document document = resultService.getDocumentFromWebService(matchID);
+            final String kickoff = getKickoffFromDocument(document);
+            
+            if (document != null && StringUtils.isNotBlank(kickoff)) {
+                final SimpleDateFormat df = new SimpleDateFormat(KICKOFF_FORMAT);
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                try {
+                    Date newKickoff = df.parse(kickoff);
+                    if (isValidKickoff(newKickoff, game.getKickoff())) {
+                        game.setKickoff(newKickoff);
+                        dataService.save(game);
+
+                        LOG.info("Updated Kickoff of game number: " + game.getNumber() + " to " + newKickoff);  
+                    }
+                } catch (Exception e) {
+                    LOG.error("Failed to parse date from openligadb for kickoff update", e);
+                }
+            }
         }
     }
     

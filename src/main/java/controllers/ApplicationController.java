@@ -9,7 +9,6 @@ import models.enums.Constants;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.mongodb.MongoDB;
 import services.CalculationService;
 import services.DataService;
 import services.I18nService;
@@ -27,9 +26,6 @@ public class ApplicationController extends RootController {
     private DataService dataService;
     
     @Inject
-    private MongoDB mongoDB;
-    
-    @Inject
     private CalculationService calculationService;
     
     @Inject
@@ -41,7 +37,7 @@ public class ApplicationController extends RootController {
         final Playday playday = dataService.findCurrentPlayday();
         final List<User> topUsers = dataService.findTopThreeUsers();
         final List<Game> games = dataService.findGamesByPlayday(playday);
-        final long users = mongoDB.countAll(User.class);
+        final long users = dataService.countAll(User.class);
         
         dataService.findResultsStatistic();
         

@@ -20,10 +20,10 @@ import com.google.inject.Inject;
  */
 @Singleton
 public class StartupActions {
-    private static final String RESULTSCRON = "0 */4 * * * ?";
-    private static final String REMINDERCRON = "0 0 */1 * * ?";
+    private static final String RESULTSCRON = "0 0/5 * * * ?";
+    private static final String REMINDERCRON = "0 0 0/1 * * ?";
     private static final String KICKOFFCRON = "0 0 4 * * ?";
-    private static final String GAMETIPCRON = "0 */1 * * * ?";
+    private static final String GAMETIPCRON = "0 0/1 * * * ?";
     private static final String TRIGGER_GROUP = "triggerGroup";
     private static final String JOB_GROUP = "jobGroup";
 

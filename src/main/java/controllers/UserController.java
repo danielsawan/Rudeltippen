@@ -20,7 +20,6 @@ import models.statistic.UserStatistic;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -52,9 +51,6 @@ public class UserController extends RootController {
     private DataService dataService;
 
     @Inject
-    private MongoDB mongoDB;
-    
-    @Inject
     private MailService mailService;
 
     @Inject
@@ -76,14 +72,14 @@ public class UserController extends RootController {
             final Map<String, Integer> statistics = new HashMap<String, Integer>();
             final List<ExtraTip> extraTips = dataService.findExtraTipsByUser(user);
             final List<GameTip> tips = dataService.findGameTipsByUser(user);
-            final long extra = mongoDB.countAll(Extra.class);
+            final long extra = dataService.countAll(Extra.class);
             final int sumAllTipps = tips.size();
             final int correctTipps = user.getCorrectResults();
             final int correctTrend = user.getCorrectTrends();
             final int correctDifference = user.getCorrectDifferences();
             final DecimalFormat df = new DecimalFormat( "0.00" );
 
-            statistics.put("sumGames", (int) mongoDB.countAll(Game.class));
+            statistics.put("sumGames", (int) dataService.countAll(Game.class));
             statistics.put("sumTipps", sumAllTipps);
             statistics.put("correctTipps", correctTipps);
             statistics.put("correctTrend", correctTrend);
@@ -138,7 +134,7 @@ public class UserController extends RootController {
         final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
         user.setPicture(commonService.getUserPictureUrl(commonService.getAvatarFromString(avatar), user));
         user.setAvatar(commonService.getAvatarFromString(avatar));
-        mongoDB.save(user);
+        dataService.save(user);
         
         return Results.redirect(USERS_PROFILE);
     }
@@ -153,7 +149,7 @@ public class UserController extends RootController {
         } else {
             final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
             user.setUsername(username);
-            mongoDB.save(user);
+            dataService.save(user);
 
             flashScope.success(i18nService.get("controller.profile.updateusername"));
             LOG.info("username updated: " + user.getEmail() + " / " + username);
@@ -185,7 +181,7 @@ public class UserController extends RootController {
                 confirmation.setCreated(new Date());
                 confirmation.setToken(token);
                 confirmation.setUser(user);
-                mongoDB.save(confirmation);
+                dataService.save(confirmation);
                 mailService.confirm(user, token, confirmationType);
                 flashScope.success(i18nService.get(CONFIRM_MESSAGE));
             }
@@ -213,7 +209,7 @@ public class UserController extends RootController {
                 confirm.setCreated(new Date());
                 confirm.setToken(token);
                 confirm.setUser(user);
-                mongoDB.save(confirm);
+                dataService.save(confirm);
                 mailService.confirm(user, token, confirmationType);
                 flashScope.success(i18nService.get(CONFIRM_MESSAGE));
                 LOG.info("Password updated: " + user.getEmail());
@@ -235,7 +231,7 @@ public class UserController extends RootController {
         user.setNotification(("1").equals(notification));
         user.setSendStandings(("1").equals(sendstandings));
         user.setSendGameTips(("1").equals(sendgametips));
-        mongoDB.save(user);
+        dataService.save(user);
 
         flashScope.success(i18nService.get("controller.profile.notifications"));
         LOG.info("Notifications updated: " + user.getEmail());

@@ -16,7 +16,6 @@ import models.User;
 import models.ws.WSResult;
 import models.ws.WSResults;
 import ninja.cache.NinjaCache;
-import ninja.mongodb.MongoDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,6 @@ public class CalculationService {
     @Inject
     private DataService dataService;
     
-    @Inject
-    private MongoDB mongoDB;
-
     @Inject
     private ResultService resultService;
 
@@ -62,6 +58,7 @@ public class CalculationService {
         
         calculateBrackets();
         setTeamPlaces();
+        setExtraAnswers();
         calculateUserPoints();
         setUserPlaces();
         setPlayoffTeams();
@@ -94,19 +91,6 @@ public class CalculationService {
     }
 
     private void calculateUserPoints() {
-        final Settings settings = dataService.findSettings();
-
-        final List<Extra> extras = mongoDB.findAll(Extra.class);
-        for (final Extra extra : extras) {
-            if (extra.getAnswer() == null && commonService.allReferencedGamesEnded(extra.getGameReferences())) {
-                final Team team = commonService.getTeamByReference(extra.getExtraReference());
-                if (team != null) {
-                    extra.setAnswer(team);
-                    mongoDB.save(extra);
-                }
-            }
-        }
-
         final List<User> users = dataService.findAllActiveUsers();
         for (final User user : users) {
             int correctResults = 0;
@@ -130,8 +114,9 @@ public class CalculationService {
                     pointsForTipp = resultService.getTipPoints(Integer.parseInt(game.getHomeScore()), Integer.parseInt(game.getAwayScore()), gameTip.getHomeScore(), gameTip.getAwayScore());
                 }
                 gameTip.setPoints(pointsForTipp);
-                mongoDB.save(gameTip);
+                dataService.save(gameTip);
 
+                final Settings settings = dataService.findSettings();
                 if (pointsForTipp == settings.getPointsTip()) {
                     correctResults++;
                 } else if (pointsForTipp == settings.getPointsTipDiff()) {
@@ -148,6 +133,7 @@ public class CalculationService {
             user.setCorrectTrends(correctTrends);
 
             int bonusPoints = 0;
+            List<Extra> extras = dataService.findAllExtras();
             for (final Extra extra : extras) {
                 final ExtraTip extraTip = dataService.findExtraTipByExtraAndUser(extra, user);
                 if (extraTip != null) {
@@ -157,7 +143,7 @@ public class CalculationService {
                         final int bPoints = extra.getPoints();
                         extraTip.setPoints(bPoints);
                         correctExtraTips++;
-                        mongoDB.save(extraTip);
+                        dataService.save(extraTip);
                         bonusPoints = bonusPoints + bPoints;
                     }
                 }
@@ -166,7 +152,20 @@ public class CalculationService {
             user.setExtraPoints(bonusPoints);
             user.setPoints(bonusPoints + userTipPoints);
             user.setCorrectExtraTips(correctExtraTips);
-            mongoDB.save(user);
+            dataService.save(user);
+        }
+    }
+
+    private void setExtraAnswers() {
+        List<Extra> extras = dataService.findAllExtras();
+        for (final Extra extra : extras) {
+            if (extra.getAnswer() == null && commonService.allReferencedGamesEnded(extra.getGameReferences())) {
+                final Team team = commonService.getTeamByReference(extra.getExtraReference());
+                if (team != null) {
+                    extra.setAnswer(team);
+                    dataService.save(extra);
+                }
+            }
         }
     }
 
@@ -175,7 +174,7 @@ public class CalculationService {
         final int pointsWin = settings.getPointsGameWin();
         final int pointsDraw = settings.getPointsGameDraw();
 
-        final List<Team> teams = mongoDB.findAll(Team.class);
+        final List<Team> teams = dataService.findAllTeams();
         for (final Team team : teams) {
             final List<Game> homeGames = dataService.findGamesByHomeTeam(team);
             final List<Game> awayGames = dataService.findGamesByAwayTeam(team);
@@ -231,7 +230,7 @@ public class CalculationService {
             team.setGoalsFor(goalsFor);
             team.setGoalsAgainst(goalsAgainst);
             team.setGoalsDiff(goalsFor - goalsAgainst);
-            mongoDB.save(team);
+            dataService.save(team);
         }
     }
 
@@ -241,7 +240,7 @@ public class CalculationService {
         for (final User user : users) {
             user.setPreviousPlace(user.getPlace());
             user.setPlace(place);
-            mongoDB.save(user);
+            dataService.save(user);
             place++;
         }
     }
@@ -253,10 +252,10 @@ public class CalculationService {
         for (final Playday playday : playdays) {
             if (commonService.allGamesEnded(playday)) {
                 playday.setCurrent(false);
-                mongoDB.save(playday);
+                dataService.save(playday);
             } else {
                 playday.setCurrent(true);
-                mongoDB.save(playday);
+                dataService.save(playday);
                 break;
             }
         }
@@ -275,7 +274,7 @@ public class CalculationService {
             Team homeTeam = null;
             Team awayTeam = null;
 
-            final List<Bracket> brackets = mongoDB.findAll(Bracket.class);
+            final List<Bracket> brackets = dataService.findAllBrackets();
             for (final Bracket bracket : brackets) {
                 if (commonService.allGamesEnded(bracket)) {
                     final int number = bracket.getNumber();
@@ -286,7 +285,7 @@ public class CalculationService {
                         awayTeam = commonService.getTeamByReference(game.getAwayReference());
                         game.setHomeTeam(homeTeam);
                         game.setAwayTeam(awayTeam);
-                        mongoDB.save(game);
+                        dataService.save(game);
                     }
                 }
             }
@@ -297,7 +296,7 @@ public class CalculationService {
                 awayTeam = commonService.getTeamByReference(game.getAwayReference());
                 game.setHomeTeam(homeTeam);
                 game.setAwayTeam(awayTeam);
-                mongoDB.save(game);
+                dataService.save(game);
             }
         }
     }
@@ -310,7 +309,7 @@ public class CalculationService {
             for (final Team team : teams) {
                 team.setPreviousPlace(team.getPlace());
                 team.setPlace(place);
-                mongoDB.save(team);
+                dataService.save(team);
                 place++;
             }
         }
@@ -318,7 +317,7 @@ public class CalculationService {
 
     public void setGameScore(final String gameId, final String homeScore, final String awayScore, final String extratime, final String homeScoreExtratime, final String awayScoreExtratime) {
         if (validationService.isValidScore(homeScore, awayScore)) {
-            final Game game = mongoDB.findById(gameId, Game.class);
+            final Game game = dataService.findGameById(gameId);
             if (game != null) {
                 dataService.saveScore(game, homeScore, awayScore, extratime, homeScoreExtratime, awayScoreExtratime);
             }
