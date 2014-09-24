@@ -596,7 +596,7 @@ public class DataService {
     }
 
     public List<User> findAllUsers() {
-        return this.mongoDB.findAll((User.class));
+        return this.mongoDB.findAll(User.class);
     }
 
     public Game findGameById(String id) {
@@ -612,15 +612,15 @@ public class DataService {
     }
 
     public List<Bracket> findAllBrackets() {
-        return this.mongoDB.findAll((Bracket.class));
+        return this.mongoDB.findAll(Bracket.class);
     }
 
     public List<Game> findAllGames() {
-        return this.mongoDB.findAll((Game.class));
+        return this.mongoDB.findAll(Game.class);
     }
 
     public List<AbstractJob> findAllAbstractJobs() {
-        return this.mongoDB.findAll((AbstractJob.class));
+        return this.mongoDB.findAll(AbstractJob.class);
     }
 
     public Team findTeamById(String id) {
@@ -636,7 +636,7 @@ public class DataService {
     }
 
     public List<Extra> findAllExtras() {
-        return this.mongoDB.findAll((Extra.class));
+        return this.mongoDB.findAll(Extra.class);
     }
 
     public Extra findExtraById(String id) {
@@ -644,6 +644,6 @@ public class DataService {
     }
 
     public List<Team> findAllTeams() {
-        return this.mongoDB.findAll((Team.class));
+        return this.mongoDB.findAll(Team.class);
     }
 }
