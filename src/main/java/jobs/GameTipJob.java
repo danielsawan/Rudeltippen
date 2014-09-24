@@ -1,9 +1,7 @@
 package jobs;
 
-import java.util.Date;
 import java.util.List;
 
-import models.AbstractJob;
 import models.Game;
 import models.User;
 import models.enums.Constants;
@@ -14,9 +12,9 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import services.CommonService;
 import services.DataService;
 import services.MailService;
-import services.ResultService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -37,15 +35,14 @@ public class GameTipJob implements Job {
     private MailService mailService;
 
     @Inject
-    private ResultService resultService;
+    private CommonService commonService;
 
     public GameTipJob() {
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        AbstractJob job = dataService.findAbstractJobByName(Constants.GAMETIPJOB.get());
-        if (job != null && job.isActive() && resultService.isJobInstance()) {
+        if (commonService.isJobInstance()) {
             LOG.info("Started Job: " + Constants.GAMETIPJOB.get());
             final List<Game> games = dataService.findAllNotifiableGames();
 
@@ -60,9 +57,6 @@ public class GameTipJob implements Job {
                     dataService.save(game);
                 }
             }
-
-            job.setExecuted(new Date());
-            dataService.save(job);
             LOG.info("Finished Job: " + Constants.GAMETIPJOB.get());
         }
     }

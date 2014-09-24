@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import models.AbstractJob;
 import models.Game;
 import models.Playday;
 import models.enums.Constants;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import services.CommonService;
 import services.DataService;
 import services.ResultService;
 
@@ -39,6 +39,9 @@ public class KickoffJob implements Job {
     private DataService dataService;
     
     @Inject
+    private CommonService commonService;
+    
+    @Inject
     private ResultService resultService;
 
     public KickoffJob() {
@@ -46,8 +49,7 @@ public class KickoffJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        AbstractJob job = dataService.findAbstractJobByName(Constants.KICKOFFJOB.get());
-        if (job != null && job.isActive() && resultService.isJobInstance()) {
+        if (commonService.isJobInstance()) {
             LOG.info("Started Job: " + Constants.KICKOFFJOB.get());
             List<Playday> playdays = dataService.findNextPlaydays();
             for (Playday playday : playdays) {
@@ -55,9 +57,6 @@ public class KickoffJob implements Job {
                     updateKickoff(game, game.getWebserviceID());
                 }
             }
-            
-            job.setExecuted(new Date());
-            dataService.save(job);
             LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
         }
     }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import models.AbstractJob;
 import models.Bracket;
 import models.Confirmation;
 import models.Extra;
@@ -91,10 +90,6 @@ public class DataService {
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoDB.setMongoClient(mongoClient);
         this.datastore = this.mongoDB.getDatastore();
-    }
-
-    public AbstractJob findAbstractJobByName(String jobName) {
-        return this.datastore.find(AbstractJob.class).field("name").equal(jobName).get();
     }
 
     public List<User> findAllNotifiableUsers() {
@@ -617,10 +612,6 @@ public class DataService {
 
     public List<Game> findAllGames() {
         return this.mongoDB.findAll(Game.class);
-    }
-
-    public List<AbstractJob> findAllAbstractJobs() {
-        return this.mongoDB.findAll(AbstractJob.class);
     }
 
     public Team findTeamById(String id) {

@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import models.AbstractJob;
 import models.Bracket;
 import models.Confirmation;
 import models.Game;
+import models.Job;
 import models.Playday;
 import models.Settings;
 import models.User;
@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ import filters.AdminFilter;
  *
  */
 @FilterWith(AdminFilter.class)
+@SuppressWarnings("unchecked")
 public class AdminController extends RootController {
     private static final Logger LOG = LoggerFactory.getLogger(AdminController.class);
     private static final String ERROR_LOADING_USER = "error.loading.user";
@@ -309,18 +312,45 @@ public class AdminController extends RootController {
     }
 
     public Result jobstatus(@PathParam("name") String name) {
-        if (StringUtils.isNotBlank(name)) {
-            AbstractJob abstractJob = dataService.findAbstractJobByName(name);
-            abstractJob.setActive(!abstractJob.isActive());
-            dataService.save(abstractJob);
+        Scheduler scheduler = ninjaScheduler.getScheduler();
+        
+        try {
+            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals("jobGroup"));
+            for (JobKey jobKey : jobKeys) {
+                if (jobKey.getName().equals(name)) {
+                    List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+                    Trigger trigger = triggers.get(0);  
+                    TriggerState triggerState = scheduler.getTriggerState(trigger.getKey());
+                    if (TriggerState.NORMAL.equals(triggerState)) {
+                        scheduler.pauseJob(jobKey);                        
+                    } else {
+                        scheduler.resumeJob(jobKey);
+                    }
+                }
+            }
+        } catch (SchedulerException e) {
+            LOG.error("Failed to get jobs from scheduler", e);
         }
-
+        
         return Results.redirect("/admin/jobs");
     }
 
-    public Result jobs() {
-        List<AbstractJob> jobs = dataService.findAllAbstractJobs();
-
+    public Result jobs() throws SchedulerException {
+        Scheduler scheduler = ninjaScheduler.getScheduler();
+        
+        List<Job> jobs = new ArrayList<Job>();
+        try {
+            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals("jobGroup"));
+            for (JobKey jobKey : jobKeys) {
+                List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+                Trigger trigger = triggers.get(0);  
+                TriggerState triggerState = scheduler.getTriggerState(trigger.getKey());
+                jobs.add(new Job((TriggerState.PAUSED.equals(triggerState)) ? false : true, jobKey.getName(), trigger.getDescription(), trigger.getNextFireTime(), trigger.getPreviousFireTime()));
+            }
+        } catch (SchedulerException e) {
+            LOG.error("Failed to get jobs from scheduler", e);
+        }
+        
         return Results.html().render("jobs", jobs);
     }
 
@@ -350,8 +380,16 @@ public class AdminController extends RootController {
             Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals("jobGroup"));
             for (JobKey jobKey : jobKeys) {
                 if (jobKey != null && jobKey.getName().equalsIgnoreCase(name)) {
-                    scheduler.triggerJob(jobKey);
-                    flashScope.success(i18nService.get("admin.jobs.executed", new Object[]{name}));
+                    List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+                    Trigger trigger = triggers.get(0);  
+                    TriggerState triggerState = scheduler.getTriggerState(trigger.getKey());
+                    
+                    if (TriggerState.NORMAL.equals(triggerState)) {
+                        scheduler.triggerJob(jobKey);
+                        flashScope.success(i18nService.get("admin.jobs.executed", new Object[]{name}));   
+                    } else {
+                        flashScope.error(i18nService.get("admin.jobs.failed", new Object[]{name})); 
+                    }
                 }
             }
         } catch (SchedulerException e) {

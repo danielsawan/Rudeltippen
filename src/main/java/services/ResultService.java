@@ -13,7 +13,6 @@ import models.User;
 import models.enums.Constants;
 import models.ws.WSResult;
 import models.ws.WSResults;
-import ninja.utils.NinjaProperties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -43,9 +42,6 @@ public class ResultService {
 
     @Inject
     private DataService dataService;
-
-    @Inject
-    private NinjaProperties ninjaProperties;
 
     public WSResults getResultsFromWebService(final Game game) {
         WSResults wsResults = new WSResults();
@@ -192,15 +188,5 @@ public class ResultService {
         }
 
         return points;
-    }
-
-    public boolean isJobInstance() {
-        boolean isInstance = false;
-        final String jobInstance = ninjaProperties.get("rudeltippen.jobinstance");
-        if (("true").equalsIgnoreCase(jobInstance)) {
-            isInstance = true;
-        }
-
-        return isInstance;
     }
 }

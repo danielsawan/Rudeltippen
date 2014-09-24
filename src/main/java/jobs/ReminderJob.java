@@ -1,10 +1,8 @@
 package jobs;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import models.AbstractJob;
 import models.Extra;
 import models.ExtraTip;
 import models.Game;
@@ -18,9 +16,9 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import services.CommonService;
 import services.DataService;
 import services.MailService;
-import services.ResultService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -41,15 +39,14 @@ public class ReminderJob implements Job {
     private MailService mailService;
 
     @Inject
-    private ResultService resultService;
+    private CommonService commonService;
 
     public ReminderJob() {
     }
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        AbstractJob job = dataService.findAbstractJobByName(Constants.REMINDERJOB.get());
-        if (job != null && job.isActive() && resultService.isJobInstance()) {
+        if (commonService.isJobInstance()) {
             LOG.info("Started Job: " + Constants.REMINDERJOB.get());
             final List<Extra> nextExtras = dataService.findAllExtrasEnding();
             final List<Game> nextGames = dataService.findAllGamesEnding();
@@ -77,9 +74,6 @@ public class ReminderJob implements Job {
             }
 
             disableReminder(nextExtras, nextGames);
-            
-            job.setExecuted(new Date());
-            dataService.save(job);
             LOG.info("Finshed Job: " + Constants.REMINDERJOB.get());
         }
     }
