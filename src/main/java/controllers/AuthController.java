@@ -15,7 +15,6 @@ import ninja.FilterWith;
 import ninja.NinjaValidator;
 import ninja.Result;
 import ninja.Results;
-import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -54,9 +53,6 @@ public class AuthController {
     @Inject
     private DataService dataService;
     
-    @Inject
-    private MongoDB mongoDB;
-
     @Inject
     private ValidationService validationService;
 
@@ -109,7 +105,7 @@ public class AuthController {
             confirmation.setConfirmationType(confirmType);
             confirmation.setConfirmValue(authService.encryptAES(UUID.randomUUID().toString()));
             confirmation.setCreated(new Date());
-            mongoDB.save(confirmation);
+            dataService.save(confirmation);
 
             mailService.confirm(user, token, confirmType);
             flashScope.success(i18nService.get("confirm.message"));
@@ -135,8 +131,8 @@ public class AuthController {
             } else {
                 if ((ConfirmationType.ACTIVATION).equals(confirmationType)) {
                     user.setActive(true);
-                    mongoDB.save(user);
-                    mongoDB.delete(confirmation);
+                    dataService.save(user);
+                    dataService.delete(confirmation);
                     
                     flashScope.success(i18nService.get("controller.users.accountactivated"));
                     LOG.info("User activated: " + user.getEmail());
@@ -144,17 +140,17 @@ public class AuthController {
                     final String oldusername = user.getEmail();
                     final String newusername = authService.decryptAES(confirmation.getConfirmValue());
                     user.setEmail(newusername);
-                    mongoDB.save(user);
+                    dataService.save(user);
                     session.remove(Constants.USERNAME.get());
-                    mongoDB.delete(confirmation);
+                    dataService.delete(confirmation);
 
                     flashScope.success(i18nService.get("controller.users.changedusername"));
                     LOG.info("User changed username... old username: " + oldusername + " - " + "new username: " + newusername);
                 } else if ((ConfirmationType.CHANGEUSERPASS).equals(confirmationType)) {
                     user.setUserpass(authService.decryptAES(confirmation.getConfirmValue()));
-                    mongoDB.save(user);
+                    dataService.save(user);
                     session.remove("username");
-                    mongoDB.delete(confirmation);
+                    dataService.delete(confirmation);
 
                     flashScope.success(i18nService.get("controller.users.changeduserpass"));
                     LOG.info(user.getEmail() + " changed his password");
@@ -202,7 +198,7 @@ public class AuthController {
             user.setUserpass(authService.hashPassword(userDTO.getUserpass(), salt));
             user.setPoints(0);
             user.setPicture(DigestUtils.md5Hex(userDTO.getEmail()));
-            mongoDB.save(user);
+            dataService.save(user);
 
             final String token = UUID.randomUUID().toString();
             final ConfirmationType confirmationType = ConfirmationType.ACTIVATION;
@@ -212,7 +208,7 @@ public class AuthController {
             confirmation.setCreated(new Date());
             confirmation.setToken(token);
             confirmation.setUser(user);
-            mongoDB.save(confirmation);
+            dataService.save(confirmation);
 
             mailService.confirm(user, token, confirmationType);
             if (settings.isInformOnNewTipper()) {
@@ -245,9 +241,9 @@ public class AuthController {
         final User user = confirmation.getUser();
         final String password = authService.hashPassword(passwordDTO.getUserpass(), user.getSalt());
         user.setUserpass(password);
-        mongoDB.save(user);
+        dataService.save(user);
 
-        mongoDB.delete(confirmation);
+        dataService.delete(confirmation);
         flashScope.success(i18nService.get("controller.auth.passwordreset"));
 
         return Results.redirect(AUTH_LOGIN);

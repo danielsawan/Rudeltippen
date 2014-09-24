@@ -22,7 +22,6 @@ import models.User;
 import models.enums.Avatar;
 import models.enums.Constants;
 import ninja.Context;
-import ninja.mongodb.MongoDB;
 import ninja.utils.NinjaProperties;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -51,9 +50,6 @@ public class ImportService {
 
     @Inject
     private DataService dataService;
-    
-    @Inject
-    private MongoDB mongoDB;
     
     @Inject
     private AuthService authService;
@@ -101,7 +97,7 @@ public class ImportService {
         settings.setNumPrePlayoffGames(prePlayoffGames.size());
         settings.setInformOnNewTipper(true);
         settings.setEnableRegistration(true);
-        mongoDB.save(settings);
+        dataService.save(settings);
 
         User user = new User();
         final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
@@ -125,7 +121,7 @@ public class ImportService {
         user.setCorrectExtraTips(0);
         user.setPicture(commonService.getUserPictureUrl(Avatar.GRAVATAR, user));
         user.setAvatar(Avatar.GRAVATAR);
-        mongoDB.save(user);        
+        dataService.save(user);        
     }
 
     private void initJobs() {
@@ -138,20 +134,20 @@ public class ImportService {
         for (AbstractJob abstractJob : abstractJobs) {
             AbstractJob job = dataService.findAbstractJobByName(abstractJob.getName());
             if (job == null) {
-                mongoDB.save(abstractJob);
+                dataService.save(abstractJob);
             }
         }
     }
 
     private void setReferences() {
-        List<Bracket> brackets = mongoDB.findAll(Bracket.class);
+        List<Bracket> brackets = dataService.findAllBrackets();
         for (Bracket bracket : brackets) {
             List<Game> games = dataService.findGamesByBracket(bracket);
             List<Team> teams = dataService.findTeamsByBracket(bracket);
 
             bracket.setGames(games);
             bracket.setTeams(teams);
-            mongoDB.save(bracket);
+            dataService.save(bracket);
         }
 
         List<Playday> playdays = dataService.findAllPlaydaysOrderByNumber();
@@ -159,7 +155,7 @@ public class ImportService {
             List<Game> games = dataService.findGamesByPlayday(playday);
 
             playday.setGames(games);
-            mongoDB.save(playday);
+            dataService.save(playday);
         }
     }
 
@@ -174,7 +170,7 @@ public class ImportService {
             bracket.setName(basicDBObject.getString("name"));
             bracket.setNumber(basicDBObject.getInt(NUMBER));
             bracket.setUpdatable(basicDBObject.getBoolean(UPDATABLE));
-            mongoDB.save(bracket);
+            dataService.save(bracket);
 
             brackets.put(basicDBObject.getString("id"), bracket);
         }
@@ -199,7 +195,7 @@ public class ImportService {
             extra.setQuestion(basicDBObject.getString("question"));
             extra.setExtraReference(basicDBObject.getString("extraReference"));
             extra.setQuestionShort(basicDBObject.getString("questionShort"));
-            mongoDB.save(extra);
+            dataService.save(extra);
         }
     }
 
@@ -221,7 +217,7 @@ public class ImportService {
             game.setAwayTeam(teams.get(basicDBObject.getString("awayTeam")));
             game.setPlayday(playdays.get(basicDBObject.getString("playday")));
             game.setKickoff(parseDate(basicDBObject.getString("kickoff"), DATE_FORMAT));
-            mongoDB.save(game);
+            dataService.save(game);
         }
     }
 
@@ -248,7 +244,7 @@ public class ImportService {
             playday.setCurrent(basicDBObject.getBoolean("current"));
             playday.setCurrent(basicDBObject.getBoolean(PLAYOFF));
             playday.setNumber(basicDBObject.getInt(NUMBER));
-            mongoDB.save(playday);
+            dataService.save(playday);
 
             playdays.put(basicDBObject.getString("id"), playday);
         }
@@ -270,7 +266,7 @@ public class ImportService {
             team.setGamesDraw(basicDBObject.getInt("gamesDraw"));
             team.setGamesLost(basicDBObject.getInt("gamesLost"));
             team.setBracket(brackets.get(basicDBObject.getString(BRACKET)));
-            mongoDB.save(team);
+            dataService.save(team);
 
             teams.put(basicDBObject.getString("id"), team);
         }

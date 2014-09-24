@@ -9,7 +9,6 @@ import models.AbstractJob;
 import models.Game;
 import models.Playday;
 import models.enums.Constants;
-import ninja.mongodb.MongoDB;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
@@ -40,9 +39,6 @@ public class KickoffJob implements Job {
     private DataService dataService;
     
     @Inject
-    private MongoDB mongoDB;
-
-    @Inject
     private ResultService resultService;
 
     public KickoffJob() {
@@ -61,7 +57,7 @@ public class KickoffJob implements Job {
             }
             
             job.setExecuted(new Date());
-            mongoDB.save(job);
+            dataService.save(job);
             LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
         }
     }
@@ -79,7 +75,7 @@ public class KickoffJob implements Job {
                     Date newKickoff = df.parse(kickoff);
                     if (isValidKickoff(newKickoff, game.getKickoff())) {
                         game.setKickoff(newKickoff);
-                        mongoDB.save(game);
+                        dataService.save(game);
 
                         LOG.info("Updated Kickoff of game number: " + game.getNumber() + " to " + newKickoff);  
                     }

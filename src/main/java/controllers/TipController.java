@@ -19,7 +19,6 @@ import models.statistic.GameTipStatistic;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.mongodb.MongoDB;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 
@@ -50,9 +49,6 @@ public class TipController extends RootController {
     private DataService dataService;
     
     @Inject
-    private MongoDB mongoDB;
-
-    @Inject
     private I18nService i18nService;
 
     @Inject
@@ -69,7 +65,7 @@ public class TipController extends RootController {
         final Playday playday = dataService.findPlaydaybByNumber(pagination.getNumberAsInt());
         final List<Game> games = dataService.findGamesByPlayday(playday);
 
-        final List<Extra> extras = mongoDB.findAll(Extra.class);
+        final List<Extra> extras = dataService.findAllExtras();
         final boolean tippable = commonService.extrasAreTipable(extras);
 
         return Results.html()
@@ -101,7 +97,7 @@ public class TipController extends RootController {
                 final String homeScore = map.get(GAME + key + HOME_SCORE);
                 final String awayScore = map.get(GAME + key + AWAY_SCORE);
 
-                final Game game = mongoDB.findById(key, Game.class);
+                final Game game = dataService.findGameById(key);
                 
                 if (validationService.isValidScore(homeScore, awayScore) && game != null) {
                     dataService.saveGameTip(game, Integer.parseInt(homeScore), Integer.parseInt(awayScore), context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
@@ -140,9 +136,9 @@ public class TipController extends RootController {
                     return Results.redirect(TIPS_PLAYDAY + dataService.findCurrentPlayday().getNumber());
                 }
 
-                final Extra extra = mongoDB.findById(bId, Extra.class);
+                final Extra extra = dataService.findExtraById(bId);
                 if (commonService.extraIsTipable(extra)) {
-                    final Team team = mongoDB.findById(tId, Team.class);
+                    final Team team = dataService.findTeamById(tId);
                     dataService.saveExtraTip(extra, team, context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
                     flashScope.success(i18nService.get("controller.tipps.bonussaved"));
                 }
@@ -163,7 +159,7 @@ public class TipController extends RootController {
         final Playday playday = dataService.findPlaydaybByNumber(pagination.getNumberAsInt());
         final List<User> users = dataService.findActiveUsers(15);
         final List<Map<User, List<GameTip>>> tips = dataService.findPlaydayTips(playday, users);
-        final long usersCount = mongoDB.countAll(User.class);
+        final long usersCount = dataService.countAll(User.class);
 
         return Results.html()
                 .render("tips", tips)
@@ -174,7 +170,7 @@ public class TipController extends RootController {
 
     public Result extras() {
         final List<User> users = dataService.findAllActiveUsersOrderedByPlace();
-        final List<Extra> extras = mongoDB.findAll(Extra.class);
+        final List<Extra> extras = dataService.findAllExtras();
         final List<Map<User, List<ExtraTip>>> tips = dataService.findExtraTips(users, extras);
 
         return Results.html()

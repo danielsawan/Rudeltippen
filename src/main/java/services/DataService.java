@@ -44,6 +44,7 @@ import com.mongodb.MongoClient;
  *
  */
 @Singleton
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DataService {
     private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String POINTS = "points";
@@ -592,5 +593,57 @@ public class DataService {
         }
         
         return playdays;
+    }
+
+    public List<User> findAllUsers() {
+        return this.mongoDB.findAll((User.class));
+    }
+
+    public Game findGameById(String id) {
+        return this.mongoDB.findById(id, Game.class);
+    }
+
+    public User findUserById(String id) {
+        return this.mongoDB.findById(id, User.class);
+    }
+
+    public void delete(Object object) {
+        this.datastore.delete(object);
+    }
+
+    public List<Bracket> findAllBrackets() {
+        return this.mongoDB.findAll((Bracket.class));
+    }
+
+    public List<Game> findAllGames() {
+        return this.mongoDB.findAll((Game.class));
+    }
+
+    public List<AbstractJob> findAllAbstractJobs() {
+        return this.mongoDB.findAll((AbstractJob.class));
+    }
+
+    public Team findTeamById(String id) {
+        return this.mongoDB.findById(id, Team.class);
+    }
+
+    public Bracket findBracketById(String id) {
+        return this.mongoDB.findById(id, Bracket.class);
+    }
+
+    public long countAll(Class clazz) {
+        return this.mongoDB.countAll(clazz);
+    }
+
+    public List<Extra> findAllExtras() {
+        return this.mongoDB.findAll((Extra.class));
+    }
+
+    public Extra findExtraById(String id) {
+        return this.mongoDB.findById(id, Extra.class);
+    }
+
+    public List<Team> findAllTeams() {
+        return this.mongoDB.findAll((Team.class));
     }
 }
