@@ -98,11 +98,12 @@ public class DataService {
 
     public List<Game> findAllNotifiableGames() {
         DateTime dateTime = new DateTime();
-        dateTime.plusMinutes(1);
-
+        dateTime = dateTime.plusMinutes(1);
+        
         return this.datastore.find(Game.class)
                 .field("informed")
-                .equal(false).field(KICKOFF)
+                .equal(false)
+                .field(KICKOFF)
                 .lessThanOrEq(dateTime.toDate())
                 .asList();
     }
@@ -113,7 +114,7 @@ public class DataService {
 
     public List<Game> findAllGamesWithNoResult() {
         DateTime dateTime = new DateTime();
-        dateTime.plusMinutes(90);
+        dateTime = dateTime.plusMinutes(90);
 
         return this.datastore.find(Game.class)
                 .field(ENDED).equal(false)
@@ -123,7 +124,7 @@ public class DataService {
 
     public List<Extra> findAllExtrasEnding() {
         DateTime dateTime = new DateTime();
-        dateTime.plusDays(1);
+        dateTime = dateTime.plusDays(1);
 
         return this.datastore.find(Extra.class)
                 .field(REMINDER).equal(false)
@@ -133,8 +134,8 @@ public class DataService {
 
     public List<Game> findAllGamesEnding() {
         DateTime dateTime = new DateTime();
-        dateTime.plusDays(1);
-
+        dateTime = dateTime.plusDays(1);
+ 
         return this.datastore.find(Game.class)
                 .field(REMINDER).equal(false)
                 .field(KICKOFF).lessThanOrEq(dateTime.toDate())
