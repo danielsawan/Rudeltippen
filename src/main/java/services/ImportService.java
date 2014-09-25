@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import models.AbstractJob;
 import models.Bracket;
 import models.Extra;
 import models.Game;
@@ -57,9 +56,6 @@ public class ImportService {
     @Inject
     private CommonService commonService;
     
-    @Inject
-    private I18nService i18nService;
-    
     @Inject 
     private NinjaProperties ninjaProperties;
 
@@ -70,7 +66,6 @@ public class ImportService {
         loadGames(playdays, teams, brackets, context);
         loadExtras(teams, context);
         loadSettingsAndAdmin();
-        initJobs();
 
         setReferences();
     }
@@ -122,21 +117,6 @@ public class ImportService {
         user.setPicture(commonService.getUserPictureUrl(Avatar.GRAVATAR, user));
         user.setAvatar(Avatar.GRAVATAR);
         dataService.save(user);        
-    }
-
-    private void initJobs() {
-        List<AbstractJob> abstractJobs = new ArrayList<AbstractJob>();
-        abstractJobs.add(new AbstractJob(Constants.GAMETIPJOB.get(), i18nService.get("job.gametipjob.executed"), i18nService.get("job.gametipjob.description")));
-        abstractJobs.add(new AbstractJob(Constants.KICKOFFJOB.get(), i18nService.get("job.playdayjob.executed"), i18nService.get("job.playdayjob.description")));
-        abstractJobs.add(new AbstractJob(Constants.REMINDERJOB.get(), i18nService.get("job.reminderjob.executed"), i18nService.get("job.reminderjob.description")));
-        abstractJobs.add(new AbstractJob(Constants.RESULTJOB.get(), i18nService.get("job.resultsjob.executed"), i18nService.get("job.resultsjob.descrption")));
-
-        for (AbstractJob abstractJob : abstractJobs) {
-            AbstractJob job = dataService.findAbstractJobByName(abstractJob.getName());
-            if (job == null) {
-                dataService.save(abstractJob);
-            }
-        }
     }
 
     private void setReferences() {

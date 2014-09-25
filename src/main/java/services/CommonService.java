@@ -18,6 +18,7 @@ import models.Team;
 import models.User;
 import models.enums.Avatar;
 import models.pagination.Pagination;
+import ninja.utils.NinjaProperties;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +51,9 @@ public class CommonService extends ViewService {
 
     @Inject
     private DataService dataService;
+    
+    @Inject
+    private NinjaProperties ninjaProperties;
 
     /**
      * Checks if all games in given list have ended
@@ -419,5 +423,15 @@ public class CommonService extends ViewService {
         }
         
         return avatar;
+    }
+
+    public boolean isJobInstance() {
+        boolean isInstance = false;
+        final String jobInstance = ninjaProperties.get("rudeltippen.jobinstance");
+        if (("true").equalsIgnoreCase(jobInstance)) {
+            isInstance = true;
+        }
+
+        return isInstance;
     }
 }

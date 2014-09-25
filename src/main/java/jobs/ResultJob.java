@@ -1,9 +1,7 @@
 package jobs;
 
-import java.util.Date;
 import java.util.List;
 
-import models.AbstractJob;
 import models.Game;
 import models.enums.Constants;
 import models.ws.WSResults;
@@ -15,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import services.CalculationService;
+import services.CommonService;
 import services.DataService;
 import services.ResultService;
 
@@ -37,6 +36,9 @@ public class ResultJob implements Job {
     private CalculationService calculationService;
 
     @Inject
+    private CommonService commonService;
+    
+    @Inject
     private ResultService resultService;
 
     public ResultJob() {
@@ -44,16 +46,12 @@ public class ResultJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        AbstractJob job = dataService.findAbstractJobByName(Constants.RESULTJOB.get());
-        if (job != null && job.isActive() && resultService.isJobInstance()) {
+        if (commonService.isJobInstance()) {
             LOG.info("Started Job: " + Constants.RESULTJOB.get());
             final List<Game> games = dataService.findAllGamesWithNoResult();
             for (final Game game : games) {
                 setGameScore(game);
             }
-            
-            job.setExecuted(new Date());
-            dataService.save(job);
             LOG.info("Finished Job: " + Constants.RESULTJOB.get());
         }
     }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import models.AbstractJob;
 import models.Bracket;
 import models.Confirmation;
 import models.Extra;
@@ -93,21 +92,18 @@ public class DataService {
         this.datastore = this.mongoDB.getDatastore();
     }
 
-    public AbstractJob findAbstractJobByName(String jobName) {
-        return this.datastore.find(AbstractJob.class).field("name").equal(jobName).get();
-    }
-
     public List<User> findAllNotifiableUsers() {
         return this.datastore.find(User.class).field(ACTIVE).equal(true).field("sendGameTips").equal(true).asList();
     }
 
     public List<Game> findAllNotifiableGames() {
         DateTime dateTime = new DateTime();
-        dateTime.plusMinutes(1);
-
+        dateTime = dateTime.plusMinutes(1);
+        
         return this.datastore.find(Game.class)
                 .field("informed")
-                .equal(false).field(KICKOFF)
+                .equal(false)
+                .field(KICKOFF)
                 .lessThanOrEq(dateTime.toDate())
                 .asList();
     }
@@ -118,7 +114,7 @@ public class DataService {
 
     public List<Game> findAllGamesWithNoResult() {
         DateTime dateTime = new DateTime();
-        dateTime.plusMinutes(90);
+        dateTime = dateTime.plusMinutes(90);
 
         return this.datastore.find(Game.class)
                 .field(ENDED).equal(false)
@@ -128,7 +124,7 @@ public class DataService {
 
     public List<Extra> findAllExtrasEnding() {
         DateTime dateTime = new DateTime();
-        dateTime.plusDays(1);
+        dateTime = dateTime.plusDays(1);
 
         return this.datastore.find(Extra.class)
                 .field(REMINDER).equal(false)
@@ -138,8 +134,8 @@ public class DataService {
 
     public List<Game> findAllGamesEnding() {
         DateTime dateTime = new DateTime();
-        dateTime.plusDays(1);
-
+        dateTime = dateTime.plusDays(1);
+ 
         return this.datastore.find(Game.class)
                 .field(REMINDER).equal(false)
                 .field(KICKOFF).lessThanOrEq(dateTime.toDate())
@@ -596,7 +592,7 @@ public class DataService {
     }
 
     public List<User> findAllUsers() {
-        return this.mongoDB.findAll((User.class));
+        return this.mongoDB.findAll(User.class);
     }
 
     public Game findGameById(String id) {
@@ -612,15 +608,11 @@ public class DataService {
     }
 
     public List<Bracket> findAllBrackets() {
-        return this.mongoDB.findAll((Bracket.class));
+        return this.mongoDB.findAll(Bracket.class);
     }
 
     public List<Game> findAllGames() {
-        return this.mongoDB.findAll((Game.class));
-    }
-
-    public List<AbstractJob> findAllAbstractJobs() {
-        return this.mongoDB.findAll((AbstractJob.class));
+        return this.mongoDB.findAll(Game.class);
     }
 
     public Team findTeamById(String id) {
@@ -636,7 +628,7 @@ public class DataService {
     }
 
     public List<Extra> findAllExtras() {
-        return this.mongoDB.findAll((Extra.class));
+        return this.mongoDB.findAll(Extra.class);
     }
 
     public Extra findExtraById(String id) {
@@ -644,6 +636,6 @@ public class DataService {
     }
 
     public List<Team> findAllTeams() {
-        return this.mongoDB.findAll((Team.class));
+        return this.mongoDB.findAll(Team.class);
     }
 }
