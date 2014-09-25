@@ -28,10 +28,10 @@
 			                <td><#if (job.previousFireTime)??>${job.previousFireTime?datetime}<#else>-</#if></td>
 			                <td><#if (job.nextFireTime)??>${job.nextFireTime?datetime}<#else>-</#if></td>
 							<#if job.active>
-								<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.is.active')}" class="jobtooltip" onclick="return confirm('Change status of ${job.name}?');"><span class="glyphicon glyphicon-ok"></span></a></td>
+								<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.is.active')}" class="jobtooltip" onclick="return confirm('Pause job ${job.name}?');"><span class="glyphicon glyphicon-pause"></span></a></td>
 								<td><a href="/admin/executejob/${job.name}" data-toggle="tooltip" data-placement="top" onclick="return confirm('Execute job ${job.name}?');"><span class="glyphicon glyphicon-ok-circle"></span></a></td>
 							<#else>
-								<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.isnot.active')}" class="jobtooltip" onclick="return confirm('Change status of ${job.name}?');"><span class="glyphicon glyphicon-remove"></span></a></td>
+								<td><a href="/admin/jobstatus/${job.name}" data-toggle="tooltip" data-placement="top" title="${i18n('app.jobs.isnot.active')}" class="jobtooltip" onclick="return confirm('Resume job ${job.name}?');"><span class="glyphicon glyphicon-play"></span></a></td>
 								<td>&nbsp;</td>
 							</#if>
 			            </tr>
