@@ -1,6 +1,5 @@
 package services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,11 +187,6 @@ public class StatisticService {
         }
     }
 
-    public List<Object[]> getGameStatistics() {
-        dataService.findGameStatistics();
-        return new ArrayList<Object[]>();
-    }
-
     public Object [] getPlaydayStatistics(Playday playday) {
         dataService.findPlaydayStatistics();
         return new Object [0];
@@ -201,10 +195,5 @@ public class StatisticService {
     public Object []  getAscendingStatistics(final Playday playday, final User user) {
         dataService.findAscendingStatistics();
         return new Object [0];
-    }
-
-    public List<Object[]> getResultsStatistic() {
-        dataService.findResultsStatistic();
-        return new ArrayList<Object[]>();
     }
 }

@@ -39,8 +39,6 @@ public class ApplicationController extends RootController {
         final List<Game> games = dataService.findGamesByPlayday(playday);
         final long users = dataService.countAll(User.class);
         
-        dataService.findResultsStatistic();
-        
         return Results.html()
                 .render("topUsers", topUsers)
                 .render("playday", playday)

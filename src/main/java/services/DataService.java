@@ -1,6 +1,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 /**
@@ -478,17 +484,28 @@ public class DataService {
         this.datastore.delete(this.datastore.find(Confirmation.class).field(USER).equal(user).asList());
     }
 
-    public void findResultsStatistic() {
-        //TODO Refactoring
-        //        List<Object []> results = JPA.em()
-        //                .createQuery("SELECT " +
-        //                        "SUM(resultCount) AS counts, " +
-        //                        "gameResult AS result " +
-        //                        "FROM PlaydayStatistic p " +
-        //                        "GROUP BY gameResult " +
-        //                        "ORDER BY counts DESC").getResultList();
-        //
-        //        return results;
+    public List<Map<String, String>> findResultsStatistic() {
+        DB db = this.mongoDB.getDatastore().getDB();
+        DBCollection collection = db.getCollection("playdaystatistics");
+        
+        DBObject groupFields = new BasicDBObject();
+        groupFields.put("_id", "$gameResult");
+        groupFields.put("total", new BasicDBObject("$sum", "$resultCount"));
+        
+        DBObject group = new BasicDBObject("$group", groupFields);
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("total", -1));
+        
+        List<DBObject> pipeline = Arrays.asList(group, sort);
+        AggregationOutput output = collection.aggregate(pipeline);
+
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        for (DBObject dbObject : output.results()) {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put(dbObject.get("_id").toString(), dbObject.get("total").toString());
+            results.add(result);
+        }
+        
+        return results;
     }
 
     public void findPlaydayStatistics() {
@@ -539,18 +556,28 @@ public class DataService {
         //        return values;        
     }
 
-    public void findGameStatistics() {
-        //TODO Refactoring
-        //        List<Object []> results = JPA.em()
-        //                .createQuery(
-        //                        "SELECT " +
-        //                                "SUM(resultCount) AS counts, " +
-        //                                "gameResult AS result " +
-        //                                "FROM GameStatistic g " +
-        //                                "GROUP BY gameResult " +
-        //                        "ORDER BY counts DESC").getResultList();
-        //
-        //        return results;        
+    public List<Map<String, String>> findGameStatistics() {
+        DB db = this.mongoDB.getDatastore().getDB();
+        DBCollection collection = db.getCollection("gamestatistics");
+        
+        DBObject groupFields = new BasicDBObject();
+        groupFields.put("_id", "$gameResult");
+        groupFields.put("total", new BasicDBObject("$sum", "$resultCount"));
+        
+        DBObject group = new BasicDBObject("$group", groupFields);
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("total", -1));
+        
+        List<DBObject> pipeline = Arrays.asList(group, sort);
+        AggregationOutput output = collection.aggregate(pipeline);
+
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        for (DBObject dbObject : output.results()) {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put(dbObject.get("_id").toString(), dbObject.get("total").toString());
+            results.add(result);
+        }
+        
+        return results;
     }
 
     public List<Bracket> findAllTournamentBrackets() {
