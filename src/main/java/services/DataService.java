@@ -51,6 +51,8 @@ import com.mongodb.MongoClient;
 @Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DataService {
+    private static final String ID = "_id";
+    private static final String TOTAL = "total";
     private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String POINTS = "points";
     private static final String GAME_RESULT = "gameResult";
@@ -489,11 +491,11 @@ public class DataService {
         DBCollection collection = db.getCollection("playdaystatistics");
         
         DBObject groupFields = new BasicDBObject();
-        groupFields.put("_id", "$gameResult");
-        groupFields.put("total", new BasicDBObject("$sum", "$resultCount"));
+        groupFields.put(ID, "$gameResult");
+        groupFields.put(TOTAL, new BasicDBObject("$sum", "$resultCount"));
         
         DBObject group = new BasicDBObject("$group", groupFields);
-        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("total", -1));
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject(TOTAL, -1));
         
         List<DBObject> pipeline = Arrays.asList(group, sort);
         AggregationOutput output = collection.aggregate(pipeline);
@@ -501,7 +503,7 @@ public class DataService {
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         for (DBObject dbObject : output.results()) {
             Map<String, String> result = new HashMap<String, String>();
-            result.put(dbObject.get("_id").toString(), dbObject.get("total").toString());
+            result.put(dbObject.get(ID).toString(), dbObject.get(TOTAL).toString());
             results.add(result);
         }
         
@@ -535,11 +537,11 @@ public class DataService {
         DBCollection collection = db.getCollection("gamestatistics");
         
         DBObject groupFields = new BasicDBObject();
-        groupFields.put("_id", "$gameResult");
-        groupFields.put("total", new BasicDBObject("$sum", "$resultCount"));
+        groupFields.put(ID, "$gameResult");
+        groupFields.put(TOTAL, new BasicDBObject("$sum", "$resultCount"));
         
         DBObject group = new BasicDBObject("$group", groupFields);
-        DBObject sort = new BasicDBObject("$sort", new BasicDBObject("total", -1));
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject(TOTAL, -1));
         
         List<DBObject> pipeline = Arrays.asList(group, sort);
         AggregationOutput output = collection.aggregate(pipeline);
@@ -547,7 +549,7 @@ public class DataService {
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         for (DBObject dbObject : output.results()) {
             Map<String, String> result = new HashMap<String, String>();
-            result.put(dbObject.get("_id").toString(), dbObject.get("total").toString());
+            result.put(dbObject.get(ID).toString(), dbObject.get(TOTAL).toString());
             results.add(result);
         }
         
