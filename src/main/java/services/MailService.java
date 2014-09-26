@@ -55,6 +55,9 @@ public class MailService {
 
     @Inject
     private CommonService commonService;
+    
+    @Inject
+    private ViewService viewService;
 
     public void reminder(final User user, final List<Game> games, final List<Extra> extras) {
         final Settings settings = dataService.findSettings();
@@ -69,6 +72,7 @@ public class MailService {
             content.put(I18N, i18nService);
             content.put(SETTINGS, settings);
             content.put("extras", extras);
+            content.put("viewService", viewService);
             mail.setBodyHtml(commonService.getProcessedTemplate("reminder.ftl", content));
 
             try {
