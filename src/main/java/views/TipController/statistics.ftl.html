@@ -48,9 +48,10 @@
 		            <#if results?has_content>
 			            <#list results as result>
 			                <tr>
-			                <#list result as aResult>
-			                    <td>${aResult}</td>
-			                </#list>
+							<#list result?keys as key> 
+							    <td>${key}</td>
+							    <td>${result[key]}</td>
+							</#list> 
 			                </tr>
 			            </#list>
 		            </#if>
@@ -72,9 +73,10 @@
 		            <#if games?has_content>
 			            <#list games as game>
 			                <tr>
-			                <#list game as aGame>
-			                    <td>${aGame}</td>
-			                </#list>
+							<#list game?keys as key> 
+							    <td>${key}</td>
+							    <td>${game[key]}</td>
+							</#list> 
 			                </tr>
 			            </#list>
 		            </#if>

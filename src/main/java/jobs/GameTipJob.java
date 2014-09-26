@@ -43,7 +43,7 @@ public class GameTipJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {
-            LOG.info("Started Job: " + Constants.GAMETIPJOB.get());
+            LOG.info("Started Job: " + Constants.GAMETIPJOB.asString());
             final List<Game> games = dataService.findAllNotifiableGames();
 
             if (games != null && !games.isEmpty()) {
@@ -57,7 +57,7 @@ public class GameTipJob implements Job {
                     dataService.save(game);
                 }
             }
-            LOG.info("Finished Job: " + Constants.GAMETIPJOB.get());
+            LOG.info("Finished Job: " + Constants.GAMETIPJOB.asString());
         }
     }
 }

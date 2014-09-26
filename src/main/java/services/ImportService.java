@@ -79,7 +79,7 @@ public class ImportService {
         }
         
         Settings settings = new Settings();
-        settings.setAppName(Constants.APPNAME.get());
+        settings.setAppName(Constants.APPNAME.asString());
         settings.setPointsGameWin(3);
         settings.setPointsGameDraw(1);
         settings.setAppSalt(DigestUtils.sha512Hex(UUID.randomUUID().toString()));
@@ -257,7 +257,7 @@ public class ImportService {
     private List<String> readLines(InputStream inputStream) {
         List<String> lines = null;
         try {
-            lines = IOUtils.readLines(inputStream, Constants.ENCODING.get());
+            lines = IOUtils.readLines(inputStream, Constants.ENCODING.asString());
         } catch (IOException e) {
             LOG.error("Failed to read lines", e);
         }

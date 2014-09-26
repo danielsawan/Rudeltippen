@@ -50,14 +50,14 @@ public class KickoffJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {
-            LOG.info("Started Job: " + Constants.KICKOFFJOB.get());
+            LOG.info("Started Job: " + Constants.KICKOFFJOB.asString());
             List<Playday> playdays = dataService.findNextPlaydays();
             for (Playday playday : playdays) {
                 for (final Game game : playday.getGames()) {
                     updateKickoff(game, game.getWebserviceID());
                 }
             }
-            LOG.info("Finished Job: " + Constants.KICKOFFJOB.get());
+            LOG.info("Finished Job: " + Constants.KICKOFFJOB.asString());
         }
     }
 

@@ -34,7 +34,7 @@ public enum Constants {
         this.value = value;
     }
 
-    public String get() {
+    public String asString() {
         return value;
     }
 }

@@ -47,12 +47,12 @@ public class ResultJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {
-            LOG.info("Started Job: " + Constants.RESULTJOB.get());
+            LOG.info("Started Job: " + Constants.RESULTJOB.asString());
             final List<Game> games = dataService.findAllGamesWithNoResult();
             for (final Game game : games) {
                 setGameScore(game);
             }
-            LOG.info("Finished Job: " + Constants.RESULTJOB.get());
+            LOG.info("Finished Job: " + Constants.RESULTJOB.asString());
         }
     }
 

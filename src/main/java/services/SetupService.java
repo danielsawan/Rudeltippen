@@ -155,9 +155,9 @@ public class SetupService {
         Document document = null;
         try {
             HttpResponse httpResponse = Request
-                    .Post(Constants.WS_URL.get())
-                    .setHeader("Content-Type", Constants.WS_COTENT_TYPE.get())
-                    .setHeader("charset", Constants.ENCODING.get())
+                    .Post(Constants.WS_URL.asString())
+                    .setHeader("Content-Type", Constants.WS_COTENT_TYPE.asString())
+                    .setHeader("charset", Constants.ENCODING.asString())
                     .bodyString(buffer.toString(), ContentType.TEXT_XML)
                     .execute()
                     .returnResponse();

@@ -17,7 +17,7 @@ public class AdminFilter implements Filter {
     
     @Override
     public Result filter(FilterChain filterChain, Context context) {
-        User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
         if (connectedUser == null || !connectedUser.isAdmin()) {
             return Results.redirect("/");
         }

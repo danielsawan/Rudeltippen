@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import services.CommonService;
 import services.DataService;
 import services.I18nService;
-import services.StatisticService;
 import services.ValidationService;
 
 import com.google.inject.Inject;
@@ -56,9 +55,6 @@ public class TipController extends RootController {
 
     @Inject
     private CommonService commonService;
-    
-    @Inject
-    private StatisticService statisticService;
 
     public Result playday(@PathParam("number") long number) {
         final Pagination pagination = commonService.getPagination(number, TIPS_PLAYDAY, dataService.findAllPlaydaysOrderByNumber().size());
@@ -93,14 +89,13 @@ public class TipController extends RootController {
                 if (keys.contains(key)) {
                     continue;
                 }
-
+                
                 final String homeScore = map.get(GAME + key + HOME_SCORE);
                 final String awayScore = map.get(GAME + key + AWAY_SCORE);
 
                 final Game game = dataService.findGameById(key);
-                
                 if (validationService.isValidScore(homeScore, awayScore) && game != null) {
-                    dataService.saveGameTip(game, Integer.parseInt(homeScore), Integer.parseInt(awayScore), context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
+                    dataService.saveGameTip(game, Integer.parseInt(homeScore), Integer.parseInt(awayScore), context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class));
                     keys.add(key);
                     tipped++;
 
@@ -112,7 +107,7 @@ public class TipController extends RootController {
         if (tipped > 0) {
             flashScope.success(i18nService.get("controller.tipps.tippsstored"));
         } else {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get("controller.tipps.novalidtipps"));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get("controller.tipps.novalidtipps"));
         }
 
         return Results.redirect(TIPS_PLAYDAY + playday);
@@ -139,7 +134,7 @@ public class TipController extends RootController {
                 final Extra extra = dataService.findExtraById(bId);
                 if (commonService.extraIsTipable(extra)) {
                     final Team team = dataService.findTeamById(tId);
-                    dataService.saveExtraTip(extra, team, context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
+                    dataService.saveExtraTip(extra, team, context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class));
                     flashScope.success(i18nService.get("controller.tipps.bonussaved"));
                 }
             }
@@ -184,8 +179,8 @@ public class TipController extends RootController {
     }
 
     public Result statistics() {
-        final List<Object[]> games = statisticService.getGameStatistics();
-        final List<Object[]> results = statisticService.getResultsStatistic();
+        final List<Map<String, String>> games = dataService.findGameStatistics();
+        final List<Map<String, String>> results = dataService.findResultsStatistic();
         final List<GameTipStatistic> gameTipStatistics = dataService.findGameTipStatisticsOrderByPlayday();
 
         return Results.html()

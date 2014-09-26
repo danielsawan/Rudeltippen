@@ -1,6 +1,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 /**
@@ -45,6 +51,8 @@ import com.mongodb.MongoClient;
 @Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DataService {
+    private static final String ID = "_id";
+    private static final String TOTAL = "total";
     private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String POINTS = "points";
     private static final String GAME_RESULT = "gameResult";
@@ -223,10 +231,10 @@ public class DataService {
     }
 
     public Settings findSettings() {
-        Settings settings = (Settings) ninjaCache.get(Constants.SETTINGS.get());
+        Settings settings = (Settings) ninjaCache.get(Constants.SETTINGS.asString());
         if (settings == null) {
-            settings = this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.get()).get();
-            ninjaCache.add(Constants.SETTINGS.get(), settings);
+            settings = this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
+            ninjaCache.add(Constants.SETTINGS.asString(), settings);
         }
 
         return settings;
@@ -478,79 +486,74 @@ public class DataService {
         this.datastore.delete(this.datastore.find(Confirmation.class).field(USER).equal(user).asList());
     }
 
-    public void findResultsStatistic() {
-        //TODO Refactoring
-        //        List<Object []> results = JPA.em()
-        //                .createQuery("SELECT " +
-        //                        "SUM(resultCount) AS counts, " +
-        //                        "gameResult AS result " +
-        //                        "FROM PlaydayStatistic p " +
-        //                        "GROUP BY gameResult " +
-        //                        "ORDER BY counts DESC").getResultList();
-        //
-        //        return results;
+    public List<Map<String, String>> findResultsStatistic() {
+        DB db = this.mongoDB.getDatastore().getDB();
+        DBCollection collection = db.getCollection("playdaystatistics");
+        
+        DBObject groupFields = new BasicDBObject();
+        groupFields.put(ID, "$gameResult");
+        groupFields.put(TOTAL, new BasicDBObject("$sum", "$resultCount"));
+        
+        DBObject group = new BasicDBObject("$group", groupFields);
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject(TOTAL, -1));
+        
+        List<DBObject> pipeline = Arrays.asList(group, sort);
+        AggregationOutput output = collection.aggregate(pipeline);
+
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        for (DBObject dbObject : output.results()) {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put(dbObject.get(ID).toString(), dbObject.get(TOTAL).toString());
+            results.add(result);
+        }
+        
+        return results;
     }
 
-    public void findPlaydayStatistics() {
-        //TODO Refactoring
-        //        Object result = null;
-        //        Object [] values = null;
-        //
-        //        result = JPA.em()
-        //                .createQuery("SELECT " +
-        //                        "SUM(playdayPoints) AS points, " +
-        //                        "SUM(playdayCorrectTips) AS tips, " +
-        //                        "SUM(playdayCorrectDiffs) AS diffs," +
-        //                        "SUM(playdayCorrectTrends) AS trends, " +
-        //                        "ROUND(AVG(playdayPoints)) AS avgPoints " +
-        //                        "FROM UserStatistic u WHERE u.playday.id = :playdayID")
-        //                        .setParameter("playdayID", playday.getId())
-        //                        .getSingleResult();
-        //
-        //        if (result != null) {
-        //            values = (Object[]) result;
-        //        }
-        //
-        //        return values;        
+    public Map<String, String> findStatisticsForPlayday(Playday playday) {
+        int points = 0, tips = 0, diffs = 0, trends = 0;
+        List<UserStatistic> userStatistics = this.datastore.find(UserStatistic.class).field("playday").equal(playday).asList();
+        for (UserStatistic userStatistic : userStatistics) {
+            points = points + userStatistic.getPlaydayPoints();
+            tips = tips + userStatistic.getPlaydayCorrectTips();
+            diffs = diffs + userStatistic.getPlaydayCorrectDiffs();
+            trends = trends + userStatistic.getPlaydayCorrectTrends();
+        }
+        
+        Map<String, String> statistics = new HashMap<String, String>();
+        if (!userStatistics.isEmpty()) {
+            statistics.put("points", String.valueOf(points));
+            statistics.put("tips", String.valueOf(tips));
+            statistics.put("diffs", String.valueOf(diffs));
+            statistics.put("trends", String.valueOf(trends));
+            statistics.put("avgPoints", String.valueOf(points / userStatistics.size()));   
+        }
+        
+        return statistics;
     }
 
-    public void findAscendingStatistics() {
-        //TODO Refactoring
-        //        Object result = null;
-        //        Object [] values = null;
-        //
-        //        result = JPA.em()
-        //                .createQuery(
-        //                        "SELECT " +
-        //                                "SUM(playdayPoints) AS points, " +
-        //                                "SUM(playdayCorrectTips) AS correctTips, " +
-        //                                "SUM(playdayCorrectDiffs) AS correctDiffs, " +
-        //                                "SUM(playdayCorrectTrends) AS correctTrends " +
-        //                                "FROM UserStatistic u " +
-        //                        "WHERE u.playday.id <= :playdayID AND u.user.id = :userID")
-        //                        .setParameter("playdayID", playday.getId())
-        //                        .setParameter("userID", user.getId())
-        //                        .getSingleResult();
-        //
-        //        if (result != null) {
-        //            values = (Object[]) result;
-        //        }
-        //
-        //        return values;        
-    }
+    public List<Map<String, String>> findGameStatistics() {
+        DB db = this.mongoDB.getDatastore().getDB();
+        DBCollection collection = db.getCollection("gamestatistics");
+        
+        DBObject groupFields = new BasicDBObject();
+        groupFields.put(ID, "$gameResult");
+        groupFields.put(TOTAL, new BasicDBObject("$sum", "$resultCount"));
+        
+        DBObject group = new BasicDBObject("$group", groupFields);
+        DBObject sort = new BasicDBObject("$sort", new BasicDBObject(TOTAL, -1));
+        
+        List<DBObject> pipeline = Arrays.asList(group, sort);
+        AggregationOutput output = collection.aggregate(pipeline);
 
-    public void findGameStatistics() {
-        //TODO Refactoring
-        //        List<Object []> results = JPA.em()
-        //                .createQuery(
-        //                        "SELECT " +
-        //                                "SUM(resultCount) AS counts, " +
-        //                                "gameResult AS result " +
-        //                                "FROM GameStatistic g " +
-        //                                "GROUP BY gameResult " +
-        //                        "ORDER BY counts DESC").getResultList();
-        //
-        //        return results;        
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        for (DBObject dbObject : output.results()) {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put(dbObject.get(ID).toString(), dbObject.get(TOTAL).toString());
+            results.add(result);
+        }
+        
+        return results;
     }
 
     public List<Bracket> findAllTournamentBrackets() {
@@ -637,5 +640,9 @@ public class DataService {
 
     public List<Team> findAllTeams() {
         return this.mongoDB.findAll(Team.class);
+    }
+
+    public List<Game> findAllGamesOrderByNumber() {
+        return this.datastore.find(Game.class).order("number").asList();
     }
 }

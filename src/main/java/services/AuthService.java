@@ -61,11 +61,11 @@ public class AuthService {
      */
     public String encryptAES(String value, String privateKey) {
         try {
-            byte[] raw = privateKey.getBytes(Constants.ENCODING.get());
+            byte[] raw = privateKey.getBytes(Constants.ENCODING.asString());
             SecretKeySpec skeySpec = new SecretKeySpec(raw, AES);
             Cipher cipher = Cipher.getInstance(AES);
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-            return byteToHexString(cipher.doFinal(value.getBytes(Constants.ENCODING.get())));
+            return byteToHexString(cipher.doFinal(value.getBytes(Constants.ENCODING.asString())));
         } catch (Exception ex) {
             throw new UnexpectedException(ex);
         }
@@ -88,7 +88,7 @@ public class AuthService {
      */
     public String decryptAES(String value, String privateKey) {
         try {
-            byte[] raw = privateKey.getBytes(Constants.ENCODING.get());
+            byte[] raw = privateKey.getBytes(Constants.ENCODING.asString());
             SecretKeySpec skeySpec = new SecretKeySpec(raw, AES);
             Cipher cipher = Cipher.getInstance(AES);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec);
@@ -126,7 +126,7 @@ public class AuthService {
      */
     public String sign(String message) {
         try {
-            return sign(message, ninjaProperties.get(APPLICATION_SECRET).getBytes(Constants.ENCODING.get()));
+            return sign(message, ninjaProperties.get(APPLICATION_SECRET).getBytes(Constants.ENCODING.asString()));
         } catch (UnsupportedEncodingException e) {
             LOG.error("Failed to sign message", e);
         }
@@ -149,7 +149,7 @@ public class AuthService {
             Mac mac = Mac.getInstance(HMAC_SHA1);
             SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
             mac.init(signingKey);
-            byte[] messageBytes = message.getBytes(Constants.ENCODING.get());
+            byte[] messageBytes = message.getBytes(Constants.ENCODING.asString());
             byte[] result = mac.doFinal(messageBytes);
             int len = result.length;
             char[] hexChars = new char[len * 2];
