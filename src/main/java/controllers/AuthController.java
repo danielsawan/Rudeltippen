@@ -71,7 +71,7 @@ public class AuthController {
     public Result password(@PathParam("token") String token, FlashScope flashScope) {
         final Confirmation confirmation = dataService.findConfirmationByToken(token);
         if (confirmation == null) {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get(INVALIDTOKEN));
             return Results.redirect(AUTH_LOGIN);
         }
 
@@ -118,7 +118,7 @@ public class AuthController {
         Confirmation confirmation = null;
 
         if (!validationService.isValidConfirmationToken(token)) {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get(INVALIDTOKEN));
         } else {
             confirmation = dataService.findConfirmationByToken(token);
         }
@@ -141,7 +141,7 @@ public class AuthController {
                     final String newusername = authService.decryptAES(confirmation.getConfirmValue());
                     user.setEmail(newusername);
                     dataService.save(user);
-                    session.remove(Constants.USERNAME.get());
+                    session.remove(Constants.USERNAME.asString());
                     dataService.delete(confirmation);
 
                     flashScope.success(i18nService.get("controller.users.changedusername"));
@@ -157,7 +157,7 @@ public class AuthController {
                 }
             }
         } else {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get(INVALIDTOKEN));
         }
 
         return Results.redirect(AUTH_LOGIN);
@@ -234,7 +234,7 @@ public class AuthController {
 
         final Confirmation confirmation = dataService.findConfirmationByToken(passwordDTO.getToken());
         if (confirmation == null) {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get(INVALIDTOKEN));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get(INVALIDTOKEN));
             return Results.redirect(AUTH_LOGIN);
         }
 
@@ -257,10 +257,10 @@ public class AuthController {
             return Results.html().render(VALIDATION, validations).render("settings", dataService.findSettings()).template("/views/AuthController/login.ftl.html");
         } else {
             if (authService.authenticate(login.getUsername(), login.getUserpass())) {
-                session.put(Constants.USERNAME.get(), login.getUsername());
+                session.put(Constants.USERNAME.asString(), login.getUsername());
                 if (login.isRemember()) {
                     String signedUsername = authService.sign(login.getUsername()) + "-" + login.getUsername();
-                    Cookie.builder(Constants.COOKIENAME.get(), signedUsername).setSecure(true).setHttpOnly(true).build();
+                    Cookie.builder(Constants.COOKIENAME.asString(), signedUsername).setSecure(true).setHttpOnly(true).build();
                 }
 
                 return Results.redirect("/");

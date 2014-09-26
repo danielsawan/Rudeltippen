@@ -95,7 +95,7 @@ public class TipController extends RootController {
 
                 final Game game = dataService.findGameById(key);
                 if (validationService.isValidScore(homeScore, awayScore) && game != null) {
-                    dataService.saveGameTip(game, Integer.parseInt(homeScore), Integer.parseInt(awayScore), context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
+                    dataService.saveGameTip(game, Integer.parseInt(homeScore), Integer.parseInt(awayScore), context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class));
                     keys.add(key);
                     tipped++;
 
@@ -107,7 +107,7 @@ public class TipController extends RootController {
         if (tipped > 0) {
             flashScope.success(i18nService.get("controller.tipps.tippsstored"));
         } else {
-            flashScope.put(Constants.FLASHWARNING.get(), i18nService.get("controller.tipps.novalidtipps"));
+            flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get("controller.tipps.novalidtipps"));
         }
 
         return Results.redirect(TIPS_PLAYDAY + playday);
@@ -134,7 +134,7 @@ public class TipController extends RootController {
                 final Extra extra = dataService.findExtraById(bId);
                 if (commonService.extraIsTipable(extra)) {
                     final Team team = dataService.findTeamById(tId);
-                    dataService.saveExtraTip(extra, team, context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
+                    dataService.saveExtraTip(extra, team, context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class));
                     flashScope.success(i18nService.get("controller.tipps.bonussaved"));
                 }
             }

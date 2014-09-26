@@ -175,7 +175,7 @@ public class AdminController extends RootController {
             settings.setEnableRegistration(settingsDTO.isEnableRegistration());
             dataService.save(settings);
 
-            ninjaCache.delete(Constants.SETTINGS.get());
+            ninjaCache.delete(Constants.SETTINGS.asString());
             flashScope.success(i18nService.get("setup.saved"));
         }
 
@@ -197,7 +197,7 @@ public class AdminController extends RootController {
     }
 
     public Result changeactive(@PathParam("userid") String userId, Context context, FlashScope flashScope) {
-        final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
         final User user = dataService.findUserById(userId);
 
         if (!connectedUser.equals(user)) {
@@ -227,7 +227,7 @@ public class AdminController extends RootController {
     }
 
     public Result changeadmin(@PathParam("userid") String userId, FlashScope flashScope, Context context) {
-        final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        final User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
         final User user = dataService.findUserById(userId);
 
         if (user != null) {
@@ -247,7 +247,7 @@ public class AdminController extends RootController {
                 flashScope.success(message);
                 LOG.info(user.getEmail() + " " + admin + " - " + connectedUser.getEmail());
             } else {
-                flashScope.put(Constants.FLASHWARNING.get(), i18nService.get("warning.change.admin"));
+                flashScope.put(Constants.FLASHWARNING.asString(), i18nService.get("warning.change.admin"));
             }
         } else {
             flashScope.error(i18nService.get(ERROR_LOADING_USER));
@@ -281,8 +281,8 @@ public class AdminController extends RootController {
     }
 
     public Result tournament() {
-        List<Bracket> brackets = dataService.findAllBrackets();
-        List<Game> games = dataService.findAllGames();
+        List<Bracket> brackets = dataService.findAllTournamentBrackets();
+        List<Game> games = dataService.findAllGamesOrderByNumber();
 
         return Results.html().render("brackets", brackets).render("games", games);
     }
@@ -301,7 +301,7 @@ public class AdminController extends RootController {
             String[] recipientsArray = new String[users.size()];
             recipientsArray = recipients.toArray(recipientsArray);
 
-            User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+            User connectedUser = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
             mailService.rudelmail(subject, message, recipientsArray, connectedUser.getEmail());
             flashScope.success(i18nService.get("info.rudelmail.send"));
         } else {

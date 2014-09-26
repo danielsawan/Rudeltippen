@@ -32,7 +32,7 @@ public class ApplicationController extends RootController {
     private I18nService i18nService;
 
     public Result index(Context context) {
-        final int pointsDiff = calculationService.getPointsToFirstPlace(context.getAttribute(Constants.CONNECTEDUSER.get(), User.class));
+        final int pointsDiff = calculationService.getPointsToFirstPlace(context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class));
         final String diffToTop = i18nService.getDiffToTop(pointsDiff);
         final Playday playday = dataService.findCurrentPlayday();
         final List<User> topUsers = dataService.findTopThreeUsers();

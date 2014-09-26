@@ -229,10 +229,10 @@ public class DataService {
     }
 
     public Settings findSettings() {
-        Settings settings = (Settings) ninjaCache.get(Constants.SETTINGS.get());
+        Settings settings = (Settings) ninjaCache.get(Constants.SETTINGS.asString());
         if (settings == null) {
-            settings = this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.get()).get();
-            ninjaCache.add(Constants.SETTINGS.get(), settings);
+            settings = this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
+            ninjaCache.add(Constants.SETTINGS.asString(), settings);
         }
 
         return settings;
@@ -508,52 +508,26 @@ public class DataService {
         return results;
     }
 
-    public void findPlaydayStatistics() {
-        //TODO Refactoring
-        //        Object result = null;
-        //        Object [] values = null;
-        //
-        //        result = JPA.em()
-        //                .createQuery("SELECT " +
-        //                        "SUM(playdayPoints) AS points, " +
-        //                        "SUM(playdayCorrectTips) AS tips, " +
-        //                        "SUM(playdayCorrectDiffs) AS diffs," +
-        //                        "SUM(playdayCorrectTrends) AS trends, " +
-        //                        "ROUND(AVG(playdayPoints)) AS avgPoints " +
-        //                        "FROM UserStatistic u WHERE u.playday.id = :playdayID")
-        //                        .setParameter("playdayID", playday.getId())
-        //                        .getSingleResult();
-        //
-        //        if (result != null) {
-        //            values = (Object[]) result;
-        //        }
-        //
-        //        return values;        
-    }
-
-    public void findAscendingStatistics() {
-        //TODO Refactoring
-        //        Object result = null;
-        //        Object [] values = null;
-        //
-        //        result = JPA.em()
-        //                .createQuery(
-        //                        "SELECT " +
-        //                                "SUM(playdayPoints) AS points, " +
-        //                                "SUM(playdayCorrectTips) AS correctTips, " +
-        //                                "SUM(playdayCorrectDiffs) AS correctDiffs, " +
-        //                                "SUM(playdayCorrectTrends) AS correctTrends " +
-        //                                "FROM UserStatistic u " +
-        //                        "WHERE u.playday.id <= :playdayID AND u.user.id = :userID")
-        //                        .setParameter("playdayID", playday.getId())
-        //                        .setParameter("userID", user.getId())
-        //                        .getSingleResult();
-        //
-        //        if (result != null) {
-        //            values = (Object[]) result;
-        //        }
-        //
-        //        return values;        
+    public Map<String, String> findStatisticsForPlayday(Playday playday) {
+        int points = 0, tips = 0, diffs = 0, trends = 0;
+        List<UserStatistic> userStatistics = this.datastore.find(UserStatistic.class).field("playday").equal(playday).asList();
+        for (UserStatistic userStatistic : userStatistics) {
+            points = points + userStatistic.getPlaydayPoints();
+            tips = tips + userStatistic.getPlaydayCorrectTips();
+            diffs = diffs + userStatistic.getPlaydayCorrectDiffs();
+            trends = trends + userStatistic.getPlaydayCorrectTrends();
+        }
+        
+        Map<String, String> statistics = new HashMap<String, String>();
+        if (!userStatistics.isEmpty()) {
+            statistics.put("points", String.valueOf(points));
+            statistics.put("tips", String.valueOf(tips));
+            statistics.put("diffs", String.valueOf(diffs));
+            statistics.put("trends", String.valueOf(trends));
+            statistics.put("avgPoints", String.valueOf(points / userStatistics.size()));   
+        }
+        
+        return statistics;
     }
 
     public List<Map<String, String>> findGameStatistics() {
@@ -664,5 +638,9 @@ public class DataService {
 
     public List<Team> findAllTeams() {
         return this.mongoDB.findAll(Team.class);
+    }
+
+    public List<Game> findAllGamesOrderByNumber() {
+        return this.datastore.find(Game.class).order("number").asList();
     }
 }

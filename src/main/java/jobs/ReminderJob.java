@@ -47,7 +47,7 @@ public class ReminderJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {
-            LOG.info("Started Job: " + Constants.REMINDERJOB.get());
+            LOG.info("Started Job: " + Constants.REMINDERJOB.asString());
             final List<Extra> nextExtras = dataService.findAllExtrasEnding();
             final List<Game> nextGames = dataService.findAllGamesEnding();
             final List<User> users = dataService.findAllRemindableUsers();
@@ -74,7 +74,7 @@ public class ReminderJob implements Job {
             }
 
             disableReminder(nextExtras, nextGames);
-            LOG.info("Finshed Job: " + Constants.REMINDERJOB.get());
+            LOG.info("Finshed Job: " + Constants.REMINDERJOB.asString());
         }
     }
 

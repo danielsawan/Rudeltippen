@@ -184,7 +184,7 @@ public class ValidationService {
     public boolean isValidEmail(final String email) {
         boolean valid = false;
         if (StringUtils.isNotBlank(email)) {
-            final Pattern p = Pattern.compile(Constants.EMAILPATTERN.get());
+            final Pattern p = Pattern.compile(Constants.EMAILPATTERN.asString());
             final Matcher m = p.matcher(email);
             if (m.matches()) {
                 valid = true;
@@ -202,7 +202,7 @@ public class ValidationService {
      */
     public boolean isValidUsername(final String username) {
         boolean valid = false;
-        final Pattern p = Pattern.compile(Constants.USERNAMEPATTERN.get());
+        final Pattern p = Pattern.compile(Constants.USERNAMEPATTERN.asString());
         final Matcher m = p.matcher(username);
 
         if (StringUtils.isNotBlank(username) && username.length() >= 3 && username.length() <= 32 && m.matches()) {
@@ -213,14 +213,14 @@ public class ValidationService {
     }
 
     public boolean isValidConfirmationToken(String token) {
-        final Pattern p = Pattern.compile(Constants.CONFIRMATIONPATTERN.get());
+        final Pattern p = Pattern.compile(Constants.CONFIRMATIONPATTERN.asString());
         final Matcher m = p.matcher(token);
 
         return m.matches();
     }
     
     public boolean isValidObjectId(String id) {
-        final Pattern p = Pattern.compile(Constants.OBJECTIDPATTERN.get());
+        final Pattern p = Pattern.compile(Constants.OBJECTIDPATTERN.asString());
         final Matcher m = p.matcher(id);
 
         return m.matches();

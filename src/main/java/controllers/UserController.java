@@ -124,14 +124,14 @@ public class UserController extends RootController {
     }
     
     public Result profile(Context context) {
-        final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
         final Settings settings = dataService.findSettings();
         
         return Results.html().render("user", user).render(settings);
     }
 
     public Result changepicture(@PathParam("avatar") String avatar, Context context) {
-        final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
         user.setPicture(commonService.getUserPictureUrl(commonService.getAvatarFromString(avatar), user));
         user.setAvatar(commonService.getAvatarFromString(avatar));
         dataService.save(user);
@@ -147,7 +147,7 @@ public class UserController extends RootController {
         } else if (validationService.usernameExists(username)) {
             flashScope.error(i18nService.get("controller.users.usernamexists"));
         } else {
-            final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+            final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
             user.setUsername(username);
             dataService.save(user);
 
@@ -172,7 +172,7 @@ public class UserController extends RootController {
             flashScope.error(i18nService.get("validation.email.notmatch"));
         } else {
             final String token = UUID.randomUUID().toString();
-            final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+            final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
             if (user != null) {
                 final ConfirmationType confirmationType = ConfirmationType.CHANGEUSERNAME;
                 final Confirmation confirmation = new Confirmation();
@@ -200,7 +200,7 @@ public class UserController extends RootController {
             flashScope.error(i18nService.get("validation.password.notmatch"));
         } else {
             final String token = UUID.randomUUID().toString();
-            final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+            final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
             if (user != null) {
                 final ConfirmationType confirmationType = ConfirmationType.CHANGEUSERPASS;
                 final Confirmation confirm = new Confirmation();
@@ -220,7 +220,7 @@ public class UserController extends RootController {
     }
 
     public Result updatenotifications(Context context, FlashScope flashScope) {
-        final User user = context.getAttribute(Constants.CONNECTEDUSER.get(), User.class);
+        final User user = context.getAttribute(Constants.CONNECTEDUSER.asString(), User.class);
 
         String reminder = context.getParameter("reminder");
         String notification = context.getParameter("notification");

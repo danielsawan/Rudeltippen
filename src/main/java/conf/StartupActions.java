@@ -40,10 +40,10 @@ public class StartupActions {
             return;
         }
 
-        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(GameTipJob.class, Constants.GAMETIPJOB.get(), JOB_GROUP), ninjaScheduler.getTrigger("gameTipJobTrigger", GAMETIPCRON, TRIGGER_GROUP, i18nService.get("job.gametipjob.description")));
-        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(KickoffJob.class, Constants.KICKOFFJOB.get(), JOB_GROUP), ninjaScheduler.getTrigger("kickoffJobTrigger", KICKOFFCRON, TRIGGER_GROUP, i18nService.get("job.resultsjob.descrption")));
-        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(ReminderJob.class, Constants.REMINDERJOB.get(), JOB_GROUP), ninjaScheduler.getTrigger("reminderJobTrigger", REMINDERCRON, TRIGGER_GROUP, i18nService.get("job.reminderjob.description")));
-        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(ResultJob.class, Constants.RESULTJOB.get(), JOB_GROUP), ninjaScheduler.getTrigger("resultsJobTrigger", RESULTSCRON, TRIGGER_GROUP, i18nService.get("job.resultsjob.descrption")));
+        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(GameTipJob.class, Constants.GAMETIPJOB.asString(), JOB_GROUP), ninjaScheduler.getTrigger("gameTipJobTrigger", GAMETIPCRON, TRIGGER_GROUP, i18nService.get("job.gametipjob.description")));
+        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(KickoffJob.class, Constants.KICKOFFJOB.asString(), JOB_GROUP), ninjaScheduler.getTrigger("kickoffJobTrigger", KICKOFFCRON, TRIGGER_GROUP, i18nService.get("job.resultsjob.descrption")));
+        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(ReminderJob.class, Constants.REMINDERJOB.asString(), JOB_GROUP), ninjaScheduler.getTrigger("reminderJobTrigger", REMINDERCRON, TRIGGER_GROUP, i18nService.get("job.reminderjob.description")));
+        ninjaScheduler.schedule(ninjaScheduler.getJobDetail(ResultJob.class, Constants.RESULTJOB.asString(), JOB_GROUP), ninjaScheduler.getTrigger("resultsJobTrigger", RESULTSCRON, TRIGGER_GROUP, i18nService.get("job.resultsjob.descrption")));
         ninjaScheduler.start();
     }
 }

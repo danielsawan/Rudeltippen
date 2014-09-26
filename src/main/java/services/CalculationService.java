@@ -76,7 +76,6 @@ public class CalculationService {
 
                 for (final User user : users) {
                     statisticService.setPlaydayPoints(playday, user);
-                    statisticService.setAscendingPlaydayPoints(playday, user);
                 }
 
                 statisticService.setPlaydayPlaces(playday);

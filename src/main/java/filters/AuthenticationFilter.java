@@ -36,23 +36,23 @@ public class AuthenticationFilter implements Filter {
 
     @Override
     public Result filter(FilterChain filterChain, Context context) {
-        Cookie cookie = context.getCookie(Constants.COOKIENAME.get());
+        Cookie cookie = context.getCookie(Constants.COOKIENAME.asString());
         if (cookie != null && cookie.getValue().indexOf("-") > 0) {
             final String sign = cookie.getValue().substring(0, cookie.getValue().indexOf("-"));
             final String username = cookie.getValue().substring(cookie.getValue().indexOf("-") + 1);
 
             if (StringUtils.isNotBlank(sign) && StringUtils.isNotBlank(username) && authService.sign(username).equals(sign) && context.getSession() != null) {
-                context.getSession().put(Constants.USERNAME.get(), username);
+                context.getSession().put(Constants.USERNAME.asString(), username);
             }
         }
 
-        if (context.getSession() != null && context.getSession().get(Constants.USERNAME.get()) != null) {
-            User connectedUser = dataService.findUserByUsernameOrEmail(context.getSession().get(Constants.USERNAME.get()));
-            context.setAttribute(Constants.CONNECTEDUSER.get(), connectedUser);
+        if (context.getSession() != null && context.getSession().get(Constants.USERNAME.asString()) != null) {
+            User connectedUser = dataService.findUserByUsernameOrEmail(context.getSession().get(Constants.USERNAME.asString()));
+            context.setAttribute(Constants.CONNECTEDUSER.asString(), connectedUser);
 
             Result result = filterChain.next(context);
             if (result.getRenderable() != null && !(result.getRenderable() instanceof NoHttpBody)) {
-                result.render(Constants.CONNECTEDUSER.get(), connectedUser);
+                result.render(Constants.CONNECTEDUSER.asString(), connectedUser);
                 result.render("ViewService", viewService);
                 result.render("currentPlayday", dataService.findCurrentPlayday()); 
                 result.render("location", context.getRequestPath());

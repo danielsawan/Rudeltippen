@@ -94,29 +94,16 @@ public class StatisticService {
             gameTipStatistic.setPlayday(playday);
         }
 
-        final Object [] statistics = getPlaydayStatistics(playday);
-        if ((statistics != null) && (statistics.length == 5)) {
-            gameTipStatistic.setPoints(((Long) statistics [0]).intValue());
-            gameTipStatistic.setCorrectTips(((Long) statistics [1]).intValue());
-            gameTipStatistic.setCorrectDiffs(((Long) statistics [2]).intValue());
-            gameTipStatistic.setCorrectTrends(((Long) statistics [3]).intValue());
-            gameTipStatistic.setAvgPoints(((Double) statistics [4]).intValue());
+        final Map<String, String> statistics =  dataService.findStatisticsForPlayday(playday);
+        if (statistics != null) {
+            gameTipStatistic.setPoints(Integer.valueOf(statistics.get("points")));
+            gameTipStatistic.setCorrectTips(Integer.valueOf(statistics.get("tips")));
+            gameTipStatistic.setCorrectDiffs(Integer.valueOf(statistics.get("diffs")));
+            gameTipStatistic.setCorrectTrends(Integer.valueOf(statistics.get("trends")));
+            gameTipStatistic.setAvgPoints(Integer.valueOf(statistics.get("avgPoints")));
         }
 
         dataService.save(gameTipStatistic);
-    }
-
-    public void setAscendingPlaydayPoints(final Playday playday, final User user) {
-        final UserStatistic userStatistic = dataService.findUserStatisticByPlaydayAndUser(playday, user);
-
-        final Object [] statistics = getAscendingStatistics(playday, user);
-        if ((statistics != null) && (statistics.length == 4)) {
-            userStatistic.setPoints(((Long) statistics [0]).intValue());
-            userStatistic.setCorrectTips(((Long) statistics [1]).intValue());
-            userStatistic.setCorrectDiffs(((Long) statistics [2]).intValue());
-            userStatistic.setCorrectTrends(((Long) statistics [3]).intValue());
-        }
-        dataService.save(userStatistic);
     }
 
     public void setPlaydayPlaces(final Playday playday) {
@@ -185,15 +172,5 @@ public class StatisticService {
             playdayStatistic.setResultCount(entry.getValue());
             dataService.save(playdayStatistic);
         }
-    }
-
-    public Object [] getPlaydayStatistics(Playday playday) {
-        dataService.findPlaydayStatistics();
-        return new Object [0];
-    }
-
-    public Object []  getAscendingStatistics(final Playday playday, final User user) {
-        dataService.findAscendingStatistics();
-        return new Object [0];
     }
 }

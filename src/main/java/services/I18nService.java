@@ -59,7 +59,7 @@ public class I18nService {
     public String getCurrentTimeZone() {
         String timezone = ninjaProperties.get("rudeltippen.timezone");
         if (StringUtils.isBlank(timezone)) {
-            timezone = Constants.DEFAULT_TIMEZONE.get();
+            timezone = Constants.DEFAULT_TIMEZONE.asString();
         }
         return timezone;
     }
