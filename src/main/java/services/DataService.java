@@ -122,12 +122,13 @@ public class DataService {
 
     public List<Game> findAllGamesWithNoResult() {
         DateTime dateTime = new DateTime();
-        dateTime = dateTime.plusMinutes(90);
+        dateTime = dateTime.minusMinutes(90);
 
         return this.datastore.find(Game.class)
                 .field(ENDED).equal(false)
                 .field("webserviceID").exists()
-                .field(KICKOFF).lessThanOrEq(dateTime.toDate()).asList();
+                .field(KICKOFF).lessThanOrEq(dateTime.toDate())
+                .asList();
     }
 
     public List<Extra> findAllExtrasEnding() {
