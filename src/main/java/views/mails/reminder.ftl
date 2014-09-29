@@ -16,7 +16,7 @@
 					<td>${i18n.get(game.homeTeam.name)} - ${i18n.get(game.awayTeam.name)}</td>
 				</tr>
 				<tr>
-					<td>${i18n.get('mail.tipto')}: ${viewService.getTippEnding(game)}</td>
+					<td>${i18n.get('mail.tipto')}: ${viewService.getTippEnding(game)?datetime}</td>
 				</tr>
 				<#if game_has_next>
 					<tr>
