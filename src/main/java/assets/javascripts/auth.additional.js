@@ -1,3 +1,7 @@
+$(function() {
+    FastClick.attach(document.body);
+});
+
 $(document).ready(function(){
 	$('.alert-warning').delay(20000).slideToggle();
 	$('.alert-success').delay(5000).slideToggle();

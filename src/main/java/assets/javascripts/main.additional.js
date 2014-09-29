@@ -1,3 +1,7 @@
+$(function() {
+    FastClick.attach(document.body);
+});
+
 $(document).ready(function(){
     $('.table-responsive').responsiveTable({
     	addFocusBtn: false,
