@@ -25,7 +25,6 @@ import models.statistic.GameTipStatistic;
 import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import ninja.cache.NinjaCache;
 import ninja.mongodb.MongoDB;
 
 import org.joda.time.DateTime;
@@ -60,7 +59,6 @@ public class DataService {
     private static final String ENDED = "ended";
     private static final String CURRENT = "current";
     private static final String GAME = "game";
-    private static final String CURRENT_PLAYDAY = "currentPlayday";
     private static final String REMINDER = "reminder";
     private static final String PLAYOFF = "playoff";
     private static final String USERNAME = "username";
@@ -74,9 +72,6 @@ public class DataService {
     private Datastore datastore;
     private MongoDB mongoDB;
 
-    @Inject
-    private NinjaCache ninjaCache;
-    
     @Inject
     private ResultService resultService;
 
@@ -122,12 +117,13 @@ public class DataService {
 
     public List<Game> findAllGamesWithNoResult() {
         DateTime dateTime = new DateTime();
-        dateTime = dateTime.plusMinutes(90);
+        dateTime = dateTime.minusMinutes(90);
 
         return this.datastore.find(Game.class)
                 .field(ENDED).equal(false)
                 .field("webserviceID").exists()
-                .field(KICKOFF).lessThanOrEq(dateTime.toDate()).asList();
+                .field(KICKOFF).lessThanOrEq(dateTime.toDate())
+                .asList();
     }
 
     public List<Extra> findAllExtrasEnding() {
@@ -231,13 +227,7 @@ public class DataService {
     }
 
     public Settings findSettings() {
-        Settings settings = (Settings) ninjaCache.get(Constants.SETTINGS.asString());
-        if (settings == null) {
-            settings = this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
-            ninjaCache.add(Constants.SETTINGS.asString(), settings);
-        }
-
-        return settings;
+        return this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
     }
 
     public User findUserByPlace(int place) {
@@ -331,13 +321,9 @@ public class DataService {
     }
 
     public Playday findCurrentPlayday () {
-        Playday playday = (Playday) ninjaCache.get(CURRENT_PLAYDAY);
+        Playday playday = this.datastore.find(Playday.class).field(CURRENT).equal(true).get();
         if (playday == null) {
-            playday = this.datastore.find(Playday.class).field(CURRENT).equal(true).get();
-            if (playday == null) {
-                playday = this.datastore.find(Playday.class).field(NUMBER).equal(1).get();
-            }
-            ninjaCache.add(CURRENT_PLAYDAY, playday);
+            playday = this.datastore.find(Playday.class).field(NUMBER).equal(1).get();
         }
 
         return playday;

@@ -1,7 +1,8 @@
 $(document).ready(function(){
     $('.table-responsive').responsiveTable({
     	addFocusBtn: false,
-    	addDisplayAllBtn: false
+    	addDisplayAllBtn: false,
+    	stickyTableHeader: false
     });
 	$(".dropdown-btn-group").hide();
     $(".pagination").rPage();
