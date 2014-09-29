@@ -113,7 +113,7 @@ public class CommonService extends ViewService {
         while (entries.hasNext()) {
             Map.Entry<String, String[]> entry = entries.next();
 
-            if (entry.getValue() != null && entry.getValue().length > 0) {
+            if (entry.getValue() != null && entry.getValue().length >= 2) {
                 map.put(entry.getKey(), entry.getValue()[1]);
             }
         }

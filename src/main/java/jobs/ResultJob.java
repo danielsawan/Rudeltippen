@@ -58,7 +58,7 @@ public class ResultJob implements Job {
 
     private void setGameScore(final Game game) {
         final WSResults wsResults = resultService.getResultsFromWebService(game);
-        if ((wsResults != null) && wsResults.isUpdated()) {
+        if (wsResults != null && wsResults.isUpdated()) {
             calculationService.setGameScoreFromWebService(game, wsResults);
         }
     }

@@ -5,7 +5,6 @@ import java.util.List;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
-import ninja.cache.NinjaCache;
 import ninja.session.Session;
 import ninja.utils.NinjaProperties;
 import services.DataService;
@@ -32,9 +31,6 @@ public class SystemController {
     @Inject
     private NinjaProperties ninjaProperties;
     
-    @Inject
-    private NinjaCache ninjaCache;
-
     public Result setup() {
         if (dataService.appIsInizialized()) {
             return Results.redirect("/");
@@ -46,7 +42,6 @@ public class SystemController {
 
     public Result init(Session session, Context context) {
         if (!dataService.appIsInizialized()) {
-            ninjaCache.clear();
             session.clear();
             
             importService.loadInitialData(context);

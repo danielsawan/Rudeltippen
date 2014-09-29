@@ -15,7 +15,6 @@ import models.Team;
 import models.User;
 import models.ws.WSResult;
 import models.ws.WSResults;
-import ninja.cache.NinjaCache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +49,7 @@ public class CalculationService {
     @Inject
     private CommonService commonService;
 
-    @Inject
-    private NinjaCache ninjaCache;
-    
     public void calculations() {
-        ninjaCache.clear();
-        
         calculateBrackets();
         setTeamPlaces();
         setExtraAnswers();

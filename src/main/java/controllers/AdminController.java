@@ -22,7 +22,6 @@ import ninja.FilterWith;
 import ninja.NinjaScheduler;
 import ninja.Result;
 import ninja.Results;
-import ninja.cache.NinjaCache;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.session.Session;
@@ -87,9 +86,6 @@ public class AdminController extends RootController {
 
     @Inject
     private CommonService commonService;
-    
-    @Inject
-    private NinjaCache ninjaCache;
     
     @Inject
     private NinjaScheduler ninjaScheduler;
@@ -176,7 +172,6 @@ public class AdminController extends RootController {
             settings.setEnableRegistration(settingsDTO.isEnableRegistration());
             dataService.save(settings);
 
-            ninjaCache.delete(Constants.SETTINGS.asString());
             flashScope.success(i18nService.get("setup.saved"));
         }
 
@@ -366,7 +361,6 @@ public class AdminController extends RootController {
         
         if (("rudeltippen").equalsIgnoreCase(confirm)) {
             dataService.dropDatabase();
-            ninjaCache.clear();
             session.clear();
             
             return Results.redirect("/");
