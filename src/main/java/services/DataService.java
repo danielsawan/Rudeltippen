@@ -440,7 +440,7 @@ public class DataService {
     }
 
     public List<Game> findGamesByPlayday(Playday playday) {
-        return this.datastore.find(Game.class).field(PLAYDAY).equal(playday).order("kickoff").asList();
+        return this.datastore.find(Game.class).field(PLAYDAY).equal(playday).order("kickoff").order("number").asList();
     }
 
     public List<ExtraTip> findExtraTipsByUser(User user) {

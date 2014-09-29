@@ -1,10 +1,6 @@
 package services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Date;
-
 import main.TestBase;
 import models.User;
 
@@ -44,12 +40,5 @@ public class TestViewService extends TestBase {
         assertEquals(commonService.getPlaceName(-5), "");
         assertEquals(commonService.getPlaceName(11), "");
         assertEquals(commonService.getPlaceName(1), "Erster");
-    }
-
-    @Test
-    public void testFormatDate() {
-        CommonService commonService = getInjector().getInstance(CommonService.class);
-
-        assertNotNull(commonService.difference(new Date()));
     }
 }
