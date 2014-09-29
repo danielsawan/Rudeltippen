@@ -182,7 +182,7 @@ public class ViewService {
         return tip;
     }
 
-    private Date getTippEnding(Game game) {
+    public Date getTippEnding(Game game) {
         final long time = game.getKickoff().getTime();
         final int offset = dataService.findSettings().getMinutesBeforeTip() * 60000 ;
 
