@@ -31,7 +31,7 @@
 		                <tr>
 		                    <td>${game.number}</td>		                
 		                    <td>${game.kickoff?datetime}</td>
-		                    <td>${ViewService.difference(game.kickoff)}</td>
+		                    <td>${prettyTime(game.kickoff)}</td>
 		                    <#if (game.homeTeam)?? && (game.awayTeam.name)??>
 		                        <td><img class="flag" src="/assets/img/flags/${game.homeTeam.flag}">${i18n(game.homeTeam.name)}</td>
 		                        <td><img class="flag" src="/assets/img/flags/${game.awayTeam.flag}">${i18n(game.awayTeam.name)}</td>
@@ -62,15 +62,10 @@
 </div>
 <div class="row">
 	<div class="col-md-12">
-		<legend>${i18n('extratips')}&nbsp;&nbsp;<span class="glyphicon glyphicon-question-sign bonustips" data-toggle="tooltip" data-placement="top" title="${i18n('app.bonus.tooltip')}"></span></legend>
+		<legend>${i18n('extratips')}</legend>
 	</div>
 </div>
-<div class="row" style="text-align:right; padding-right: 5px;">
-	<div class="col-md-12">
-		<a data-toggle="collapse" id="collapseExtra" data-parent="#accordion" href="#extratips"><span class="glyphicon glyphicon-circle-arrow-down"></span></a>
-	</div>
-</div>
-<div id="extratips" class="row panel-collapse collapse">
+<div id="extratips" class="row">
 	<div class="col-md-12">
 		<form action="/tips/storeextratips" method="post" role="form">
 		<div class="table-responsive">
@@ -89,9 +84,9 @@
 			            <tr>
 			                <td>${i18n(extra.question)}</td>
 			                <td>${extra.points}</td>
-			                <td>${ViewService.difference(extra.ending)}</td>
+			                <td>${prettyTime(extra.ending)}</td>
 			                <td>
-			                    <#if (extra.tipable)??>
+			                    <#if extra.isTipable()>
 			                        <select id="bonustipp_${extra_index}" name="bonus_${extra.id}_teamId" class="form-control">
 			                            <#if !((extra.getExtraTip)??)>	
 			                                <option value="0" selected="selected">-- ${i18n('pleasechoose')} --</option>

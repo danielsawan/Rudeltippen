@@ -253,7 +253,7 @@ public class CalculationService {
             }
         }
 
-        if (currentPlayday != dataService.findCurrentPlayday()) {
+        if (currentPlayday.getNumber() != dataService.findCurrentPlayday().getNumber()) {
             changed = true;
             notificationService.sendTopThree(currentPlayday);
         }

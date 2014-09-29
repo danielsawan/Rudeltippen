@@ -100,42 +100,6 @@ public class ViewService {
         return trend;
     }
 
-    public String difference (final Date date) {
-        final int min = 60;
-        final int hour = min * 60;
-        final int day = hour * 24;
-        final int month = day * 30;
-        final int year = day * 365;
-
-        final Date now = new Date();
-        String difference = null;
-        if (date != null && date.after(now)) {
-            final long delta = (date.getTime() - now.getTime()) / 1000;
-            if (delta < 60) {
-                difference = i18nService.get("in.second", new Object[]{delta});
-            } else if (delta < hour) {
-                final long minutes = delta / min;
-                difference = i18nService.get("in.minute", new Object[]{minutes});
-            } else if (delta < day) {
-                final long hours = delta / hour;
-                difference = i18nService.get("in.hour", new Object[]{hours});
-            } else if (delta < month) {
-                final long days = delta / day;
-                difference = i18nService.get("in.day", new Object[]{days});
-            } else if (delta < year) {
-                final long months = delta / month;
-                difference = i18nService.get("in.month", new Object[]{months});
-            } else {
-                final long years = delta / year;
-                difference = i18nService.get("in.year", new Object[]{years});
-            }
-        } else {
-            difference = i18nService.get("in.ended");
-        }
-
-        return difference;
-    }
-
     public String getHomeScoreTip(final Game game, User user) {
         String homeScore = "";
 

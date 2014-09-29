@@ -85,12 +85,6 @@ $(document).ready(function(){
         		}
         });	        
     }
-    $('#extratips').on('hidden.bs.collapse', function () {
-    	$('#collapseExtra').html("<span class=\"glyphicon glyphicon-circle-arrow-down\">");
-    });
-    $('#extratips').on('show.bs.collapse', function () {
-    	$('#collapseExtra').html("<span class=\"glyphicon glyphicon-circle-arrow-up\">");
-    })
 });
 
 $(document).on("click", ".loading-avatar", function(e) {
