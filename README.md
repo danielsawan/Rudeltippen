@@ -1,4 +1,6 @@
-Rudeltippen [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
+[![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
+
+Rudeltippen
 ------------------
 
 A football betting game based on the [Ninja web Framework][19], [Twitter Bootstrap][20] and [MongoDB][21].
