@@ -2,7 +2,7 @@ package models;
 
 import java.io.Serializable;
 
-import ninja.morphia.MorphiaModel;
+import morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
