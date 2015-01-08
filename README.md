@@ -1,5 +1,10 @@
 [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
 
+If this software is useful to you, you can support further development by using Flattr. Thank you!
+
+[![Flattr this repository](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=svenkubiak&url=https://github.com/svenkubiak/Rudeltippen&title=Rudeltippen&language=en&tags=github&category=software)
+
+
 Rudeltippen
 ------------------
 
