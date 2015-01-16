@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import models.enums.ConfirmationType;
-import ninja.morphia.MorphiaModel;
+import morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;

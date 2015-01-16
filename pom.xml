@@ -8,15 +8,18 @@
 	<version>3.0.0-SNAPSHOT</version>
 	<url>https://github.com/svenkubiak/Rudeltippen</url>
 	<properties>
-		<ninja.version>3.3.3</ninja.version>
+		<ninja.version>4.0.4</ninja.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<prerequisites>
+		<maven>3.1.0</maven>
+	</prerequisites>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.2</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -50,7 +53,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.2.3.v20140905</version>
+				<version>9.2.6.v20141205</version>
 				<configuration>
 					<contextPath>/</contextPath>
 					<stopKey>stop</stopKey>
@@ -78,6 +81,11 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
+			<plugin>
 				<groupId>org.ninjaframework</groupId>
 				<artifactId>ninja-maven-plugin</artifactId>
 				<version>${ninja.version}</version>
@@ -92,7 +100,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>2.5.3</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -109,7 +117,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
+				<version>1.8</version>
 				<executions>
 					<execution>
 						<id>combine-css-js</id>
@@ -123,10 +131,10 @@
 								<property name="JS_FILE" value="combined.min.js" />
 								<property name="CSS_PATH" value="${CSS_DIR}/${CSS_FILE}" />
 								<property name="JS_PATH" value="${JS_DIR}/${JS_FILE}" />
-					
+
 								<delete file="${CSS_PATH}" />
 								<delete file="${JS_PATH}" />
-					
+
 								<echo message="Building minifed combined JS file..." />
 								<concat destfile="${JS_PATH}">
 									<fileset dir="${JS_DIR}" includes="jquery.min.js" />
@@ -136,7 +144,8 @@
 									<fileset dir="${JS_DIR}" includes="overlay.min.js" />
 									<fileset dir="${JS_DIR}" includes="rwd-table.min.js" />
 								</concat>
-								<apply executable="java" parallel="false" verbose="true" dest="${JS_DIR}">
+								<apply executable="java" parallel="false" verbose="true"
+									dest="${JS_DIR}">
 									<fileset dir="${JS_DIR}">
 										<include name="${JS_FILE}" />
 									</fileset>
@@ -149,16 +158,18 @@
 									<mapper type="glob" from="${JS_FILE}" to="${JS_FILE}" />
 								</apply>
 								<echo message="Built minfied combined JS file ${JS_PATH}" />
-								
+
 								<echo message="Building minifed combined CSS file..." />
-								<replace file="${CSS_DIR}/bootstrap.min.css" token="(min-width:768px)" value="(min-width:1023px)" />
+								<replace file="${CSS_DIR}/bootstrap.min.css" token="(min-width:768px)"
+									value="(min-width:1023px)" />
 								<concat destfile="${CSS_PATH}">
 									<fileset dir="${CSS_DIR}" includes="bootstrap.min.css" />
 									<fileset dir="${CSS_DIR}" includes="overlay.min.css" />
 									<fileset dir="${CSS_DIR}" includes="rwd-table.min.css" />
 									<fileset dir="${CSS_DIR}" includes="additional.css" />
 								</concat>
-								<apply executable="java" parallel="false" verbose="true" dest="${CSS_DIR}">
+								<apply executable="java" parallel="false" verbose="true"
+									dest="${CSS_DIR}">
 									<fileset dir="${CSS_DIR}">
 										<include name="${CSS_FILE}" />
 									</fileset>
@@ -171,10 +182,11 @@
 									<mapper type="glob" from="${CSS_FILE}" to="${CSS_FILE}" />
 								</apply>
 								<echo message="Built minfied combined CSS file ${CSS_PATH}" />
-								
+
 								<delete file="${JS_DIR}/auth.additional.min.js" />
 								<echo message="Building minifed JS auth.additional.min.js" />
-								<apply executable="java" parallel="false" verbose="true" dest="${JS_DIR}">
+								<apply executable="java" parallel="false" verbose="true"
+									dest="${JS_DIR}">
 									<fileset dir="${JS_DIR}">
 										<include name="auth.additional.js" />
 									</fileset>
@@ -187,10 +199,11 @@
 									<mapper type="glob" from="auth.additional.js" to="auth.additional.min.js" />
 								</apply>
 								<echo message="Built minfied CSS file auth.additional.min.js" />
-								
+
 								<delete file="${JS_DIR}/main.additional.min.js" />
 								<echo message="Building minifed JS main.additional.min.js" />
-								<apply executable="java" parallel="false" verbose="true" dest="${JS_DIR}">
+								<apply executable="java" parallel="false" verbose="true"
+									dest="${JS_DIR}">
 									<fileset dir="${JS_DIR}">
 										<include name="main.additional.js" />
 									</fileset>
@@ -214,11 +227,15 @@
 						<phase>deploy</phase>
 						<configuration>
 							<target name="Create deployable zip">
-								<move file="target/rudeltippen-${project.version}-jar-with-dependencies.jar" tofile="rudeltippen/rudeltippen.jar" failonerror="false" />
-								<move file="target/rudeltippen-${project.version}.war" tofile="rudeltippen/rudeltippen.war" failonerror="false" />
+								<move
+									file="target/rudeltippen-${project.version}-jar-with-dependencies.jar"
+									tofile="rudeltippen/rudeltippen.jar" failonerror="false" />
+								<move file="target/rudeltippen-${project.version}.war"
+									tofile="rudeltippen/rudeltippen.war" failonerror="false" />
 								<copy file="src/main/java/conf/application.conf" todir="rudeltippen/" />
 								<copy file="README.md" todir="rudeltippen/" />
-								<zip destfile="target/rudeltippen.zip" filesonly="true"	basedir="." includes="rudeltippen/**" />
+								<zip destfile="target/rudeltippen.zip" filesonly="true"
+									basedir="." includes="rudeltippen/**" />
 								<delete dir="rudeltippen/" />
 							</target>
 						</configuration>
@@ -262,28 +279,28 @@
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
 			<artifactId>embedded-mongodb</artifactId>
-			<version>1.1.0</version>
+			<version>1.3.0</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
 			<artifactId>ninja-quartz-scheduler-module</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
 			<artifactId>ninja-mongodb-module</artifactId>
-			<version>1.3.1</version>
+			<version>1.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.svenkubiak</groupId>
 			<artifactId>ninja-validation-module</artifactId>
-			<version>1.0.2</version>
-		</dependency>		
+			<version>1.0.3</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>fluent-hc</artifactId>
-			<version>4.3.5</version>
+			<version>4.3.6</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>

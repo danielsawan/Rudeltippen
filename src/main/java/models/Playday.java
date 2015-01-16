@@ -6,7 +6,7 @@ import java.util.List;
 import models.statistic.GameStatistic;
 import models.statistic.GameTipStatistic;
 import models.statistic.UserStatistic;
-import ninja.morphia.MorphiaModel;
+import morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;

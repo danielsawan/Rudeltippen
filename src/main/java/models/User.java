@@ -7,7 +7,7 @@ import java.util.List;
 import models.enums.Avatar;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import ninja.morphia.MorphiaModel;
+import morphia.MorphiaModel;
 
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;

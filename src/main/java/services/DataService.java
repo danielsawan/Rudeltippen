@@ -25,7 +25,7 @@ import models.statistic.GameTipStatistic;
 import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import ninja.mongodb.MongoDB;
+import mongodb.MongoDB;
 
 import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
@@ -50,9 +50,9 @@ import com.mongodb.MongoClient;
 @Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DataService {
+    private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String ID = "_id";
     private static final String TOTAL = "total";
-    private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String POINTS = "points";
     private static final String GAME_RESULT = "gameResult";
     private static final String KICKOFF = "kickoff";
