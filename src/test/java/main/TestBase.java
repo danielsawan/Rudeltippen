@@ -28,10 +28,7 @@ import services.AuthService;
 import services.CommonService;
 import services.DataService;
 import services.ImportService;
-
-import com.mongodb.MongoClient;
-
-import de.svenkubiak.embeddedmongodb.EmbeddedMongoDB;
+import de.svenkubiak.embeddedmongodb.EmbeddedMongo;
 
 public class TestBase extends NinjaTest {
     private static final Logger LOG = LoggerFactory.getLogger(TestBase.class);
@@ -42,9 +39,8 @@ public class TestBase extends NinjaTest {
     @Before
     public void init() {
         try {
-            EmbeddedMongoDB.getInstance();
             dataService = getInjector().getInstance(DataService.class);
-            dataService.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
+            dataService.setMongoClient(EmbeddedMongo.DB.getMongoClient());
         } catch (Exception e) {
             LOG.error("Failed to start in memory mongodb for testing", e);
         }
