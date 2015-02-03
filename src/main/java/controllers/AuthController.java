@@ -10,7 +10,6 @@ import models.User;
 import models.enums.ConfirmationType;
 import models.enums.Constants;
 import ninja.Context;
-import ninja.Cookie;
 import ninja.FilterWith;
 import ninja.Result;
 import ninja.Results;
@@ -24,7 +23,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import services.AuthService;
 import services.DataService;
 import services.I18nService;
 import services.MailService;
@@ -32,6 +30,7 @@ import services.ValidationService;
 
 import com.google.inject.Inject;
 
+import de.svenkubiak.ninja.auth.services.Authentications;
 import de.svenkubiak.ninja.validation.NinjaValidator;
 import dtos.LoginDTO;
 import dtos.PasswordDTO;
@@ -60,7 +59,7 @@ public class AuthController {
     private MailService mailService;
 
     @Inject
-    private AuthService authService;
+    private Authentications authentications;
 
     @Inject
     private I18nService i18nService;
@@ -103,7 +102,6 @@ public class AuthController {
             confirmation.setUser(user);
             confirmation.setToken(token);
             confirmation.setConfirmationType(confirmType);
-            confirmation.setConfirmValue(authService.encryptAES(UUID.randomUUID().toString()));
             confirmation.setCreated(new Date());
             dataService.save(confirmation);
 
@@ -138,7 +136,7 @@ public class AuthController {
                     LOG.info("User activated: " + user.getEmail());
                 } else if ((ConfirmationType.CHANGEUSERNAME).equals(confirmationType)) {
                     final String oldusername = user.getEmail();
-                    final String newusername = authService.decryptAES(confirmation.getConfirmValue());
+                    final String newusername = confirmation.getConfirmValue();
                     user.setEmail(newusername);
                     dataService.save(user);
                     session.remove(Constants.USERNAME.asString());
@@ -147,7 +145,7 @@ public class AuthController {
                     flashScope.success(i18nService.get("controller.users.changedusername"));
                     LOG.info("User changed username... old username: " + oldusername + " - " + "new username: " + newusername);
                 } else if ((ConfirmationType.CHANGEUSERPASS).equals(confirmationType)) {
-                    user.setUserpass(authService.decryptAES(confirmation.getConfirmValue()));
+                    user.setUserpass(confirmation.getConfirmValue());
                     dataService.save(user);
                     session.remove("username");
                     dataService.delete(confirmation);
@@ -183,7 +181,6 @@ public class AuthController {
         if (validation.hasBeanViolations()) {
             return Results.html().render("user", userDTO).render(VALIDATION, validation).template("/views/AuthController/register.ftl.html");
         } else {
-            final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
             final User user = new User();
             user.setRegistered(new Date());
             user.setUsername(userDTO.getUsername());
@@ -194,8 +191,7 @@ public class AuthController {
             user.setSendGameTips(true);
             user.setNotification(true);
             user.setAdmin(false);
-            user.setSalt(salt);
-            user.setUserpass(authService.hashPassword(userDTO.getUserpass(), salt));
+            user.setUserpass(authentications.getHashedPassword(userDTO.getUserpass()));
             user.setPoints(0);
             user.setPicture(DigestUtils.md5Hex(userDTO.getEmail()));
             dataService.save(user);
@@ -204,7 +200,6 @@ public class AuthController {
             final ConfirmationType confirmationType = ConfirmationType.ACTIVATION;
             final Confirmation confirmation = new Confirmation();
             confirmation.setConfirmationType(confirmationType);
-            confirmation.setConfirmValue(authService.encryptAES(UUID.randomUUID().toString()));
             confirmation.setCreated(new Date());
             confirmation.setToken(token);
             confirmation.setUser(user);
@@ -239,8 +234,7 @@ public class AuthController {
         }
 
         final User user = confirmation.getUser();
-        final String password = authService.hashPassword(passwordDTO.getUserpass(), user.getSalt());
-        user.setUserpass(password);
+        user.setUserpass(authentications.getHashedPassword(passwordDTO.getUserpass()));
         dataService.save(user);
 
         dataService.delete(confirmation);
@@ -249,20 +243,16 @@ public class AuthController {
         return Results.redirect(AUTH_LOGIN);
     }
 
-    public Result authenticate(Session session, LoginDTO login, FlashScope flashScope) {
+    public Result authenticate(Context context, LoginDTO login, FlashScope flashScope) {
         validations.required("username", login.getUsername());
         validations.required("userpass", login.getUserpass());
         
         if (validations.hasErrors()) {
             return Results.html().render(VALIDATION, validations).render("settings", dataService.findSettings()).template("/views/AuthController/login.ftl.html");
         } else {
-            if (authService.authenticate(login.getUsername(), login.getUserpass())) {
-                session.put(Constants.USERNAME.asString(), login.getUsername());
-                if (login.isRemember()) {
-                    String signedUsername = authService.sign(login.getUsername()) + "-" + login.getUsername();
-                    Cookie.builder(Constants.COOKIENAME.asString(), signedUsername).setSecure(true).setHttpOnly(true).build();
-                }
-
+            User user = dataService.findUserByUsernameOrEmail(login.getUsername());
+            if (user != null && authentications.authenticate(user.getUsername(), user.getUserpass())) {
+                authentications.login(context, user.getUsername(), false);
                 return Results.redirect("/");
             }
         }
@@ -270,8 +260,8 @@ public class AuthController {
         return Results.redirect(AUTH_LOGIN);
     }
 
-    public Result logout(Session session, FlashScope flashScope){
-        session.clear();
+    public Result logout(Context context, FlashScope flashScope){
+        authentications.logout(context);
         flashScope.success(i18nService.get("controller.auth.logout"));
 
         return Results.redirect(AUTH_LOGIN);

@@ -37,9 +37,6 @@ public class GameTipJob implements Job {
     @Inject
     private CommonService commonService;
 
-    public GameTipJob() {
-    }
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {

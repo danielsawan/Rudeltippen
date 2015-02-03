@@ -2,7 +2,6 @@ package controllers;
 
 import java.util.List;
 
-import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.session.Session;
@@ -40,11 +39,11 @@ public class SystemController {
         return Results.html();
     }
 
-    public Result init(Session session, Context context) {
+    public Result init(Session session) {
         if (!dataService.appIsInizialized()) {
             session.clear();
             
-            importService.loadInitialData(context);
+            importService.loadInitialData();
 
             return Results.ok().render(Result.NO_HTTP_BODY);
         }

@@ -41,9 +41,6 @@ public class ResultJob implements Job {
     @Inject
     private ResultService resultService;
 
-    public ResultJob() {
-    }
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {

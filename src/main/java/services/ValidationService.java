@@ -34,9 +34,6 @@ public class ValidationService {
     private DataService dataService;
 
     @Inject
-    private AuthService authService;
-
-    @Inject
     private I18nService i18nService;
 
     /**
@@ -50,8 +47,6 @@ public class ValidationService {
         final List<Confirmation> confirmations = dataService.findAllConfirmation();
         for (final Confirmation confirmation : confirmations) {
             String value = confirmation.getConfirmValue();
-            value = authService.decryptAES(value);
-
             if (value.equalsIgnoreCase(email)) {
                 exists = true;
             }

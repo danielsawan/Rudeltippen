@@ -1,8 +1,8 @@
 package controllers;
 
 import ninja.FilterWith;
+import de.svenkubiak.ninja.auth.filters.AuthenticationFilter;
 import filters.AppFilter;
-import filters.AuthenticationFilter;
 
 /**
  * 

@@ -1,5 +1,6 @@
 package services;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
@@ -39,13 +40,17 @@ import com.google.inject.Singleton;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 @Singleton
 public class CommonService extends ViewService {
-    private static final int TIMEOUT = 4000;
-
     private static final Logger LOG = LoggerFactory.getLogger(CommonService.class);
-
+    private static final int TIMEOUT = 4000;
+    private static final int VERSION_21 = 21;
+    private static final int VERSION_3 = 3;
+    private static final int VERSION_2 = 2;
+    
     @Inject
     private I18nService i18nService;
 
@@ -59,7 +64,7 @@ public class CommonService extends ViewService {
      * Checks if all games in given list have ended
      *
      * @param games The games to check
-     * @return true if all games have ended, false otherweise
+     * @return true if all games have ended, false otherwise
      */
     public boolean allReferencedGamesEnded(final List<Game> games) {
         boolean ended = true;
@@ -122,12 +127,13 @@ public class CommonService extends ViewService {
 
     public String getProcessedTemplate(String name, Map<String, Object> content) {
         Writer writer = new StringWriter();
-        Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration(new Version(VERSION_2, VERSION_3, VERSION_21));
         configuration.setClassForTemplateLoading(this.getClass(), "/views/mails/");
+
         try {
             Template template = configuration.getTemplate(name);
             template.process(content, writer);
-        } catch (Exception e) {
+        } catch (IOException | TemplateException e) {
             LOG.error("Failed to create template for: " + name, e);
         }
 
@@ -281,7 +287,9 @@ public class CommonService extends ViewService {
     }
 
     public Team getWinner(Game game) {
-        String home, away;
+        String home;
+        String away;
+        
         if (game.isOvertime()) {
             home = game.getHomeScoreOT();
             away = game.getAwayScoreOT();
@@ -304,7 +312,9 @@ public class CommonService extends ViewService {
     }
 
     public Team getLoser(Game game) {
-        String home, away;
+        String home;
+        String away;
+        
         if (game.isOvertime()) {
             home = game.getHomeScoreOT();
             away = game.getAwayScoreOT();
@@ -356,7 +366,7 @@ public class CommonService extends ViewService {
             }
 
             if (("G").equals(references[0])) {
-                final Game game = dataService.findGameByNumber(Integer.valueOf(references[1]));
+                final Game game = dataService.findGameByNumber(Integer.parseInt(references[1]));
                 if (game != null && game.isEnded()) {
                     if (("W").equals(references[2])) {
                         team = getWinner(game);

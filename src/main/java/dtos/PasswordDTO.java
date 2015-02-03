@@ -11,9 +11,6 @@ public class PasswordDTO {
     private String userpass;
     private String userpassConfirmation;
     
-    public PasswordDTO() {
-    }
-    
     public String getToken() {
         return token;
     }

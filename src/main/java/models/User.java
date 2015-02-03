@@ -44,7 +44,6 @@ public class User extends MorphiaModel implements Serializable {
     private String userpass;
     private String username;
     private String email;
-    private String salt;
     private String picture;
 
     private Date registered;
@@ -80,14 +79,6 @@ public class User extends MorphiaModel implements Serializable {
 
     public void setUserpass(final String userpass) {
         this.userpass = userpass;
-    }
-
-    public String getSalt() {
-        return this.salt;
-    }
-
-    public void setSalt(final String salt) {
-        this.salt = salt;
     }
 
     public Date getRegistered() {

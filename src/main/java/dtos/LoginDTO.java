@@ -10,9 +10,6 @@ public class LoginDTO {
     private String userpass;
     private boolean remember;
     
-    public LoginDTO() {
-    }
-    
     public String getUsername() {
         return username;
     }

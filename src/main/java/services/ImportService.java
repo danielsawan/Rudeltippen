@@ -20,7 +20,6 @@ import models.Team;
 import models.User;
 import models.enums.Avatar;
 import models.enums.Constants;
-import ninja.Context;
 import ninja.utils.NinjaProperties;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -33,9 +32,11 @@ import com.google.inject.Singleton;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
+import de.svenkubiak.ninja.auth.services.Authentications;
+
 /**
  * 
- * @author skubiak
+ * @author svenkubiak
  *
  */
 @Singleton
@@ -51,20 +52,22 @@ public class ImportService {
     private DataService dataService;
     
     @Inject
-    private AuthService authService;
-    
-    @Inject
     private CommonService commonService;
     
     @Inject 
     private NinjaProperties ninjaProperties;
+    
+    @Inject 
+    private Authentications authentications;
+    
+    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    public void loadInitialData(Context context) {
-        Map<String, Bracket> brackets = loadBrackets(context);
-        Map<String, Team> teams = loadTeams(brackets, context);
-        Map<String, Playday> playdays = loadPlaydays(context);
-        loadGames(playdays, teams, brackets, context);
-        loadExtras(teams, context);
+    public void loadInitialData() {
+        Map<String, Bracket> brackets = loadBrackets();
+        Map<String, Team> teams = loadTeams(brackets);
+        Map<String, Playday> playdays = loadPlaydays();
+        loadGames(playdays, teams, brackets);
+        loadExtras(teams);
         loadSettingsAndAdmin();
 
         setReferences();
@@ -95,11 +98,9 @@ public class ImportService {
         dataService.save(settings);
 
         User user = new User();
-        final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
-        user.setSalt(salt);
         user.setEmail(ninjaProperties.get("rudeltippen.admin.email"));
         user.setUsername(ninjaProperties.get("rudeltippen.admin.username"));
-        user.setUserpass(authService.hashPassword(ninjaProperties.get("rudeltippen.admin.password"), salt));
+        user.setUserpass(authentications.getHashedPassword(ninjaProperties.get("rudeltippen.admin.password")));
         user.setRegistered(new Date());
         user.setExtraPoints(0);
         user.setTipPoints(0);
@@ -139,12 +140,9 @@ public class ImportService {
         }
     }
 
-    private Map<String, Bracket> loadBrackets(Context context) {
+    private Map<String, Bracket> loadBrackets() {
         Map<String, Bracket> brackets = new HashMap<String, Bracket>();
-        InputStream inputStream = context.getClass().getClassLoader().getResourceAsStream("brackets.json");
-        List<String> lines = readLines(inputStream);
-
-        for (String line : lines) {
+        for (String line : readLines("brackets.json")) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
             Bracket bracket = new Bracket();
             bracket.setName(basicDBObject.getString("name"));
@@ -158,15 +156,13 @@ public class ImportService {
         return brackets;
     }
 
-    private void loadExtras(Map<String, Team> teams, Context context) {
-        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("extras.json"));
-        
+    private void loadExtras(Map<String, Team> teams) {
         List<Team> answers = new ArrayList<Team>();
         for (Map.Entry<String, Team> entry : teams.entrySet()) {
             answers.add(entry.getValue());
         }
 
-        for (String line : lines) {
+        for (String line : readLines("extras.json")) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
             Extra extra = new Extra();
             extra.setPoints(basicDBObject.getInt("points"));
@@ -179,10 +175,8 @@ public class ImportService {
         }
     }
 
-    private void loadGames(Map<String, Playday> playdays, Map<String, Team> teams, Map<String, Bracket> brackets, Context context) {
-        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("games.json"));
-
-        for (String line : lines) {
+    private void loadGames(Map<String, Playday> playdays, Map<String, Team> teams, Map<String, Bracket> brackets) {
+        for (String line : readLines("games.json")) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
             Game game = new Game();
             game.setBracket(brackets.get(basicDBObject.getString(BRACKET)));
@@ -213,11 +207,9 @@ public class ImportService {
         return null;
     }
 
-    private Map<String, Playday> loadPlaydays(Context context) {
+    private Map<String, Playday> loadPlaydays() {
         Map<String, Playday> playdays = new HashMap<String, Playday>();
-        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("playdays.json"));
-
-        for (String line : lines) {
+        for (String line : readLines("playdays.json")) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
             Playday playday = new Playday();
             playday.setName(basicDBObject.getString("name"));
@@ -232,11 +224,9 @@ public class ImportService {
         return playdays;
     }
 
-    private Map<String, Team> loadTeams(Map<String, Bracket> brackets, Context context) {
+    private Map<String, Team> loadTeams(Map<String, Bracket> brackets) {
         Map<String, Team> teams = new HashMap<String, Team>();
-        List<String> lines = readLines(context.getClass().getClassLoader().getResourceAsStream("teams.json"));
-
-        for (String line : lines) {
+        for (String line : readLines("teams.json")) {
             BasicDBObject basicDBObject = (BasicDBObject) JSON.parse(line);
             Team team = new Team();
             team.setName(basicDBObject.getString("name"));
@@ -254,13 +244,14 @@ public class ImportService {
         return teams;
     }
 
-    private List<String> readLines(InputStream inputStream) {
-        List<String> lines = null;
-        try {
+    private List<String> readLines(String filename) {
+        List<String> lines = new ArrayList<String>();
+        try (InputStream inputStream = this.classLoader.getResourceAsStream(filename)) {
             lines = IOUtils.readLines(inputStream, Constants.ENCODING.asString());
         } catch (IOException e) {
-            LOG.error("Failed to read lines", e);
+            LOG.error("Failed to read brackets", e);
         }
+        
         return lines;
     }
 }

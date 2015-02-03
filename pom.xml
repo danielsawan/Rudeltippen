@@ -346,6 +346,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>de.svenkubiak</groupId>
+			<artifactId>ninja-authentication-module</artifactId>
+			<version>1.0.1</version>
+		</dependency>		
+		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.2</version>
