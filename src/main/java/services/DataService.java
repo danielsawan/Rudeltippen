@@ -25,7 +25,6 @@ import models.statistic.GameTipStatistic;
 import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import mongodb.MongoDB;
 
 import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
@@ -41,6 +40,8 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
+import de.svenkubiak.ninja.mongodb.MongoDB;
 
 /**
  * 

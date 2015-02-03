@@ -12,7 +12,6 @@ import models.enums.Constants;
 import ninja.Context;
 import ninja.Cookie;
 import ninja.FilterWith;
-import ninja.NinjaValidator;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
@@ -33,6 +32,7 @@ import services.ValidationService;
 
 import com.google.inject.Inject;
 
+import de.svenkubiak.ninja.validation.NinjaValidator;
 import dtos.LoginDTO;
 import dtos.PasswordDTO;
 import dtos.UserDTO;

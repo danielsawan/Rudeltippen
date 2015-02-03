@@ -10,13 +10,14 @@ import jobs.KickoffJob;
 import jobs.ReminderJob;
 import jobs.ResultJob;
 import models.enums.Constants;
-import ninja.NinjaScheduler;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
 import ninja.utils.NinjaConstant;
 import services.I18nService;
 
 import com.google.inject.Inject;
+
+import de.svenkubiak.ninja.quartz.NinjaScheduler;
 
 /**
  * 

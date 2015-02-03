@@ -19,7 +19,6 @@ import models.enums.Constants;
 import models.pagination.Pagination;
 import ninja.Context;
 import ninja.FilterWith;
-import ninja.NinjaScheduler;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.PathParam;
@@ -47,6 +46,7 @@ import services.ValidationService;
 
 import com.google.inject.Inject;
 
+import de.svenkubiak.ninja.quartz.NinjaScheduler;
 import dtos.SettingsDTO;
 import filters.AdminFilter;
 

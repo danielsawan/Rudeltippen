@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import morphia.MorphiaModel;
-
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
+
+import de.svenkubiak.ninja.morphia.MorphiaModel;
 
 /**
  * 

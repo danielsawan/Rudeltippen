@@ -2,9 +2,9 @@ package models;
 
 import java.io.Serializable;
 
-import morphia.MorphiaModel;
-
 import org.mongodb.morphia.annotations.Entity;
+
+import de.svenkubiak.ninja.morphia.MorphiaModel;
 
 /**
  * 
