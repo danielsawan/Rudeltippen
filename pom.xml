@@ -8,7 +8,7 @@
 	<version>3.0.0-SNAPSHOT</version>
 	<url>https://github.com/svenkubiak/Rudeltippen</url>
 	<properties>
-		<ninja.version>4.0.4</ninja.version>
+		<ninja.version>4.0.5</ninja.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<prerequisites>
