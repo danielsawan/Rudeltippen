@@ -1,4 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/4048/badge.svg)](https://scan.coverity.com/projects/4048)
+
+[![forthebadge](http://forthebadge.com/images/badges/powered-by-electricity.svg)](http://forthebadge.com)
 
 If this software is useful to you, you can support further development by using Flattr. Thank you!
 
@@ -37,7 +40,7 @@ Screenshots made with some awesomeness from [Am I Responsive][2].
 Requirements
 ------------------
 
-- [Java SDK 1.7+][1]
+- [Java SDK 1.8+][1]
 - Nginx, Apache, Lighttpd or any other HTTP-Server with Proxy-Support
 - SMTP-Account (with SSL/non-SSL, e.g. [Gmail][12])
 - MongoDB 2.6+
@@ -52,9 +55,11 @@ Available Languages
 Installation guide
 ------------------
 
-This installation guide assumes that you already have JDK 1.7+ installed and that you have your database- and SMTP-credentials ready.
+This installation guide assumes that you already have JDK 1.8+ installed.
 
 ### Step 0
+
+tbd
 
 
 Licence

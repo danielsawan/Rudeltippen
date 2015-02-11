@@ -44,9 +44,6 @@ public class KickoffJob implements Job {
     @Inject
     private ResultService resultService;
 
-    public KickoffJob() {
-    }
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         if (commonService.isJobInstance()) {

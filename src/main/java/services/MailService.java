@@ -64,7 +64,7 @@ public class MailService {
         final String recipient = user.getEmail();
 
         if (validationService.isValidEmail(recipient)) {
-            Mail mail = getMailInstance(settings, recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.reminder")));
+            Mail mail = getMailInstance(recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.reminder")));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put("user", user);
@@ -106,7 +106,7 @@ public class MailService {
                 message = i18nService.get("mails.message.forgotuserpass");
             }
             message = StringEscapeUtils.unescapeHtml(message);
-            Mail mail = getMailInstance(settings, user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
+            Mail mail = getMailInstance(user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(I18N, i18nService);
@@ -129,7 +129,7 @@ public class MailService {
     public void newuser(final User user, final User admin) {
         final Settings settings = dataService.findSettings();
         if (validationService.isValidEmail(admin.getEmail()) && (user != null)) {
-            Mail mail = getMailInstance(settings, user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.newuser")));
+            Mail mail = getMailInstance(user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.newuser")));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put("user", user);
@@ -151,7 +151,7 @@ public class MailService {
         final Settings settings = dataService.findSettings();
 
         if (validationService.isValidEmail(recipient) && StringUtils.isNotBlank(response)) {
-            Mail mail = getMailInstance(settings, recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.updatefailed")));
+            Mail mail = getMailInstance(recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("mails.subject.updatefailed")));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put("response", response);
@@ -171,7 +171,7 @@ public class MailService {
     public void notifications(final String subject, String notification, final User user) {
         final Settings settings = dataService.findSettings();
         if (validationService.isValidEmail(user.getEmail()) && StringUtils.isNotEmpty(notification)) {
-            Mail mail = getMailInstance(settings, user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
+            Mail mail = getMailInstance(user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put("notification", notification);
@@ -192,7 +192,7 @@ public class MailService {
         final Settings settings = dataService.findSettings();
 
         if (validationService.isValidEmail(user.getEmail()) && !games.isEmpty()) {
-            Mail mail = getMailInstance(settings, user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("overview")));
+            Mail mail = getMailInstance(user.getEmail(), StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + i18nService.get("overview")));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(I18N, i18nService);
@@ -214,7 +214,7 @@ public class MailService {
         final Settings settings = dataService.findSettings();
 
         if (StringUtils.isNotBlank(subject) && StringUtils.isNotBlank(message) && (bbcRecipients != null)) {
-            Mail mail = getMailInstance(settings, recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
+            Mail mail = getMailInstance(recipient, StringEscapeUtils.unescapeHtml("[" + settings.getGameName() + "] " + subject));
 
             Map<String, Object> content = new HashMap<String, Object>();
             content.put(MESSAGE, message);
@@ -231,7 +231,7 @@ public class MailService {
         }
     }
 
-    private Mail getMailInstance(final Settings settings, final String recipient, String subject) {
+    private Mail getMailInstance(final String recipient, String subject) {
         Mail mail = mailProvider.get();
         mail.setCharset("UTF-8");
         mail.setFrom(ninjaProperties.get("rudeltippen.mail.from"));

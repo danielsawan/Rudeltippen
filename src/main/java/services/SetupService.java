@@ -71,41 +71,42 @@ public class SetupService {
                 }
                 
                 StringBuilder buffer = new StringBuilder();
-                buffer.append("{");
-                buffer.append("\"number\":");
-                buffer.append(number);
-                buffer.append(",");
-                buffer.append("\"homeTeam\":");
-                buffer.append("\"$" + homeTeam + "\"");
-                buffer.append(",");
-                buffer.append("\"awayTeam\":");
-                buffer.append("\"$" + awayTeam + "\"");
-                buffer.append(",");
-                buffer.append("\"kickoff\":");
-                buffer.append("\"" + kickoff + "\"");
-                buffer.append(",");
-                buffer.append("\"playday\":");
-                buffer.append("\"$P" + k + "\"");
-                buffer.append(",");
-                buffer.append("\"bracket\":");
-                buffer.append("\"$B1\"");
-                buffer.append(",");
-                buffer.append("\"playoff\":");
-                buffer.append("false");  
-                buffer.append(",");
-                buffer.append("\"ended\":");
-                buffer.append("false"); 
-                buffer.append(",");
-                buffer.append("\"updatable\":");
-                buffer.append("true"); 
-                buffer.append(",");
-                buffer.append("\"webserviceID\":");
-                buffer.append("\"" + webserviceID + "\"");
-                buffer.append("}");
-                buffer.append("<br>");
+                buffer.append("{")
+                    .append("\"number\":")
+                    .append(number)
+                    .append(",")
+                    .append("\"homeTeam\":")
+                    .append("\"$" + homeTeam + "\"")
+                    .append(",")
+                    .append("\"awayTeam\":")
+                    .append("\"$" + awayTeam + "\"")
+                    .append(",")
+                    .append("\"kickoff\":")
+                    .append("\"" + kickoff + "\"")
+                    .append(",")
+                    .append("\"playday\":")
+                    .append("\"$P" + k + "\"")
+                    .append(",")
+                    .append("\"bracket\":")
+                    .append("\"$B1\"")
+                    .append(",")
+                    .append("\"playoff\":")
+                    .append("false")
+                    .append(",")
+                    .append("\"ended\":")
+                    .append("false") 
+                    .append(",")
+                    .append("\"updatable\":")
+                    .append("true")
+                    .append(",")
+                    .append("\"webserviceID\":")
+                    .append("\"" + webserviceID + "\"")
+                    .append("}")
+                    .append("<br>");
+                
                 number++;
                 
-                games.add(buffer.toString());
+                games.add(toString());
             }
         }
 
@@ -142,15 +143,15 @@ public class SetupService {
 
     public Document getDocumentFromWebService(final String group, final String leagueShortcut, final String leagueSaison) {
         final StringBuilder buffer = new StringBuilder();
-        buffer.append("<soap12:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">");
-        buffer.append("<soap12:Body>");
-        buffer.append("<GetMatchdataByGroupLeagueSaison xmlns=\"http://msiggi.de/Sportsdata/Webservices\">");
-        buffer.append("<groupOrderID>" + group + "</groupOrderID>");
-        buffer.append("<leagueShortcut>" + leagueShortcut + "</leagueShortcut>");
-        buffer.append("<leagueSaison>" + leagueSaison + "</leagueSaison>");
-        buffer.append("</GetMatchdataByGroupLeagueSaison>");
-        buffer.append("</soap12:Body>");
-        buffer.append("</soap12:Envelope>");
+        buffer.append("<soap12:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">")
+            .append("<soap12:Body>")
+            .append("<GetMatchdataByGroupLeagueSaison xmlns=\"http://msiggi.de/Sportsdata/Webservices\">")
+            .append("<groupOrderID>" + group + "</groupOrderID>")
+            .append("<leagueShortcut>" + leagueShortcut + "</leagueShortcut>")
+            .append("<leagueSaison>" + leagueSaison + "</leagueSaison>")
+            .append("</GetMatchdataByGroupLeagueSaison>")
+            .append("</soap12:Body>")
+            .append("</soap12:Envelope>");
 
         Document document = null;
         try {
@@ -158,7 +159,7 @@ public class SetupService {
                     .Post(Constants.WS_URL.asString())
                     .setHeader("Content-Type", Constants.WS_COTENT_TYPE.asString())
                     .setHeader("charset", Constants.ENCODING.asString())
-                    .bodyString(buffer.toString(), ContentType.TEXT_XML)
+                    .bodyString(toString(), ContentType.TEXT_XML)
                     .execute()
                     .returnResponse();
                 

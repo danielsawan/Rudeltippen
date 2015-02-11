@@ -76,7 +76,7 @@ public class AjaxController extends RootController {
         if (team != null) {
             final String place = context.getParameter(VALUE);
             if (StringUtils.isNotBlank(place)) {
-                team.setPlace(Integer.valueOf(place));
+                team.setPlace(Integer.parseInt(place));
                 dataService.save(team);
 
                 Bracket bracket = team.getBracket();

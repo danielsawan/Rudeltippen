@@ -27,7 +27,6 @@ import ninja.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import services.AuthService;
 import services.CommonService;
 import services.DataService;
 import services.I18nService;
@@ -35,6 +34,8 @@ import services.MailService;
 import services.ValidationService;
 
 import com.google.inject.Inject;
+
+import de.svenkubiak.ninja.auth.services.Authentications;
 
 /**
  * 
@@ -56,9 +57,8 @@ public class UserController extends RootController {
     @Inject
     private I18nService i18nService;
 
-    @Inject
-    private AuthService authService;
-
+    private Authentications authentications;
+    
     @Inject
     private ValidationService validationService;
     
@@ -177,7 +177,7 @@ public class UserController extends RootController {
                 final ConfirmationType confirmationType = ConfirmationType.CHANGEUSERNAME;
                 final Confirmation confirmation = new Confirmation();
                 confirmation.setConfirmationType(confirmationType);
-                confirmation.setConfirmValue(authService.encryptAES(email));
+                confirmation.setConfirmValue(email);
                 confirmation.setCreated(new Date());
                 confirmation.setToken(token);
                 confirmation.setUser(user);
@@ -205,7 +205,7 @@ public class UserController extends RootController {
                 final ConfirmationType confirmationType = ConfirmationType.CHANGEUSERPASS;
                 final Confirmation confirm = new Confirmation();
                 confirm.setConfirmationType(confirmationType);
-                confirm.setConfirmValue(authService.encryptAES(authService.hashPassword(userpass, user.getSalt())));
+                confirm.setConfirmValue(authentications.getHashedPassword(userpass));
                 confirm.setCreated(new Date());
                 confirm.setToken(token);
                 confirm.setUser(user);

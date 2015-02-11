@@ -26,15 +26,13 @@ import dtos.UserDTO;
  */
 @Singleton
 public class ValidationService {
+    private static final Pattern PATTERN = Pattern.compile(Constants.EMAILPATTERN.asString());
     private static final String USERPASS = "userpass";
     private static final String EMAIL = "email";
     private static final String USERNAME = "username";
 
     @Inject
     private DataService dataService;
-
-    @Inject
-    private AuthService authService;
 
     @Inject
     private I18nService i18nService;
@@ -50,8 +48,6 @@ public class ValidationService {
         final List<Confirmation> confirmations = dataService.findAllConfirmation();
         for (final Confirmation confirmation : confirmations) {
             String value = confirmation.getConfirmValue();
-            value = authService.decryptAES(value);
-
             if (value.equalsIgnoreCase(email)) {
                 exists = true;
             }
@@ -184,8 +180,7 @@ public class ValidationService {
     public boolean isValidEmail(final String email) {
         boolean valid = false;
         if (StringUtils.isNotBlank(email)) {
-            final Pattern p = Pattern.compile(Constants.EMAILPATTERN.asString());
-            final Matcher m = p.matcher(email);
+            final Matcher m = PATTERN.matcher(email);
             if (m.matches()) {
                 valid = true;
             }

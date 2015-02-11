@@ -17,11 +17,6 @@ import org.junit.Test;
 public class TestCommonService extends TestBase {
 
     @Test
-    public void testHashPassword() {
-        assertEquals(getInjector().getInstance(AuthService.class).hashPassword("user22", "foo"), "a8fdb91c4a4a16033d9ac410fbdb3cd6fdc17611a3c72a90e6dd746062714662a85e161cde0b098335aa87624e6c6bee84582cf72dfc2c8f5f916803b0c5906f");
-    }
-
-    @Test
     public void testExtraTippable() {
         CommonService commonService = getInjector().getInstance(CommonService.class);
 

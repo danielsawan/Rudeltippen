@@ -5,13 +5,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import models.User;
 import models.enums.Avatar;
 import ninja.NinjaTest;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -24,37 +22,35 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import services.AuthService;
 import services.CommonService;
 import services.DataService;
 import services.ImportService;
-
-import com.mongodb.MongoClient;
-
-import de.svenkubiak.embeddedmongodb.EmbeddedMongoDB;
+import de.svenkubiak.embeddedmongodb.EmbeddedMongo;
+import de.svenkubiak.ninja.auth.services.Authentications;
 
 public class TestBase extends NinjaTest {
     private static final Logger LOG = LoggerFactory.getLogger(TestBase.class);
     private static DataService dataService;
+    private static Authentications authentications;
+    
     public static final String ADMIN = "admin";
     public static final String USER = "user";
 
     @Before
     public void init() {
         try {
-            EmbeddedMongoDB.getInstance();
+            authentications = getInjector().getInstance(Authentications.class);
+            
             dataService = getInjector().getInstance(DataService.class);
-            dataService.setMongoClient(new MongoClient(EmbeddedMongoDB.getHost(), EmbeddedMongoDB.getPort()));
+            dataService.setMongoClient(EmbeddedMongo.DB.getMongoClient());
         } catch (Exception e) {
             LOG.error("Failed to start in memory mongodb for testing", e);
         }
 
         User user = new User();
-        final String salt = DigestUtils.sha512Hex(UUID.randomUUID().toString());
-        user.setSalt(salt);
         user.setEmail("user@foo.bar");
         user.setUsername(USER);
-        user.setUserpass(getInjector().getInstance(AuthService.class).hashPassword(USER, salt));
+        user.setUserpass(authentications.getHashedPassword(USER));
         user.setRegistered(new Date());
         user.setExtraPoints(0);
         user.setTipPoints(0);

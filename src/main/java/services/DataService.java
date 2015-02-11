@@ -25,7 +25,6 @@ import models.statistic.GameTipStatistic;
 import models.statistic.PlaydayStatistic;
 import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
-import mongodb.MongoDB;
 
 import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
@@ -42,6 +41,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
+import de.svenkubiak.ninja.mongodb.MongoDB;
+
 /**
  * 
  * @author svenkubiak
@@ -49,7 +50,7 @@ import com.mongodb.MongoClient;
  */
 @Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class DataService {
+public final class DataService {
     private static final Logger LOG = LoggerFactory.getLogger(DataService.class);
     private static final String ID = "_id";
     private static final String TOTAL = "total";
@@ -497,7 +498,11 @@ public class DataService {
     }
 
     public Map<String, String> findStatisticsForPlayday(Playday playday) {
-        int points = 0, tips = 0, diffs = 0, trends = 0;
+        int points = 0;
+        int tips = 0;
+        int diffs = 0;
+        int trends = 0;
+        
         List<UserStatistic> userStatistics = this.datastore.find(UserStatistic.class).field("playday").equal(playday).asList();
         for (UserStatistic userStatistic : userStatistics) {
             points = points + userStatistic.getPlaydayPoints();

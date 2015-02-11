@@ -96,11 +96,11 @@ public class StatisticService {
 
         final Map<String, String> statistics =  dataService.findStatisticsForPlayday(playday);
         if (statistics != null) {
-            gameTipStatistic.setPoints(Integer.valueOf(statistics.get("points")));
-            gameTipStatistic.setCorrectTips(Integer.valueOf(statistics.get("tips")));
-            gameTipStatistic.setCorrectDiffs(Integer.valueOf(statistics.get("diffs")));
-            gameTipStatistic.setCorrectTrends(Integer.valueOf(statistics.get("trends")));
-            gameTipStatistic.setAvgPoints(Integer.valueOf(statistics.get("avgPoints")));
+            gameTipStatistic.setPoints(Integer.parseInt(statistics.get("points")));
+            gameTipStatistic.setCorrectTips(Integer.parseInt(statistics.get("tips")));
+            gameTipStatistic.setCorrectDiffs(Integer.parseInt(statistics.get("diffs")));
+            gameTipStatistic.setCorrectTrends(Integer.parseInt(statistics.get("trends")));
+            gameTipStatistic.setAvgPoints(Integer.parseInt(statistics.get("avgPoints")));
         }
 
         dataService.save(gameTipStatistic);
