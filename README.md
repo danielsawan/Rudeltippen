@@ -1,5 +1,4 @@
 [![Build Status](https://secure.travis-ci.org/svenkubiak/Rudeltippen.png?branch=master)](http://travis-ci.org/svenkubiak/Rudeltippen)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/4048/badge.svg)](https://scan.coverity.com/projects/4048)
 [![Dependency Status](https://www.versioneye.com/user/projects/54dcba52c1bbbd5f820004c5/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54dcba52c1bbbd5f820004c5)
 
 If this software is useful to you, you can support further development by using Flattr. Thank you!
