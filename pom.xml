@@ -147,137 +147,29 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<id>combine-css-js</id>
-						<phase>clean</phase>
-						<configuration>
-							<target name="Creating combined CSS and JS files">
-								<property name="YUI" value="build/yuicompressor.jar" />
-								<property name="CSS_DIR" value="src/main/java/assets/stylesheets" />
-								<property name="JS_DIR" value="src/main/java/assets/javascripts" />
-								<property name="CSS_FILE" value="combined.min.css" />
-								<property name="JS_FILE" value="combined.min.js" />
-								<property name="CSS_PATH" value="${CSS_DIR}/${CSS_FILE}" />
-								<property name="JS_PATH" value="${JS_DIR}/${JS_FILE}" />
-
-								<delete file="${CSS_PATH}" />
-								<delete file="${JS_PATH}" />
-
-								<echo message="Building minifed combined JS file..." />
-								<concat destfile="${JS_PATH}">
-									<fileset dir="${JS_DIR}" includes="jquery.min.js" />
-									<fileset dir="${JS_DIR}" includes="bootstrap.min.js" />
-									<fileset dir="${JS_DIR}" includes="responsive-pagination.min.js" />
-									<fileset dir="${JS_DIR}" includes="spin.min.js" />
-									<fileset dir="${JS_DIR}" includes="overlay.min.js" />
-									<fileset dir="${JS_DIR}" includes="rwd-table.min.js" />
-								</concat>
-								<apply executable="java" parallel="false" verbose="true"
-									dest="${JS_DIR}">
-									<fileset dir="${JS_DIR}">
-										<include name="${JS_FILE}" />
-									</fileset>
-									<arg line="-jar" />
-									<arg path="${YUI}" />
-									<arg value="--charset" />
-									<arg value="UTF-8" />
-									<arg value="-o" />
-									<targetfile />
-									<mapper type="glob" from="${JS_FILE}" to="${JS_FILE}" />
-								</apply>
-								<echo message="Built minfied combined JS file ${JS_PATH}" />
-
-								<echo message="Building minifed combined CSS file..." />
-								<replace file="${CSS_DIR}/bootstrap.min.css" token="(min-width:768px)"
-									value="(min-width:1023px)" />
-								<concat destfile="${CSS_PATH}">
-									<fileset dir="${CSS_DIR}" includes="bootstrap.min.css" />
-									<fileset dir="${CSS_DIR}" includes="overlay.min.css" />
-									<fileset dir="${CSS_DIR}" includes="rwd-table.min.css" />
-									<fileset dir="${CSS_DIR}" includes="additional.css" />
-								</concat>
-								<apply executable="java" parallel="false" verbose="true"
-									dest="${CSS_DIR}">
-									<fileset dir="${CSS_DIR}">
-										<include name="${CSS_FILE}" />
-									</fileset>
-									<arg line="-jar" />
-									<arg path="${YUI}" />
-									<arg value="--charset" />
-									<arg value="UTF-8" />
-									<arg value="-o" />
-									<targetfile />
-									<mapper type="glob" from="${CSS_FILE}" to="${CSS_FILE}" />
-								</apply>
-								<echo message="Built minfied combined CSS file ${CSS_PATH}" />
-
-								<delete file="${JS_DIR}/auth.additional.min.js" />
-								<echo message="Building minifed JS auth.additional.min.js" />
-								<apply executable="java" parallel="false" verbose="true"
-									dest="${JS_DIR}">
-									<fileset dir="${JS_DIR}">
-										<include name="auth.additional.js" />
-									</fileset>
-									<arg line="-jar" />
-									<arg path="${YUI}" />
-									<arg value="--charset" />
-									<arg value="UTF-8" />
-									<arg value="-o" />
-									<targetfile />
-									<mapper type="glob" from="auth.additional.js" to="auth.additional.min.js" />
-								</apply>
-								<echo message="Built minfied CSS file auth.additional.min.js" />
-
-								<delete file="${JS_DIR}/main.additional.min.js" />
-								<echo message="Building minifed JS main.additional.min.js" />
-								<apply executable="java" parallel="false" verbose="true"
-									dest="${JS_DIR}">
-									<fileset dir="${JS_DIR}">
-										<include name="main.additional.js" />
-									</fileset>
-									<arg line="-jar" />
-									<arg path="${YUI}" />
-									<arg value="--charset" />
-									<arg value="UTF-8" />
-									<arg value="-o" />
-									<targetfile />
-									<mapper type="glob" from="main.additional.js" to="main.additional.min.js" />
-								</apply>
-								<echo message="Built minfied CSS file main.additional.min.js" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>zip</id>
-						<phase>deploy</phase>
-						<configuration>
-							<target name="Create deployable zip">
-								<move
-									file="target/rudeltippen-${project.version}-jar-with-dependencies.jar"
-									tofile="rudeltippen/rudeltippen.jar" failonerror="false" />
-								<move file="target/rudeltippen-${project.version}.war"
-									tofile="rudeltippen/rudeltippen.war" failonerror="false" />
-								<copy file="src/main/java/conf/application.conf" todir="rudeltippen/" />
-								<copy file="README.md" todir="rudeltippen/" />
-								<zip destfile="target/rudeltippen.zip" filesonly="true"
-									basedir="." includes="rudeltippen/**" />
-								<delete dir="rudeltippen/" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jswarn>false</jswarn>
+                    <nomunge>true</nomunge>
+                    <suffix>.min</suffix>
+					<outputDirectory>src/main/java/</outputDirectory>
+					<excludes>
+						<exclude>**/*.min.js</exclude>
+						<exclude>**/*.min.css</exclude>
+					</excludes>
+                </configuration>
+            </plugin>
 		</plugins>
 		<resources>
 			<resource>
