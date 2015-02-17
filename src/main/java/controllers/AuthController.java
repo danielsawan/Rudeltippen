@@ -251,7 +251,7 @@ public class AuthController {
             return Results.html().render(VALIDATION, validations).render("settings", dataService.findSettings()).template("/views/AuthController/login.ftl.html");
         } else {
             User user = dataService.findUserByUsernameOrEmail(login.getUsername());
-            if (user != null && authentications.authenticate(user.getUsername(), user.getUserpass())) {
+            if (user != null && authentications.authenticate(login.getUserpass(), user.getUserpass())) {
                 authentications.login(context, user.getUsername(), false);
                 return Results.redirect("/");
             }
