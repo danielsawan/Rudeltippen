@@ -15,7 +15,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<ninja.version>4.0.5</ninja.version>
+		<ninja.version>4.0.6</ninja.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<prerequisites>
