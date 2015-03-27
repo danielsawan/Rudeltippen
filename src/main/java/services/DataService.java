@@ -27,7 +27,6 @@ import models.statistic.ResultStatistic;
 import models.statistic.UserStatistic;
 
 import org.joda.time.DateTime;
-import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,6 @@ public final class DataService {
     private static final String USER = "user";
     private static final String PLAYDAY = "playday";
     private static final String ACTIVE = "active";
-    private Datastore datastore;
     private MongoDB mongoDB;
 
     @Inject
@@ -88,23 +86,21 @@ public final class DataService {
     @Inject
     private DataService(MongoDB mongoDB) {
         this.mongoDB = mongoDB;
-        this.datastore = mongoDB.getDatastore();
     }
     
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoDB.setMongoClient(mongoClient);
-        this.datastore = this.mongoDB.getDatastore();
     }
 
     public List<User> findAllNotifiableUsers() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).field("sendGameTips").equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).field("sendGameTips").equal(true).asList();
     }
 
     public List<Game> findAllNotifiableGames() {
         DateTime dateTime = new DateTime();
         dateTime = dateTime.plusMinutes(1);
         
-        return this.datastore.find(Game.class)
+        return this.mongoDB.getDatastore().find(Game.class)
                 .field("informed")
                 .equal(false)
                 .field(KICKOFF)
@@ -113,14 +109,14 @@ public final class DataService {
     }
 
     public Playday findPlaydaybByNumber(int number) {
-        return this.datastore.find(Playday.class).field(NUMBER).equal(number).get();
+        return this.mongoDB.getDatastore().find(Playday.class).field(NUMBER).equal(number).get();
     }
 
     public List<Game> findAllGamesWithNoResult() {
         DateTime dateTime = new DateTime();
         dateTime = dateTime.minusMinutes(90);
 
-        return this.datastore.find(Game.class)
+        return this.mongoDB.getDatastore().find(Game.class)
                 .field(ENDED).equal(false)
                 .field("webserviceID").exists()
                 .field(KICKOFF).lessThanOrEq(dateTime.toDate())
@@ -131,7 +127,7 @@ public final class DataService {
         DateTime dateTime = new DateTime();
         dateTime = dateTime.plusDays(1);
 
-        return this.datastore.find(Extra.class)
+        return this.mongoDB.getDatastore().find(Extra.class)
                 .field(REMINDER).equal(false)
                 .field("ending").lessThanOrEq(dateTime.toDate())
                 .asList();
@@ -141,106 +137,106 @@ public final class DataService {
         DateTime dateTime = new DateTime();
         dateTime = dateTime.plusDays(1);
  
-        return this.datastore.find(Game.class)
+        return this.mongoDB.getDatastore().find(Game.class)
                 .field(REMINDER).equal(false)
                 .field(KICKOFF).lessThanOrEq(dateTime.toDate())
                 .asList();
     }
 
     public List<User> findAllRemindableUsers() {
-        return this.datastore.find(User.class).field(REMINDER).equal(true).field(ACTIVE).equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(REMINDER).equal(true).field(ACTIVE).equal(true).asList();
     }
 
     public GameTip findGameTipByGameAndUser(Game game, User user) {
-        return this.datastore.find(GameTip.class).field(GAME).equal(game).field(USER).equal(user).get();
+        return this.mongoDB.getDatastore().find(GameTip.class).field(GAME).equal(game).field(USER).equal(user).get();
     }
 
     public ExtraTip findExtraTipByExtraAndUser(Extra extra, User user) {
-        return this.datastore.find(ExtraTip.class).field("extra").equal(extra).field(USER).equal(user).get();
+        return this.mongoDB.getDatastore().find(ExtraTip.class).field("extra").equal(extra).field(USER).equal(user).get();
     }
 
     public List<User> findAllAdmins() {
-        return this.datastore.find(User.class).field("admin").equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field("admin").equal(true).asList();
     }
 
     public List<User> findUsersByNotificationAndActive() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).field("notification").equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).field("notification").equal(true).asList();
     }
 
     public Game findGameFirstGame() {
-        return this.datastore.find(Game.class).field(NUMBER).equal(1).get();
+        return this.mongoDB.getDatastore().find(Game.class).field(NUMBER).equal(1).get();
     }
 
     public List<User> findTopThreeUsers() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).order(PLACE).limit(3).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).order(PLACE).limit(3).asList();
     }
 
     public List<User> findSendableUsers() {
-        return this.datastore.find(User.class).field("sendStandings").equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field("sendStandings").equal(true).asList();
     }
 
     public List<GameTip> findGameTipsByUser(User user) {
-        return this.datastore.find(GameTip.class).field(USER).equal(user).asList();
+        return this.mongoDB.getDatastore().find(GameTip.class).field(USER).equal(user).asList();
     }
 
     public ResultStatistic findResultStatisticByUserAndResult(User user, String score) {
-        return this.datastore.find(ResultStatistic.class).field(USER).equal(user).field("result").equal(score).get();
+        return this.mongoDB.getDatastore().find(ResultStatistic.class).field(USER).equal(user).field("result").equal(score).get();
     }
 
     public GameStatistic findGameStatisticByPlaydayAndResult(Playday playday, Object key) {
-        return this.datastore.find(GameStatistic.class).field(PLAYDAY).equal(playday).field(GAME_RESULT).equal(key).get();
+        return this.mongoDB.getDatastore().find(GameStatistic.class).field(PLAYDAY).equal(playday).field(GAME_RESULT).equal(key).get();
     }
 
     public GameTipStatistic findGameTipStatisticByPlayday(Playday playday) {
-        return this.datastore.find(GameTipStatistic.class).field(PLAYDAY).equal(playday).get();
+        return this.mongoDB.getDatastore().find(GameTipStatistic.class).field(PLAYDAY).equal(playday).get();
     }
 
     public UserStatistic findUserStatisticByPlaydayAndUser(Playday playday, User user) {
-        return this.datastore.find(UserStatistic.class).field(PLAYDAY).equal(playday).field(USER).equal(user).get();
+        return this.mongoDB.getDatastore().find(UserStatistic.class).field(PLAYDAY).equal(playday).field(USER).equal(user).get();
     }
 
     public List<UserStatistic> findUserStatisticByPlaydayOrderByPlaydayPoints(Playday playday) {
-        return this.datastore.find(UserStatistic.class).field(PLAYDAY).equal(playday).order("playdayPoints").asList();
+        return this.mongoDB.getDatastore().find(UserStatistic.class).field(PLAYDAY).equal(playday).order("playdayPoints").asList();
     }
 
     public List<UserStatistic> findUserStatisticByPlaydayOrderByPoints(Playday playday) {
-        return this.datastore.find(UserStatistic.class).field(PLAYDAY).equal(playday).order(POINTS).asList();
+        return this.mongoDB.getDatastore().find(UserStatistic.class).field(PLAYDAY).equal(playday).order(POINTS).asList();
     }
 
     public List<GameTip> findGameTipByGame(Game game) {
-        return this.datastore.find(GameTip.class).field(GAME).equal(game).asList();
+        return this.mongoDB.getDatastore().find(GameTip.class).field(GAME).equal(game).asList();
     }
 
     public PlaydayStatistic findPlaydayStatisticByPlaydayAndResult(Playday playday, Object key) {
-        return this.datastore.find(PlaydayStatistic.class).field(PLAYDAY).equal(playday).field(GAME_RESULT).equal(key).get();
+        return this.mongoDB.getDatastore().find(PlaydayStatistic.class).field(PLAYDAY).equal(playday).field(GAME_RESULT).equal(key).get();
     }
 
     public User findUserByEmail(String email) {
-        return this.datastore.find(User.class).field(EMAIL).equal(email).get();
+        return this.mongoDB.getDatastore().find(User.class).field(EMAIL).equal(email).get();
     }
 
     public User findUserByUsername(String username) {
-        return this.datastore.find(User.class).field(USERNAME).equal(username).get();
+        return this.mongoDB.getDatastore().find(User.class).field(USERNAME).equal(username).get();
     }
 
     public List<Confirmation> findAllConfirmation() {
-        return this.datastore.find(Confirmation.class).asList();
+        return this.mongoDB.getDatastore().find(Confirmation.class).asList();
     }
 
     public Settings findSettings() {
-        return this.datastore.find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
+        return this.mongoDB.getDatastore().find(Settings.class).field("appName").equal(Constants.APPNAME.asString()).get();
     }
 
     public User findUserByPlace(int place) {
-        return this.datastore.find(User.class).field(PLACE).equal(place).get();
+        return this.mongoDB.getDatastore().find(User.class).field(PLACE).equal(place).get();
     }
 
     public Game findGameByNumber(int number) {
-        return this.datastore.find(Game.class).field(NUMBER).equal(number).get();
+        return this.mongoDB.getDatastore().find(Game.class).field(NUMBER).equal(number).get();
     }
 
     public Bracket findBracketByNumber(String number) {
-        return this.datastore.find(Bracket.class).field(NUMBER).equal(Integer.valueOf(number)).get();
+        return this.mongoDB.getDatastore().find(Bracket.class).field(NUMBER).equal(Integer.valueOf(number)).get();
     }
 
     public void saveScore(final Game game, final String homeScore, final String awayScore, final String extratime, String homeScoreExtratime, String awayScoreExtratime) {
@@ -263,7 +259,7 @@ public final class DataService {
             game.setEnded(true);
         }
         
-        this.datastore.save(game);
+        this.mongoDB.getDatastore().save(game);
     }
 
     public void saveGameTip(final Game game, final int homeScore, final int awayScore, User user) {
@@ -277,7 +273,7 @@ public final class DataService {
             gameTip.setPlaced(new Date());
             gameTip.setHomeScore(homeScore);
             gameTip.setAwayScore(awayScore);
-            this.datastore.save(gameTip);
+            this.mongoDB.getDatastore().save(gameTip);
             LOG.info("Tipp placed - " + user.getEmail() + " - " + gameTip);
         }
     }
@@ -322,9 +318,9 @@ public final class DataService {
     }
 
     public Playday findCurrentPlayday () {
-        Playday playday = this.datastore.find(Playday.class).field(CURRENT).equal(true).get();
+        Playday playday = this.mongoDB.getDatastore().find(Playday.class).field(CURRENT).equal(true).get();
         if (playday == null) {
-            playday = this.datastore.find(Playday.class).field(NUMBER).equal(1).get();
+            playday = this.mongoDB.getDatastore().find(Playday.class).field(NUMBER).equal(1).get();
         }
 
         return playday;
@@ -340,7 +336,7 @@ public final class DataService {
             extraTip.setUser(user);
             extraTip.setExtra(extra);
             extraTip.setAnswer(team);
-            this.datastore.save(extraTip);
+            this.mongoDB.getDatastore().save(extraTip);
             LOG.info("Stored extratip - " + user.getEmail() + " - " + extraTip);
         }
     }
@@ -350,86 +346,86 @@ public final class DataService {
     }
 
     public List<User> findAllActiveUsers() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).asList();
     }
 
     public List<Playday> findAllPlaydaysOrderByNumber() {
-        return this.datastore.find(Playday.class).order(NUMBER).asList();
+        return this.mongoDB.getDatastore().find(Playday.class).order(NUMBER).asList();
     }
 
     public List<Game> findGamesByHomeTeam(Team team) {
-        return this.datastore.find(Game.class).field("homeTeam").equal(team).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field("homeTeam").equal(team).asList();
     }
 
     public List<Game> findGamesByAwayTeam(Team team) {
-        return this.datastore.find(Game.class).field("awayTeam").equal(team).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field("awayTeam").equal(team).asList();
     }
 
     public List<User> findAllActiveUsersOrdered() {
-        return this.datastore.find(User.class)
+        return this.mongoDB.getDatastore().find(User.class)
                 .field(ACTIVE).equal(true)
                 .order("points, correctResults, correctDifferences, correctTrends, correctExtraTips")
                 .asList();
     }
 
     public List<Bracket> findAllUpdatableBrackets() {
-        return this.datastore.find(Bracket.class).field("updatable").equal(true).asList();
+        return this.mongoDB.getDatastore().find(Bracket.class).field("updatable").equal(true).asList();
     }
 
     public List<Team> findTeamsByBracketOrdered(Bracket bracket) {
-        return this.datastore.find(Team.class).field(BRACKET).equal(bracket).order("-points, -goalsDiff, -goalsFor").asList();
+        return this.mongoDB.getDatastore().find(Team.class).field(BRACKET).equal(bracket).order("-points, -goalsDiff, -goalsFor").asList();
     }
 
     public List<Team> findTeamsByBracket(Bracket bracket) {
-        return this.datastore.find(Team.class).field(BRACKET).equal(bracket).asList();
+        return this.mongoDB.getDatastore().find(Team.class).field(BRACKET).equal(bracket).asList();
     }
 
     public List<Game> findGamesByPlayoffAndEndedAndBracket() {
-        return this.datastore.find(Game.class).field(PLAYOFF).equal(true).field(ENDED).equal(false).field(BRACKET).equal(null).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field(PLAYOFF).equal(true).field(ENDED).equal(false).field(BRACKET).equal(null).asList();
     }
 
     public List<Game> findReferencedGames(String bracketString) {
         Pattern pattern = Pattern.compile(bracketString);
-        List<Game> games = this.datastore.find(Game.class).filter("homeReference", pattern).asList();
-        games.addAll(this.datastore.find(Game.class).filter("awayReference", pattern).asList());
+        List<Game> games = this.mongoDB.getDatastore().find(Game.class).filter("homeReference", pattern).asList();
+        games.addAll(this.mongoDB.getDatastore().find(Game.class).filter("awayReference", pattern).asList());
 
         return games;
     }
 
     public List<Game> findAllNonPlayoffGames() {
-        return this.datastore.find(Game.class).field(PLAYOFF).equal(false).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field(PLAYOFF).equal(false).asList();
     }
 
     public List<Game> findAllPlayoffGames() {
-        return this.datastore.find(Game.class).field(PLAYOFF).equal(true).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field(PLAYOFF).equal(true).asList();
     }
 
     public List<User> findActiveUsers(int limit) {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).order(PLACE).limit(limit).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).order(PLACE).limit(limit).asList();
     }
 
     public List<User> findAllActiveUsersOrderedByPlace() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).order(PLACE).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).order(PLACE).asList();
     }
 
     public List<User> findUsersOrderByUsername() {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).order(USERNAME).asList();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).order(USERNAME).asList();
     }
 
     public Confirmation findConfirmationByTypeAndUser(ConfirmationType confirmationType, User user) {
-        return this.datastore.find(Confirmation.class).field("confirmationType").equal(confirmationType).field(USER).equal(user).get();
+        return this.mongoDB.getDatastore().find(Confirmation.class).field("confirmationType").equal(confirmationType).field(USER).equal(user).get();
     }
 
     public Confirmation findConfirmationByToken(String token) {
-        return this.datastore.find(Confirmation.class).field("token").equal(token).get();
+        return this.mongoDB.getDatastore().find(Confirmation.class).field("token").equal(token).get();
     }
 
     public User findUserByEmailAndActive(String email) {
-        return this.datastore.find(User.class).field(ACTIVE).equal(true).field(EMAIL).equal(email).get();
+        return this.mongoDB.getDatastore().find(User.class).field(ACTIVE).equal(true).field(EMAIL).equal(email).get();
     }
 
     public User findUserByUsernameOrEmail(String username) {
-        Query<User> query = this.datastore.find(User.class);
+        Query<User> query = this.mongoDB.getDatastore().find(User.class);
         query.or(query.criteria(USERNAME).equal(username), query.criteria(EMAIL).equal(username));
         query.and(query.criteria(ACTIVE).equal(true));
 
@@ -437,40 +433,40 @@ public final class DataService {
     }
 
     public List<Game> findGamesByBracket(Bracket bracket) {
-        return this.datastore.find(Game.class).field(BRACKET).equal(bracket).asList();
+        return this.mongoDB.getDatastore().find(Game.class).field(BRACKET).equal(bracket).asList();
     }
 
     public List<Game> findGamesByPlayday(Playday playday) {
-        return this.datastore.find(Game.class).field(PLAYDAY).equal(playday).order("kickoff").order("number").asList();
+        return this.mongoDB.getDatastore().find(Game.class).field(PLAYDAY).equal(playday).order("kickoff").order("number").asList();
     }
 
     public List<ExtraTip> findExtraTipsByUser(User user) {
-        return this.datastore.find(ExtraTip.class).field(USER).equal(user).field(POINTS).greaterThan(0).asList();
+        return this.mongoDB.getDatastore().find(ExtraTip.class).field(USER).equal(user).field(POINTS).greaterThan(0).asList();
     }
 
     public List<UserStatistic> findUserStatisticByUser(User user) {
-        return this.datastore.find(UserStatistic.class).field(USER).equal(user).order(PLAYDAY).asList();
+        return this.mongoDB.getDatastore().find(UserStatistic.class).field(USER).equal(user).order(PLAYDAY).asList();
     }
 
     public void deleteResultsStatisticByUser(User user) {
-        List<ResultStatistic> resultStatistics = this.datastore.find(ResultStatistic.class).field(USER).equal(user).asList();
+        List<ResultStatistic> resultStatistics = this.mongoDB.getDatastore().find(ResultStatistic.class).field(USER).equal(user).asList();
         if (!resultStatistics.isEmpty()) {
             for (ResultStatistic resultStatistic : resultStatistics) {
-                this.datastore.delete(resultStatistic);
+                this.mongoDB.getDatastore().delete(resultStatistic);
             }
         }
     }
 
     public List<GameStatistic> findAllGameStatistics() {
-        return this.datastore.find(GameStatistic.class).asList();
+        return this.mongoDB.getDatastore().find(GameStatistic.class).asList();
     }
 
     public List<GameTipStatistic> findGameTipStatisticsOrderByPlayday() {
-        return this.datastore.find(GameTipStatistic.class).order(PLAYDAY).asList();
+        return this.mongoDB.getDatastore().find(GameTipStatistic.class).order(PLAYDAY).asList();
     }
 
     public void deleteConfirmationsByUser(User user) {
-        this.datastore.delete(this.datastore.find(Confirmation.class).field(USER).equal(user).asList());
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(Confirmation.class).field(USER).equal(user).asList());
     }
 
     public List<Map<String, String>> findResultsStatistic() {
@@ -503,7 +499,7 @@ public final class DataService {
         int diffs = 0;
         int trends = 0;
         
-        List<UserStatistic> userStatistics = this.datastore.find(UserStatistic.class).field("playday").equal(playday).asList();
+        List<UserStatistic> userStatistics = this.mongoDB.getDatastore().find(UserStatistic.class).field("playday").equal(playday).asList();
         for (UserStatistic userStatistic : userStatistics) {
             points = points + userStatistic.getPlaydayPoints();
             tips = tips + userStatistic.getPlaydayCorrectTips();
@@ -548,9 +544,9 @@ public final class DataService {
     }
 
     public List<Bracket> findAllTournamentBrackets() {
-        List<Bracket> brackets = this.datastore.find(Bracket.class).asList();
+        List<Bracket> brackets = this.mongoDB.getDatastore().find(Bracket.class).asList();
         for (Bracket bracket : brackets) {
-            List<Team> teams = this.datastore.find(Team.class).field("bracket").equal(bracket).order("place").asList();
+            List<Team> teams = this.mongoDB.getDatastore().find(Team.class).field("bracket").equal(bracket).order("place").asList();
             bracket.setTeams(teams);
         }
         
@@ -558,7 +554,7 @@ public final class DataService {
     }
     
     public void dropDatabase() {
-        this.datastore.getDB().dropDatabase();
+        this.mongoDB.getDatastore().getDB().dropDatabase();
     }
 
     public void save(final Object object) {
@@ -566,12 +562,12 @@ public final class DataService {
     }
 
     public void deleteUser(User user) {
-        this.datastore.delete(this.datastore.find(GameTip.class).field("user").equal(user));
-        this.datastore.delete(this.datastore.find(ExtraTip.class).field("user").equal(user));
-        this.datastore.delete(this.datastore.find(Confirmation.class).field("user").equal(user));
-        this.datastore.delete(this.datastore.find(UserStatistic.class).field("user").equal(user));
-        this.datastore.delete(this.datastore.find(ResultStatistic.class).field("user").equal(user));
-        this.datastore.delete(user);
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(GameTip.class).field("user").equal(user));
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(ExtraTip.class).field("user").equal(user));
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(Confirmation.class).field("user").equal(user));
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(UserStatistic.class).field("user").equal(user));
+        this.mongoDB.getDatastore().delete(this.mongoDB.getDatastore().find(ResultStatistic.class).field("user").equal(user));
+        this.mongoDB.getDatastore().delete(user);
     }
 
     public List<Playday> findNextPlaydays() {
@@ -598,7 +594,7 @@ public final class DataService {
     }
 
     public void delete(Object object) {
-        this.datastore.delete(object);
+        this.mongoDB.getDatastore().delete(object);
     }
 
     public List<Bracket> findAllBrackets() {
@@ -634,6 +630,6 @@ public final class DataService {
     }
 
     public List<Game> findAllGamesOrderByNumber() {
-        return this.datastore.find(Game.class).order("number").asList();
+        return this.mongoDB.getDatastore().find(Game.class).order("number").asList();
     }
 }
