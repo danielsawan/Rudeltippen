@@ -35,6 +35,10 @@ public class TestBase extends NinjaTest {
     
     public static final String ADMIN = "admin";
     public static final String USER = "user";
+    
+    public TestBase() {
+        EmbeddedMongo.DB.start();
+    }
 
     @Before
     public void init() {
