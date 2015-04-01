@@ -40,6 +40,14 @@
 				<version>2.5</version>
 			</plugin>
 			<plugin>
+				<groupId>com.versioneye</groupId>
+				<artifactId>versioneye-maven-plugin</artifactId>
+				<version>2.0.1</version>
+				<configuration>
+					<projectId>54dcba52c1bbbd5f820004c5</projectId>
+				</configuration>
+			</plugin>			
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<version>1.4</version>
