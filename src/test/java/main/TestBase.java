@@ -18,7 +18,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,17 +38,16 @@ public class TestBase extends NinjaTest {
     public static final String ADMIN = "admin";
     public static final String USER = "user";
     
-    public TestBase() {
-        EmbeddedMongo.DB.start();
+    @BeforeClass
+    public static void statup() {
+        EmbeddedMongo.DB.port(28018).start();
     }
 
     @Before
     public void init() {
         try {
             authentications = getInjector().getInstance(Authentications.class);
-            
             dataService = getInjector().getInstance(DataService.class);
-            dataService.setMongoClient(EmbeddedMongo.DB.getMongoClient());
         } catch (Exception e) {
             LOG.error("Failed to start in memory mongodb for testing", e);
         }
@@ -121,5 +122,10 @@ public class TestBase extends NinjaTest {
         }
         
         return httpclient.execute(new HttpPost(getServerAddress() + url));
+    }
+    
+    @AfterClass
+    public static void shutodwn() {
+        EmbeddedMongo.DB.stop();
     }
 }

@@ -38,7 +38,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 
 import de.svenkubiak.ninja.mongodb.MongoDB;
 
@@ -86,10 +85,6 @@ public final class DataService {
     @Inject
     private DataService(MongoDB mongoDB) {
         this.mongoDB = mongoDB;
-    }
-    
-    public void setMongoClient(MongoClient mongoClient) {
-        this.mongoDB.setMongoClient(mongoClient);
     }
 
     public List<User> findAllNotifiableUsers() {
